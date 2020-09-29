@@ -1,0 +1,13 @@
+PS4 Controller connects to a computer via bluetooth (PS4Joystick.py)
+Commands are then sent to the pupper via UDPComms using ssh
+    - Pupper receives on port 8830
+    - Pupper sends info back on port 8840
+    - Right now the only information sent back from pupper is the ps4_color
+    - Only JoystickInterface.py sends and receives information on Pupper
+
+PupperCommand is installed on the PC (or Pi) and run as a background service. This service constantly monitors PS4Joystick for input and replies with the output from port 8840
+
+**So on UDPComms sets up a local network on the raspberry pi, and sends and receives info from different processes via ssh. PupperCommand/joystick.py is run as a background service. This creates a PS4Joystick instance and waits for commands from the joystick and sends color back to the joystick. PS4Joystick connects to the PS4 controller via bluetooth or HID (?) via the ds4drv package. ds4drv sets up a thread to monitor the controller and constantly update control values in ActionShim which takes those values and massages them to account for problems. PS4Joystick returns the most recent values when queried. The PupperCommand.joystick puts thos values into a nice dict and sends them via UDPComms. JoystickInterface 
+
+Capturing video stream from raspberry pi camera module
+    - https://platypus-boats.readthedocs.io/en/latest/source/rpi/video/video-streaming-vlc.html

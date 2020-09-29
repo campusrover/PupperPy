@@ -1,0 +1,24 @@
+# This will accept commands programmatically and ferry them to the Pupper via ssh & UDP
+
+
+# On Pi have a client service listening on bluetooth for signal and then sending command dict via UDPComms on port 8830 and listening on port 8840 for dict reponse with led color:: replaces joystick.py from PupperCommand
+
+# On Computer have an interface that sends a message over bluetooth to the pi
+# send dict
+# to replace joystick, this needs keys: ['left_analog_y', 'left_analog_x', 'right_analog_x', 'right_analog_y', 'l2_analog', 'r2_analog', 'button_l1', 'button_r1', 'button_square', 'button_cross', 'button_circle', 'button_triangle', 'dpad_down', 'dpad_left']
+
+# gait_toggle : R1, 1 = toggle, 0 = nothing, sets command.trot_event = True
+# activate_toggle: L1, 1 = toggle, 0 = nothing, sets command.activate_event to True
+# hop_toggle: x, 1 = toggle, sets command.hop_event = True
+
+# x_velocity : ly * max_x_velocity, 0-1
+# y_velocity: lx * -max_y_velocity, 0-1
+# command.horizontal_velocity = [x_vel, y-vel]
+# yaw_rate : rx * -max_yaw_rate, 0-1, command.yaw_rate
+# pitch : ry * max_pitch, command.pitch requires some calc, see JoystickInterface, 0-1
+# height_movement: dpady, command.height requires calc
+# roll_movement: dpadx, command.roll requires calc
+
+# ComputerCommand needs a keyboard listener and a few variables that can range from 0-1 in steps. Each keystroke increases or decreases a var and then sends via bluetooth to the pi
+# Also a GUI to show the status of all variables
+# This needs to connect to the pi, receive a message (initial pupper color) and then send a message when told 
