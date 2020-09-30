@@ -3,6 +3,8 @@ import numpy as np
 import sys
 import os
 import configparser
+import tkinter as tk
+from tkinter import ttk
 
 __location__ = sys.path[0]
 KEY_CONFIG = os.path.join(__location__, 'keyboard_mapping.conf')
@@ -184,10 +186,12 @@ class StateManager(object):
         self.state = ControllerState()
         self.listener = keyboard.Listener(on_press=self.on_press,
                                           on_release=self.on_release)
+        self.active = False
 
     def on_press(self, key):
         if key == keyboard.Key.esc:
             self.state = ControllerState() # set state to default
+            self.active = False
             return False  # stop Listener
 
         try:
@@ -220,6 +224,7 @@ class StateManager(object):
         # if one is turned on, turn off all others
         if key == keyboard.Key.esc:
             self.state = ControllerState() # set state to default
+            self.active = False
             return False # stop listener
 
         try:
@@ -251,20 +256,24 @@ class StateManager(object):
 
     def start(self):
         self.listener.start()
+        self.active = True
 
     def stop(self):
         self.listener.stop()
+        self.active = False
 
     def join(self):
         self.listener.join()
 
     def __enter__(self):
         self.listener.start()
+        self.active = True
         return self
 
     def __exit__(self, type, value, tb):
         self.state = ControllerState()
         self.listener.stop()
+        self.active = False
 
 
 class ControlGUI(ttk.Frame):
@@ -326,14 +335,12 @@ def launch_pupper_controller():
 
         # run loop to poll state from listener and then pass it to the pupper then listen to the pupper for any returned data, then pass both to gui for update
 
-        active = True
-        while active:
+        while listener.active:
             state = listener.get_state()
             ble_interface.send(state)
             msg = ble_interface.recv()
             cgi.update(state, msg)
             time.sleep(1 / MESSAGE_RATE)
-            pass
 
 
 def window_center(win):
