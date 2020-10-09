@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="dpad_icons">
+    <file>icons/dpad_down_off.png</file>
+    <file>icons/dpad_down_on.png</file>
+    <file>icons/dpad_left_off.png</file>
+    <file>icons/dpad_left_on.png</file>
+    <file>icons/dpad_right_off.png</file>
+    <file>icons/dpad_right_on.png</file>
+    <file>icons/dpad_up_off.png</file>
+    <file>icons/dpad_up_on.png</file>
+  </qresource>
+  <qresource prefix="newPrefix"/>
+</RCC>

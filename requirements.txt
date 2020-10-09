@@ -1,2 +1,4 @@
 pybluez
 numpy
+PyQt5
+pynput
