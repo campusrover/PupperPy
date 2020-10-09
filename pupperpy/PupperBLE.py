@@ -3,7 +3,7 @@ import time
 import bluetooth
 
 ## Configurable ##
-hostMACAddress = '60-F8-1D-AA-FE-19' ## MAC address to bluetooth adapter on pi
+hostMACAddress = 'B8:27:EB:5E:D6:8F' ## MAC address to bluetooth adapter on pi
 BLE_PORT = 3
 BLE_MSG_SIZE = 1024
 MESSAGE_RATE = 20
