@@ -46,3 +46,31 @@ sudo make install
 sudo pigpio
 sudo systemctl start robot
 # now it should all be working
+
+################################################################################
+################    Bluetooth Computer Interface Setup    ######################
+################################################################################
+
+# First enable bluetooth, this needs to be done everytime the interface is
+# used, still looking for an autoconnect
+bluetoothctl
+# Coppy the shown MAC address, put this into the file pupperpy/BluetoothInterface.py
+enable on
+pairable on
+discoverable on
+# Now find and pair cerbaris from your computer, and here a prompt will pop up to accept it
+# then exit bluetoothctl
+exit
+
+# Now setup the services
+ln -s /home/cerbaris/pupper_code/pupperpy/bin/pupperble.service /etc/systemd/system/
+ln -s /home/cerbaris/pupper_code/pupperpy/bin/robotble.service /lib/systemd/system/
+# Disable other services
+sudo systemctl disable joystick
+sudo systemctl disable robot
+# Reload the daemon and start the new services
+sudo systemctl enable pupperble
+sudo systemctl enable robotble
+sudo systemctl start pupperble
+sudo systemctl start robotble
+# Now on your 

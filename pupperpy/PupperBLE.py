@@ -1,6 +1,8 @@
 from UDPComms import Publisher, Subscriber, timeout
 import time
 import bluetooth
+import json
+from pupperpy.BluetoothInterface import BluetoothServer
 
 ## Configurable ##
 hostMACAddress = 'B8:27:EB:5E:D6:8F' ## MAC address to bluetooth adapter on pi
@@ -61,21 +63,16 @@ def send_command(values):
         return None
 
 if __name__ == "__main__":
-    server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    server_sock.bind((hostMACAddress, BLE_PORT))
-    server_sock.listen(1)
-    try:
-        client, client_info = server_soc.accept()
-        client.send({'ps4_color': PUPPER_COLOR})
+    with BluetoothServer() as ble_server:
+        ble_server.send({'ps4_color': PUPPER_COLOR})
         print("running")
         while True:
-            data = client.recv(BLE_MSG_SIZE)
-            out_msg = send_command(data)
+            data = ble_server.receive()
+            if data is not None:
+                # This might cause a timeout error
+                out_msg = send_command(data)
+
             if out_msg is not None:
-                client.send(out_msg)
+                ble_server.send(out_msg)
 
             time.sleep(1 / MESSAGE_RATE)
-    except:
-        print("Closing socket")
-        client.close()
-        server_sock.close()

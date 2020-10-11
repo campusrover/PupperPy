@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 from pupperpy.Controller.Controller_QT import Ui_MainWindow
 import time
-from pupperpy.BluetoothInterface import BluetoothInterface
+from pupperpy.BluetoothInterface import BluetoothClient
 
 
 __location__ = os.path.dirname(__file__)
@@ -211,7 +211,7 @@ class ControlGUI(QMainWindow):
         self.config = load_keymap(keymap)
         self.updateUI()
 
-        #self.ble_interface = BluetoothInterface()
+        #self.ble_interface = BluetoothClient()
         self.ble_interface = DummyBLE()
         self.timer = QTimer()
         self.timer.setInterval(1000 / MESSAGE_RATE)
@@ -355,7 +355,6 @@ class ControlGUI(QMainWindow):
         self.ble_interface.close()
         self.timer.stop()
         event.accept()
-
 
 
 def set_toggle(obj, val):
