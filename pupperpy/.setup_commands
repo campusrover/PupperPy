@@ -1,0 +1,48 @@
+sudo apt install git vim screen python3-pip
+mkdir pupper_code
+cd pupper_code
+
+# python2 is officially being dropped so only using python3 for this
+sudo pip3 install --upgrade pip
+sudo pip3 install ipython
+
+# this replaces the RPI-Setup install_packages.sh
+git clone http://github.com/stanfordroboticsclub/UDPComms.git
+sudo pip3 install msgpack pexpect
+sudo ln -s ./UDPComms/rover.py /usr/local/bin/rover
+sudo pip install -e UDPComms
+
+git clone https://github.com/stanfordroboticsclub/uDHCPd.git
+sudo bash uDHCPd/install.sh
+
+# So that you don't get problems with not having python2, alias pip and python to pip3 and python3
+# in ~/.bashrc add line with . ~/.bash_aliases
+# create .bash_aliases in home folder
+# add line: export PYTHONPATH="${PYTHONPATH}:/home/cerbaris/.local/bin"
+# add line: alias pip='pip3'
+# add line: alias python='python3'
+# either restart you terminal or source the new .bashrc
+. ~/.bashrc
+
+# Now install the pupper code
+git clone https://github.com/stanfordroboticsclub/StanfordQuadruped.git
+cd StanfordQuadruped
+sudo bash install.sh
+# go to PupperCommand/joystick.service and StanfordQuadruped/robot.service and change the paths to match your configuration
+
+# If you want everything to work you will have to setup your pi with username pi and install everything in your home folder /home/pi
+# I had to change the paths in PupperCommand/joystick.service and StanfordQuadruped/robot.service and then fix the symlinks
+
+# StanfordQuadrupped install some weird version of pigpio, this version does not work 
+# I had to get pigpio from source and build it
+cd ~/pupper_code/pigpio-74
+sudo make unistall
+cd ..
+wget https://github.com/joan2937/pigpio/archive/master.zip
+unzip master.zip
+cd pigpio-master
+make
+sudo make install
+sudo pigpio
+sudo systemctl start robot
+# now it should all be working
