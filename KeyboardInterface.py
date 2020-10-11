@@ -16,55 +16,9 @@ from pupperpy.BluetoothInterface import BluetoothInterface
 __location__ = os.path.dirname(__file__)
 KEY_CONFIG = os.path.join(__location__, 'pupperpy', 'keyboard_mapping.conf')
 MESSAGE_RATE = 20
-PUPPER_COLOR = {"red":0, "blue":0, "green":255}
+PUPPER_COLOR = {"red":255, "blue":0, "green":0}
 RESET_KEY = Qt.Key_Space
 EXIT_KEY = Qt.Key_Escape
-
-# So on mac at least, holding down a key counts as repeated presses with no release, except shift and capslock those are only single
-class Test(object):
-        def __init__(self):
-            self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release, supress=True)
-            self.last_key = None
-            self.active = False
-            self.n = 0
-
-        def on_release(self, key):
-            if key == keyboard.Key.esc:
-                print(key.name)
-                self.active = False
-                return False  # stop listener
-            else:
-                try:
-                    k = key.char
-                    print('char: ' + k)
-                except:
-                    print('name: ' + key.name)
-
-            self.n = 0
-
-        def on_press(self, key):
-            if key == self.last_key:
-                self.n += 1
-            else:
-                self.n = 0
-
-            self.last_key = key
-            print(self.n)
-
-        def run(self):
-            self.listener.start()
-
-        def join(self):
-            self.listener.join()
-
-        def __enter__(self):
-            self.run()
-            self.active = True
-            return self
-
-        def __exit__(self, type, value, tb):
-            self.active = False
-            self.listener.stop()
 
 
 class ControllerState(object):
@@ -204,131 +158,11 @@ class ControllerState(object):
         return repr(self.get_state())
 
 
-class StateManager(object):
-    def __init__(self, keymap=KEY_CONFIG):
-        self.config = configparser.ConfigParser()
-        self.config.read(keymap)
-        self.state = ControllerState()
-        self.listener = keyboard.Listener(on_press=self.on_press,
-                                          on_release=self.on_release)
-        self.active = False
-
-    def on_press(self, key):
-        if key == keyboard.Key.esc:
-            self.state = ControllerState() # set state to default
-            self.active = False
-            return False  # stop Listener
-
-        try:
-            k = key.char
-        except:
-            k = key.name
-
-        # if statements to match to keyboard_mapping and set correct variables
-        group, key_val = None, None
-        for k1, v1 in self.config.items():
-            for k2, v2 in v1.items():
-                if k == v2:
-                    group = k1
-                    key_val = k2
-                    break
-
-        if group is None or key_val is None:
-            return
-
-        if k == RESET_KEY or key_val == 'reset':
-            # reset key sends resets controller state to default
-            self.state = ControllerState()
-        elif group != 'toggle':
-            if key_val == 'increment':
-                self.state.increment(group)
-            elif key_val == 'decrement':
-                self.state.decrement(group)
-            else:
-                raise ValueError('Unknown keyword %s' % key_val)
-
-        elif group == 'toggle':
-            setattr(self.state, key_val, True)
-
-    def on_release(self, key):
-        # toggles get set to True while pressed and False when released
-        # if one is turned on, turn off all others
-        if key == keyboard.Key.esc:
-            self.state = ControllerState() # set state to default
-            self.active = False
-            return False # stop listener
-
-        try:
-            k = key.char
-        except:
-            k = key.name
-
-        group, key_val = None, None
-        for k1, v1 in self.config.items():
-            for k2, v2 in v1.items():
-                if k == v2:
-                    group = k1
-                    key_val = k2
-                    break
-
-        if (group is None or key_val is None or
-            k == RESET_KEY or key_val == 'reset'):
-            return
-
-        if group is not None and group == 'toggle':
-            setattr(self.state, key_val, False)
-        elif k == RESET_KEY:
-            # reset key sends resets controller state to default
-            self.state = ControllerState()
-        elif group is not None and 'dpad' in group:
-            # reset dpad values when reset, dpad must be 1 or -1 while pressed
-            # and 0 otherwise
-            if key_val == 'increment':
-                self.state.decrement(group)
-            elif key_val == 'decrement':
-                self.state.increment(group)
-
-    def get_state(self):
-        '''returns dict with controller state information, ready to be passed
-        to PupperBLE via bluetooth
-        '''
-        return self.state.get_state()
-
-    def start(self):
-        self.listener.start()
-        self.active = True
-
-    def stop(self):
-        self.state = ControllerState()
-        self.listener.stop()
-        self.active = False
-
-    def join(self):
-        self.listener.join()
-
-    def __enter__(self):
-        self.listener.start()
-        self.active = True
-        return self
-
-    def __exit__(self, type, value, tb):
-        self.state = ControllerState()
-        self.listener.stop()
-        self.active = False
-
-
 def launch_pupper_controller():
     app = QApplication(sys.argv)
     cgi = ControlGUI()
     sys.exit(app.exec_())
 
-def window_center(win):
-    win.update_idletasks()
-    width = win.winfo_width()
-    height = win.winfo_height()
-    x = (win.winfo_screenwidth() // 2) - (width // 2)
-    y = (win.winfo_screenheight() // 2) - (height // 2)
-    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
 def load_keymap(keymap=KEY_CONFIG):
     config = configparser.ConfigParser()
@@ -351,6 +185,8 @@ class DummyBLE(object):
         pass
     def recv(self):
         return None
+    def close(self):
+        pass
 
 class ControlGUI(QMainWindow):
     '''This will start a keyboard listener and display the controller state. It
@@ -370,7 +206,7 @@ class ControlGUI(QMainWindow):
         self.ui.setupUi(self)
         self.state = ControllerState()
         self.pupper_color = PUPPER_COLOR
-        self.active = True
+        self.active = False
 
         self.config = load_keymap(keymap)
         self.updateUI()
@@ -388,8 +224,6 @@ class ControlGUI(QMainWindow):
         key = event.key()
         mapped = self.config.get(key)
         if key == EXIT_KEY:
-            self.active = False
-            self.timer.stop()
             self.close()
 
         if key == RESET_KEY:
@@ -401,7 +235,6 @@ class ControlGUI(QMainWindow):
             if key_val == 'reset':
                 self.state = ControllerState()
             elif key_val == 'quit':
-                self.active = False
                 self.close()
             elif group == 'toggle':
                 setattr(self.state, key_val, True)
@@ -505,17 +338,23 @@ class ControlGUI(QMainWindow):
             set_toggle(self.ui.dpad_up, False)
             set_toggle(self.ui.dpad_down, False)
 
-        self.ui.left_x_slider = int(100 * lx / state.LEFT_ANALOG_X_MAX)
-        self.ui.left_y_slider = int(100 * ly / state.LEFT_ANALOG_Y_MAX)
+        self.ui.left_x_slider.setValue(int(100 * lx / state.LEFT_ANALOG_X_MAX))
+        self.ui.left_y_slider.setValue(int(100 * ly / state.LEFT_ANALOG_Y_MAX))
 
-        self.ui.right_x_slider = int(100 * lx / state.RIGHT_ANALOG_X_MAX)
-        self.ui.right_y_slider = int(100 * ly / state.RIGHT_ANALOG_Y_MAX)
+        self.ui.right_x_slider.setValue(int(100 * rx / state.RIGHT_ANALOG_X_MAX))
+        self.ui.right_y_slider.setValue(int(100 * ry / state.RIGHT_ANALOG_Y_MAX))
 
     def send_signal(self):
         self.ble_interface.send(self.state.get_state())
         msg = self.ble_interface.recv()
         if msg is not None:
             self.pupper_color = msg['ps4_color']
+
+    def closeEvent(self, event):
+        self.active = False
+        self.ble_interface.close()
+        self.timer.stop()
+        event.accept()
 
 
 

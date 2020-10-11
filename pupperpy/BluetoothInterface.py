@@ -1,4 +1,5 @@
 import bluetooth
+import json
 
 ## Configurable ##
 hostMACAddress = 'B8:27:EB:5E:D6:8F' ## MAC address to bluetooth adapter on pi
@@ -16,11 +17,20 @@ class BluetoothInterface(object):
         self.socket.connect((hostMACAddress, BLE_PORT))
 
     def send(self, msg):
-        self.socket.send(msg)
+        if not isinstance(msg, dict):
+            raise ValueError('Message must be type dict or bytes')
+
+        # Convert message to bytes
+        out = json.dumps(msg).encode('utf-8')
+
+        self.socket.send(out)
 
     def recv(self):
         try:
-            return self.socket.recv(BLE_MSG_SIZE)
+            msg = self.socket.recv(BLE_MSG_SIZE)
+            # Convert bytes to dict
+            out = json.loads(msg.decode('utf-8'))
+            return out
         except:
             return None  # in case of timeout
 
