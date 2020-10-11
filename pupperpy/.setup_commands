@@ -51,7 +51,13 @@ sudo systemctl start robot
 ################    Bluetooth Computer Interface Setup    ######################
 ################################################################################
 
-# First enable bluetooth, this needs to be done everytime the interface is
+# Installing stuff
+sudo apt-get install libbluetooth-dev
+sudo pip install pybluez
+# techincally the root install is enough, but this lets you use it in ipython too
+pip install pybluez
+
+# Now enable bluetooth, this needs to be done everytime the interface is
 # used, still looking for an autoconnect
 bluetoothctl
 # Coppy the shown MAC address, put this into the file pupperpy/BluetoothInterface.py
@@ -63,9 +69,11 @@ discoverable on
 exit
 
 # Now setup the services
-ln -s /home/cerbaris/pupper_code/pupperpy/bin/pupperble.service /etc/systemd/system/
-ln -s /home/cerbaris/pupper_code/pupperpy/bin/robotble.service /lib/systemd/system/
-# Disable other services
+ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/pupperble.service /etc/systemd/system/
+ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/bin/robotble.service /lib/systemd/system/
+# Disable other services (alternatively you could just 'stop' them, I think
+# after disabling you have to relink them)
+# TODO: put aliases in bash_aliases to switch between the control modes
 sudo systemctl disable joystick
 sudo systemctl disable robot
 # Reload the daemon and start the new services
@@ -73,4 +81,4 @@ sudo systemctl enable pupperble
 sudo systemctl enable robotble
 sudo systemctl start pupperble
 sudo systemctl start robotble
-# Now on your 
+# Now on your computer you can start the KeyboardInterface

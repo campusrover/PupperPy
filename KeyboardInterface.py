@@ -1,8 +1,6 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from pynput import keyboard
-import numpy as np
 import sys
 import os
 import configparser
@@ -11,151 +9,16 @@ from tkinter import ttk
 from pupperpy.Controller.Controller_QT import Ui_MainWindow
 import time
 from pupperpy.BluetoothInterface import BluetoothClient
+from pupperpy.CommandInterface import ControllerState
 
 
 __location__ = os.path.dirname(__file__)
-KEY_CONFIG = os.path.join(__location__, 'pupperpy', 'keyboard_mapping.conf')
+RESOURCE_DIR = os.path.join(__location__, 'pupperpy', 'resources')
+KEY_CONFIG = os.path.join(RESOURCE_DIR, 'keyboard_mapping.conf')
 MESSAGE_RATE = 20
 PUPPER_COLOR = {"red":255, "blue":0, "green":0}
 RESET_KEY = Qt.Key_Space
 EXIT_KEY = Qt.Key_Escape
-
-
-class ControllerState(object):
-    LEFT_ANALOG_X_STEP = 0.05
-    LEFT_ANALOG_Y_STEP = 0.05
-    RIGHT_ANALOG_X_STEP = 0.05
-    RIGHT_ANALOG_Y_STEP = 0.05
-    DPAD_X_STEP = 1
-    DPAD_Y_STEP = 1
-
-    LEFT_ANALOG_X_MAX = 0.20
-    LEFT_ANALOG_Y_MAX = 0.6
-    RIGHT_ANALOG_X_MAX = 0.5
-    RIGHT_ANALOG_Y_MAX = 0.6
-    DPAD_X_MAX = 1
-    DPAD_Y_MAX = 1
-
-    def __init__(self, keymap=KEY_CONFIG):
-        self.left_analog_x = 0
-        self.left_analog_y = 0
-        self.right_analog_x = 0
-        self.right_analog_y = 0
-        self.dpad_x = 0
-        self.dpad_y = 0
-        self.l1 = False
-        self.l2 = False
-        self.r1 = False
-        self.r2 = False
-        self.square = False
-        self.circle = False
-        self.cross = False
-        self.triangle = False
-
-    @property
-    def left_analog_x(self):
-        return self._left_analog_x
-
-    @left_analog_x.setter
-    def left_analog_x(self, value):
-        if np.abs(value) > self.LEFT_ANALOG_X_MAX:
-            self._left_analog_x = np.sign(value)*self.LEFT_ANALOG_X_MAX
-        else:
-            self._left_analog_x = value
-
-    @property
-    def left_analog_y(self):
-        return self._left_analog_y
-
-    @left_analog_y.setter
-    def left_analog_y(self, value):
-        if np.abs(value) > self.LEFT_ANALOG_Y_MAX:
-            self._left_analog_y = np.sign(value)*self.LEFT_ANALOG_Y_MAX
-        else:
-            self._left_analog_y = value
-
-    @property
-    def right_analog_x(self):
-        return self._right_analog_x
-
-    @right_analog_x.setter
-    def right_analog_x(self, value):
-        if np.abs(value) > self.RIGHT_ANALOG_X_MAX:
-            self._right_analog_x = np.sign(value)*self.RIGHT_ANALOG_X_MAX
-        else:
-            self._right_analog_x = value
-
-    @property
-    def right_analog_y(self):
-        return self._right_analog_y
-
-    @right_analog_y.setter
-    def right_analog_y(self, value):
-        if np.abs(value) > self.RIGHT_ANALOG_Y_MAX:
-            self._right_analog_y = np.sign(value)*self.RIGHT_ANALOG_Y_MAX
-        else:
-            self._right_analog_y = value
-
-    @property
-    def dpad_x(self):
-        return self._dpad_x
-
-    @dpad_x.setter
-    def dpad_x(self, value):
-        if np.abs(value) > self.DPAD_X_MAX:
-            self._dpad_x = np.sign(value)*self.DPAD_X_MAX
-        else:
-            self._dpad_x = value
-
-    @property
-    def dpad_y(self):
-        return self._dpad_y
-
-    @dpad_y.setter
-    def dpad_y(self, value):
-        if np.abs(value) > self.DPAD_Y_MAX:
-            self._dpad_y = np.sign(value)*self.DPAD_Y_MAX
-        else:
-            self._dpad_y = value
-
-    def increment(self, attr):
-        try:
-            x = getattr(self, attr)
-            step = getattr(self, (attr + '_step').upper())
-            x += step
-            setattr(self, attr, x)
-        except:
-            print('Attribute %s not found.' % attr)
-
-    def decrement(self, attr):
-        try:
-            x = getattr(self, attr)
-            step = getattr(self, (attr + '_step').upper())
-            x -= step
-            setattr(self, attr, x)
-        except:
-            print('Attribute %s not found.' % attr)
-
-    def get_state(self):
-        out = {}
-        out['left_analog_x'] = self.left_analog_x
-        out['left_analog_y'] = self.left_analog_y
-        out['right_analog_x'] = self.right_analog_x
-        out['right_analog_y'] = self.right_analog_y
-        out['dpad_x'] = self.dpad_x
-        out['dpad_y'] = self.dpad_y
-        out['l1'] = self.l1
-        out['l2'] = self.l2
-        out['r1'] = self.r1
-        out['r2'] = self.r2
-        out['button_square'] = self.square
-        out['button_circle'] = self.circle
-        out['button_triangle'] = self.triangle
-        out['button_cross'] = self.cross
-        return out
-
-    def __str__(self):
-        return repr(self.get_state())
 
 
 def launch_pupper_controller():
@@ -363,17 +226,4 @@ def set_toggle(obj, val):
 
 
 if __name__ == '__main__':
-    #app = QApplication(sys.argv)
-    #cgi = ControllerViewer(ControllerState())
-    #sys.exit(app.exec_())
-    #listener = keyboard.Listener(on_press=on_press)
-    #listener.start()
-    # test = Test()
-    #with Test() as listener:
-    #    while listener.active:
-    #        print('trees')
-    #        time.sleep(5)
-
-        #listener.join()
-    # print('cats')
     launch_pupper_controller()
