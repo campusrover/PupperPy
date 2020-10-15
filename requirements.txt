@@ -1,4 +1,4 @@
 pybluez
 numpy
 PyQt5
-pynput
+adafruit-circuitpython-bno055
