@@ -54,3 +54,19 @@ def read_data(fn):
     df = pd.read_json(fn)
     df['time'] = df.time.apply(lambda x: dt.datetime.fromtimestamp(x/1000))
     return df
+
+def get_pos(time, acc, window=2):
+    pos = []
+    tout = []
+    curr = 0
+    t1 = time[0]
+    i = 0
+    while t1 <= time[-1]-window:
+        idx = np.where((time >= t1) & (time < t1+window))[0]
+        tout.append(np.mean(time[idx]))
+        delta = np.sum(acc[idx])*window
+        curr += delta
+        pos.append(curr)
+        t1 = t1 + window
+        i += 1
+    return np.array(tout), np.array(pos)

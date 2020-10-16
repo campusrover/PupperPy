@@ -69,8 +69,8 @@ discoverable on
 exit
 
 # Now setup the services
-ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/pupperble.service /etc/systemd/system/
-ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/bin/robotble.service /lib/systemd/system/
+ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/pupperble.service /lib/systemd/system/
+ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/bin/robotble.service /etc/systemd/system/
 # Disable other services (alternatively you could just 'stop' them, I think
 # after disabling you have to relink them)
 # TODO: put aliases in bash_aliases to switch between the control modes
