@@ -1,0 +1,6 @@
+dtparam=i2c_arm=on, i2c_arm_baudrate=10000
+dtparam=i2c1=off
+dtparam=i2c0=on
+
+start_x=1
+gpu_mem=128

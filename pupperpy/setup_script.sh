@@ -72,7 +72,11 @@ sudo cp PupperPy/pupperpy/resources/wpa_supplicant.conf /etc/wpa_supplicant/wpa_
 cat PupperPy/pupperpy/resources/dhcpcd_conf_extra.txt >> /etc/dhcpcd.conf
 
 # Setup network insterfaces for use with UDPComms
-cat PupperPy/pupperpy/resources/network_interfaces_extra.txt >> /etc/network/interfaces
+cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/network/interfaces
+
+# Configurations for IMU and Camera
+# Change to /boot/firmware/config.txt for ubuntu mate
+cat PupperPy/pupperpy/resources/config_extras.txt | sudo tee -a /boot/config.txt
 
 ################################################################################
 ################    IMU and Camera Setup    ######################
