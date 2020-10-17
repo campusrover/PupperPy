@@ -2,7 +2,7 @@
 sudo adduser cerbaris
 sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,gpio,i2c,spi cerbaris
 sudo -su cerbaris
-sudo pkill -u cerbaris
+sudo pkill -u pi
 # Log back in as cerbaris if necessary
 sudo deluser -remove-home pi
 
@@ -52,7 +52,7 @@ sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/robotble.service /etc/syste
 
 # enable services
 sudo systemctl daemon-reload
-sudo pigpio
+sudo pigpiod
 
 #### For PS4 Controller ###
 sudo systemctl enable joystick
@@ -68,15 +68,17 @@ sudo systemctl start robot
 
 
 # Enable eduroam
+sudo bash PupperPy/pupperpy/resrouces/downgrade_wpa_supplicant.sh
 sudo cp PupperPy/pupperpy/resources/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
-cat PupperPy/pupperpy/resources/dhcpcd_conf_extra.txt >> /etc/dhcpcd.conf
+#cat PupperPy/pupperpy/resources/dhcpcd_conf_extra.txt >> /etc/dhcpcd.conf
+
 
 # Setup network insterfaces for use with UDPComms
 cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/network/interfaces
 
 # Configurations for IMU and Camera
 # Change to /boot/firmware/config.txt for ubuntu mate
-cat PupperPy/pupperpy/resources/config_extras.txt | sudo tee -a /boot/config.txt
+cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 
 ################################################################################
 ################    IMU and Camera Setup    ######################
