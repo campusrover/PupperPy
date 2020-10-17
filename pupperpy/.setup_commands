@@ -82,3 +82,18 @@ sudo systemctl enable robotble
 sudo systemctl start pupperble
 sudo systemctl start robotble
 # Now on your computer you can start the KeyboardInterface
+
+# Install libedgetpu and TensorFlow Lite with Python (tflite_runtime library)
+# See instructions at coral.ai/docs/accelerator/get-started
+# 1. add debian package repository to this system
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+# 2. Install the Edge TPU runtime
+sudo apt-get install libedgetpu1-std
+# 3. Now connect the Coral TPU accelerator to the pi via one of the USB3 ports
+# 4. Install the TensorFlow Lite library (see instructions at tensorflow.org/lite/guide/python)
+# Note that the below command is for installing TensorFlow lite on a linux ARM 32 OS with Python 3.7
+sudo pip3 install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
+# Note: To run the example classification code from the coral.ai webpage above, you must additionally install libopenjp2-7-dev and libtiff5 for Pillow to work
+# sudo apt-get install libopenjp2-7 libtiff5
