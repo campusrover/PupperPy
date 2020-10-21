@@ -70,7 +70,6 @@ sudo systemctl start robot
 # Enable eduroam
 sudo bash PupperPy/pupperpy/resrouces/downgrade_wpa_supplicant.sh
 sudo cp PupperPy/pupperpy/resources/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
-#cat PupperPy/pupperpy/resources/dhcpcd_conf_extra.txt >> /etc/dhcpcd.conf
 
 
 # Setup network insterfaces for use with UDPComms
