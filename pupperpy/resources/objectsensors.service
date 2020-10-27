@@ -1,0 +1,11 @@
+[Unit]
+Description=Object Sensor Monitor Service
+
+[Service]
+ExecStartPre=sudo pigpiod
+ExecStart=/usr/bin/python3 /home/cerbaris/pupper_code/PupperPy/pupperpy/object_detection.py
+KillSignal=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -5,8 +5,11 @@ import pandas as pd
 from adafruit_bno055 import BNO055_I2C
 from busio import I2C
 
-# Setup to use GPIO 0 and 1 as I2C interface, in config.txt: dtparam=i2c0=on,
-# dtparam=i2c1=off, dtparam=i2c_arm=on, dtparam=i2c_arm_baudrate=10000
+# Setup to use GPIO 0 and 1 as I2C interface,
+# in config.txt:
+#   dtparam=i2c_arm=on,i2c_arm_baudrate=10000
+#   dtparam=i2c0=on,
+#   dtparam=i2c1=off
 SCL_GPIO = 1
 SDA_GPIO = 0
 
