@@ -16,11 +16,52 @@ SDA_GPIO = 0
 class IMU(object):
     def __init__(self):
         self.initSensor()
+        self.error_values = self.average_filter()
 
     def initSensor(self):
         self.i2c = I2C(SCL_GPIO, SDA_GPIO)
         self.sensor = BNO055_I2C(self.i2c)
 
+    def read(self):
+        acc = self.sensor.linear_acceleration
+        euler = self.sensor.euler
+        if all([x is None for x in euler]) and all([x is none for x in acc]):
+            self.initSensor()
+            acc = self.sensor.linear_acceleration
+            euler = self.sensor.euler
+
+        out = {'time': dt.datetime.now(), 'roll': euler[0],
+               'pitch': euler[1], 'yaw': euler[2], 'x_acc': acc[0],
+               'y_acc': acc[1], 'z_acc': acc[2]}
+        return out
+
+    def average_filter(self):
+        sum_x_acc = 0
+        sum_y_acc = 0
+        sum_z_acc = 0
+        sum_roll = 0
+        sum_pitch = 0
+        sum_yaw = 0
+
+        for i in range(100):
+            dat = self.read()
+            sum_x_acc += dat['x_acc']
+            sum_y_acc += dat['y_acc']
+            sum_z_acc += dat['z_acc']
+            sum_roll += dat['roll']
+            sum_pitch += dat['pitch']
+            sum_yaw += dat['yaw']
+
+        sum_x_acc /= 100
+        sum_y_acc /= 100
+        sum_z_acc /= 100
+        sum_roll /= 100
+        sum_pitch /= 100
+        sum_yaw /= 100
+        out = {'time': dt.datetime.now(), 'roll': sum_roll,
+               'pitch': sum_pitch, 'yaw': sum_yaw, 'x_acc': sum_x_acc,
+               'y_acc': sum_y_acc, 'z_acc': sum_z_acc}
+        return out
 
     def log_data(self, seconds, rate=60):
         data = []
@@ -28,15 +69,7 @@ class IMU(object):
         active = True
         next_mark = 10
         while active:
-            acc = self.sensor.linear_acceleration
-            euler = self.sensor.euler
-            if all(x is None for x in euler) and all(x is None for x in acc):
-                # If sensor drops out, refresh it and skip this iterations
-                self.initSensor()
-                continue
-
-            tmp = {'time': dt.datetime.now(), 'roll': euler[0], 'pitch': euler[1], 'yaw': euler[2], 'x_acc': acc[0], 'y_acc': acc[1], 'z_acc': acc[2]}
-            data.append(tmp)
+            data.append(self.read())
             elapsed = (tmp['time'] - start_time).seconds
             if elapsed > next_mark:
                 print('%i seconds elapsed' % elapsed)
@@ -72,4 +105,5 @@ def get_pos(time, acc, window=2):
         pos.append(curr)
         t1 = t1 + window
         i += 1
+
     return np.array(tout), np.array(pos)

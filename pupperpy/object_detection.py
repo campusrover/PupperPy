@@ -9,30 +9,37 @@ PUB_PORT = 9100
 MESSAGE_RATE = 20
 OUTPUT_MAP = {pigpio.HIGH: False, pigpio.LOW: True}
 
-if __name__ == "__main__":
-    pi = pigpio.pi()
-    pi.set_mode(LEFT_SENSOR, pigpio.INPUT)
-    pi.set_mode(RIGHT_SENSOR, pigpio.INPUT)
-    pi.set_mode(CENTER_SENSOR, pigpio.INPUT)
+class ObjectSensors(object):
+    def __init__(self):
+        self.pi = pigpio.pi()
+        self.pi.set_mode(LEFT_SENSOR, pigpio.INPUT)
+        self.pi.set_mode(RIGHT_SENSOR, pigpio.INPUT)
+        self.pi.set_mode(CENTER_SENSOR, pigpio.INPUT)
+        self.read()
 
-    obj_pub = Publisher(PUB_PORT)
-
-    try:
-        while True:
-            left = pi.read(LEFT_SENSOR)
-            right = pi.read(RIGHT_SENSOR)
-            center = pi.read(CENTER_SENSOR)
+    def read(self):
+        pi = self.pi
+        try:
+            self.left = left = pi.read(LEFT_SENSOR)
+            self.right = right = pi.read(RIGHT_SENSOR)
+            self.center = center = pi.read(CENTER_SENSOR)
             out = {'left': OUTPUT_MAP[left],
                    'right': OUTPUT_MAP[right],
                    'center': OUTPUT_MAP[center]}
-            obj_pub.send(out)
-            time.sleep(1 / MESSAGE_RATE)
-    except:
-        pi.close()
-        raise
+        except:
+            pi.close()
+            raise
 
+        return out
 
+    def close(self):
+        self.pi.close()
 
+if __name__ == "__main__":
+    sensors = ObjectSensors()
+    obj_pub = Publisher(PUB_PORT)
 
-
-
+    while True:
+        reading = sensors.read()
+        obj_pub.send(out)
+        time.sleep(1 / MESSAGE_RATE)
