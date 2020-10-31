@@ -16,8 +16,10 @@ sud nano /etc/hosts
 ## With ubuntu, sudo apt-get install openssh-server
 
 # Install basic software
-sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git
-sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera
+sudo apt-get update
+sudo apg-get upgrade
+sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools
+sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera opencv-contrib-python==4.1.0.25 pandas
 
 # Git grabs
 mkdir /home/cerbaris/pupper_code
@@ -128,3 +130,26 @@ cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 # sudo systemctl enable robotble
 # sudo systemctl start pupperble
 # sudo systemctl start robotble
+
+##############################################################################
+######################### Camera and Coral TPU ###############################
+##############################################################################
+#
+# Before continuing:
+# 1. Turn off the pi
+# 2. Install the Raspberry pi camera v2 into the raspberry pi camera slot
+# 3. Turn the pi back on
+#
+# Install Edge TPU runtime
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+sudo apt-get update
+
+sudo apt-get install libedgetpu1-std
+
+# Install TensorFlow Lite library
+pip3 install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
+
+
