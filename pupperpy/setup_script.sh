@@ -80,6 +80,8 @@ cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/
 
 # Configurations for IMU and Camera
 # Change to /boot/firmware/config.txt for ubuntu mate
+# IMU must be connected like this: Vin: 3.3V, GND: GND, SDA: GPIO_0, SCL:
+# GPIO_1, RST: GPIO_16 (or any open GPIO, set to high, pulse low to reset)
 cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 
 ################################################################################

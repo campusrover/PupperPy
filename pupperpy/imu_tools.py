@@ -12,6 +12,7 @@ from busio import I2C
 #   dtparam=i2c1=off
 SCL_GPIO = 1
 SDA_GPIO = 0
+RST_GPIO = 16
 
 class IMU(object):
     def __init__(self):
@@ -36,32 +37,22 @@ class IMU(object):
         return out
 
     def average_filter(self):
-        sum_x_acc = 0
-        sum_y_acc = 0
-        sum_z_acc = 0
-        sum_roll = 0
-        sum_pitch = 0
-        sum_yaw = 0
+        sums = dict.fromkeys(['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
+        counts = dict.fromkeys(['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
 
         for i in range(100):
             dat = self.read()
-            sum_x_acc += dat['x_acc']
-            sum_y_acc += dat['y_acc']
-            sum_z_acc += dat['z_acc']
-            sum_roll += dat['roll']
-            sum_pitch += dat['pitch']
-            sum_yaw += dat['yaw']
+            for k,v in dat.items():
+                if k in sums.keys() and v is not None:
+                    sums[k] += v
+                    counts[k] += 1
 
-        sum_x_acc /= 100
-        sum_y_acc /= 100
-        sum_z_acc /= 100
-        sum_roll /= 100
-        sum_pitch /= 100
-        sum_yaw /= 100
-        out = {'time': dt.datetime.now(), 'roll': sum_roll,
-               'pitch': sum_pitch, 'yaw': sum_yaw, 'x_acc': sum_x_acc,
-               'y_acc': sum_y_acc, 'z_acc': sum_z_acc}
-        return out
+
+        for k,v in counts.items():
+            sums[k] /= v
+
+        sums['time'] = dt.datetime.now()
+        return sums
 
     def log_data(self, seconds, rate=60):
         data = []
