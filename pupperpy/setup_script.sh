@@ -1,4 +1,5 @@
 # change username to cerbaris
+# be sure to disable auto-login in raspi-config
 sudo adduser cerbaris
 sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,gpio,i2c,spi cerbaris
 sudo -su cerbaris
@@ -17,7 +18,7 @@ sud nano /etc/hosts
 
 # Install basic software
 sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git
-sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera
+sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera pandas
 
 # Git grabs
 mkdir /home/cerbaris/pupper_code
@@ -96,13 +97,13 @@ cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 # ################################################################################
 # ################    Bluetooth Computer Interface Setup    ######################
 # ################################################################################
-# 
+#
 # # Installing stuff
 # sudo apt-get install libbluetooth-dev
 # sudo pip install pybluez
 # # techincally the root install is enough, but this lets you use it in ipython too
 # pip install pybluez
-# 
+#
 # # Now enable bluetooth, this needs to be done everytime the interface is
 # # used, still looking for an autoconnect
 # bluetoothctl
@@ -113,7 +114,7 @@ cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 # # Now find and pair cerbaris from your computer, and here a prompt will pop up to accept it
 # # then exit bluetoothctl
 # exit
-# 
+#
 # # Now setup the services
 # ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/pupperble.service /lib/systemd/system/
 # ln -s /home/cerbaris/pupper_code/pupperpy/pupperpy/resources/robotble.service /etc/systemd/system/
