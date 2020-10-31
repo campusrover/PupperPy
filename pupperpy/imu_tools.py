@@ -17,7 +17,7 @@ RST_GPIO = 16
 class IMU(object):
     def __init__(self):
         self.initSensor()
-        self.error_values = self.average_filter()
+        self.means, self.variances = self.average_filter()
 
     def initSensor(self):
         self.i2c = I2C(SCL_GPIO, SDA_GPIO)
@@ -38,21 +38,24 @@ class IMU(object):
 
     def average_filter(self):
         sums = dict.fromkeys(['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
-        counts = dict.fromkeys(['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
+        for k in sums.keys():
+            sums[k] = []
 
         for i in range(100):
             dat = self.read()
             for k,v in dat.items():
                 if k in sums.keys() and v is not None:
-                    sums[k] += v
-                    counts[k] += 1
+                    sums[k].append(v)
 
+        mean = {}
+        variance = {}
+        for k,v in sums.itemss():
+            mean[k] = np.mean(v)
+            variance[k] = np.var(v)
 
-        for k,v in counts.items():
-            sums[k] /= v
-
-        sums['time'] = dt.datetime.now()
-        return sums
+        mean['time'] = dt.datetime.now()
+        variance['time'] = mean['time']
+        return mean, variance
 
     def log_data(self, seconds, rate=60):
         data = []
