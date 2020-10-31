@@ -25,7 +25,7 @@ class IMU(object):
     def read(self):
         acc = self.sensor.linear_acceleration
         euler = self.sensor.euler
-        if all([x is None for x in euler]) and all([x is none for x in acc]):
+        if all([x is None for x in euler]) and all([x is None for x in acc]):
             self.initSensor()
             acc = self.sensor.linear_acceleration
             euler = self.sensor.euler
