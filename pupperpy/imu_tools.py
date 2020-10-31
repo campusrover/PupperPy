@@ -47,6 +47,8 @@ class IMU(object):
                 if k in sums.keys() and v is not None:
                     sums[k].append(v)
 
+            time.sleep(0.0001)
+
         mean = {}
         variance = {}
         for k,v in sums.itemss():
