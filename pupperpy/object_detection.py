@@ -2,9 +2,9 @@ import pigpio
 import time
 from UDPComms import Publisher
 
-LEFT_SENSOR = 5
-RIGHT_SENSOR = 6
-CENTER_SENSOR = 12
+LEFT_SENSOR = 12
+RIGHT_SENSOR = 5
+CENTER_SENSOR = 6
 PUB_PORT = 9100
 MESSAGE_RATE = 20
 OUTPUT_MAP = {pigpio.HIGH: False, pigpio.LOW: True}
@@ -41,5 +41,5 @@ if __name__ == "__main__":
 
     while True:
         reading = sensors.read()
-        obj_pub.send(out)
+        obj_pub.send(reading)
         time.sleep(1 / MESSAGE_RATE)

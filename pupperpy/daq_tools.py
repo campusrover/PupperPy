@@ -3,6 +3,8 @@ from pupperpy.imu_tools import IMU
 from pupperpy.object_detection import ObjectSensors
 from UDPComms import Subscriber
 import numpy as np
+from datetime import datetime as dt
+import pandas as pd
 
 CV_PORT = 9120
 CMD_PORT = 8810
@@ -14,7 +16,7 @@ max_yaw_rate = 2.0
 class RepeatTimer(Timer):
     def run(self):
         while not self.finished.wait(self.interval):
-            self.functions(*self.args, **self.kwargs)
+            self.function(*self.args, **self.kwargs)
 
 class DataLogger(object):
     def __init__(self, rate=0.1):
@@ -31,7 +33,7 @@ class DataLogger(object):
         self.timer = RepeatTimer(rate, self.log)
 
     def log(self):
-        imu = self.imu_read()
+        imu = self.imu.read()
         obj = self.obj_sensors.read()
 
 
@@ -48,7 +50,7 @@ class DataLogger(object):
         x_vel = cmd['ly'] * max_x_velocity
         y_vel = cmd['lx'] * -max_y_velocity
         yaw_rate = cmd['rx'] * -max_yaw_rate
-        time = dt.now().timestamp
+        time = dt.now().timestamp()
 
         row = np.array([time, imu['x_acc'], imu['y_acc'], imu['z_acc'],
                         imu['roll'], imu['pitch'], imu['yaw'],
@@ -64,7 +66,7 @@ class DataLogger(object):
             self.data = row
         else:
             row[0] -= self.start_time
-            self.data = np.vstack([data, row])
+            self.data = np.vstack([self.data, row])
 
     def save_data(self, fn):
         np.save(fn, self.data)
@@ -76,4 +78,11 @@ class DataLogger(object):
     def stop(self):
         self.timer.cancel()
         print('Logger stopped')
+
+    def load_data(self, fn):
+        self.data = np.load(fn)
+
+    def get_pandas(self):
+        return pd.DataFrame(self.data, columns=self.data_columns)
+
 

@@ -19,8 +19,8 @@ sud nano /etc/hosts
 # Install basic software
 sudo apt-get update
 sudo apg-get upgrade
-sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools
-sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera opencv-contrib-python==4.1.0.25 pandas
+sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools 
+sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera pandas
 
 # Git grabs
 mkdir /home/cerbaris/pupper_code
@@ -153,5 +153,10 @@ sudo apt-get install libedgetpu1-std
 
 # Install TensorFlow Lite library
 pip3 install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
+
+# Install OpenCV
+sudo apt-get install libhdf5-dev libhdf5-serial-dev libhdf5-103 libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libqtgui4 libqt4-test
+
+pip3 install opencv-contrib-python==4.1.0.25
 
 

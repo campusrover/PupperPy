@@ -20,8 +20,16 @@ class IMU(object):
         self.means, self.variances = self.average_filter()
 
     def initSensor(self):
-        self.i2c = I2C(SCL_GPIO, SDA_GPIO)
-        self.sensor = BNO055_I2C(self.i2c)
+        try_count = 0
+        try:
+            self.i2c = I2C(SCL_GPIO, SDA_GPIO)
+            self.sensor = BNO055_I2C(self.i2c)
+        except:
+            if try_count > 3:
+                raise
+            else:
+                try_count += 1
+                self.initSensor()
 
     def read(self):
         acc = self.sensor.linear_acceleration
@@ -51,7 +59,7 @@ class IMU(object):
 
         mean = {}
         variance = {}
-        for k,v in sums.itemss():
+        for k,v in sums.items():
             mean[k] = np.mean(v)
             variance[k] = np.var(v)
 
