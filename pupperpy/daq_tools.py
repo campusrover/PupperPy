@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime as dt
 import pandas as pd
 
-CV_PORT = 9120
+CV_PORT = 105
 CMD_PORT = 8810
 # From StandfordQuadrupped.pupper.Config
 max_x_velocity = 0.4
@@ -28,7 +28,8 @@ class DataLogger(object):
         self.data_columns  = ['timestamp', 'x_acc', 'y_acc', 'z_acc', 'roll',
                              'pitch', 'yaw', 'left_obj', 'right_obj',
                              'center_obj', 'bbox_x', 'bbox_y', 'bbox_h',
-                             'bbox_w', 'robo_x_vel', 'robo_y_vel',
+                             'bbox_w', 'bbox_label', 'bbox_confidence',
+                             'robo_x_vel', 'robo_y_vel',
                              'robo_yaw_rate']
         self.timer = RepeatTimer(rate, self.log)
 
@@ -38,9 +39,15 @@ class DataLogger(object):
 
 
         try:
+            # Ben's computer vision service is publishing a list of
+            # dictionaries, empty list is nothing
             cv = self.cv_sub.get()
+            if cv == []:
+                cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w', 'bbox_label', 'bbox_confidence'], np.nan)
+            else:
+                cv = cv[0]
         except:
-            cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w'], np.nan)
+            cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w', 'bbox_label', 'bbox_confidence'], np.nan)
 
         try:
             cmd = self.cmd_sub.get()
@@ -56,7 +63,8 @@ class DataLogger(object):
                         imu['roll'], imu['pitch'], imu['yaw'],
                         obj['left'], obj['right'], obj['center'],
                         cv['bbox_x'], cv['bbox_y'], cv['bbox_h'],
-                        cv['bbox_w'], x_vel, y_vel, yaw_rate])
+                        cv['bbox_w'], cv['bbox_label'], cv['bbox_confidence'],
+                        x_vel, y_vel, yaw_rate])
         self.add_data(row)
 
     def add_data(self, row):

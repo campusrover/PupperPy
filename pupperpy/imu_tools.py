@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from adafruit_bno055 import BNO055_I2C
 from busio import I2C
+import pigpio
 
 # Setup to use GPIO 0 and 1 as I2C interface,
 # in config.txt:
@@ -14,10 +15,34 @@ SCL_GPIO = 1
 SDA_GPIO = 0
 RST_GPIO = 16
 
+def reset_imu():
+    try_count = 0
+    pi = pigpio.pi()
+    h = pi.i2c_open(0, int(0x28))
+    connected = False
+    while not connected:
+        try:
+            pi.i2c_read_byte(h)
+            connected = True
+            break
+        except:
+            pass
+
+        try_count += 1
+        if try_count > 10:
+            raise Exception('IMU reset failed')
+
+        pi.write(RST_GPIO, 0)
+        time.sleep(1)
+        pi.write(RST_GPIO, 1)
+
+    pi.i2c_close(h)
+
 class IMU(object):
     def __init__(self):
+        reset_imu()
         self.initSensor()
-        self.means, self.variances = self.average_filter()
+        #self.means, self.variances = self.average_filter()
 
     def initSensor(self):
         try_count = 0
