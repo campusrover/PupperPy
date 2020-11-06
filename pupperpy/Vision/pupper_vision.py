@@ -22,13 +22,6 @@ def main():
     MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite'
     LABEL_PATH = MODELS_DIR + 'coco_labels.txt'
     LOG_FILE = '/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/vision_log.txt'
-
-def main():
-    #cv_publisher = Publisher(105)
-    MODELS_DIR = '/home/ben/robotics/PupperPy/pupperpy/Vision/models/'
-    MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite'
-    LABEL_PATH = MODELS_DIR + 'coco_labels.txt'
-    LOG_FILE = '/home/ben/robotics/PupperPy/pupperpy/Vision/vision_log.txt'
     labels = dataset_utils.read_label_file(LABEL_PATH)
     engine = DetectionEngine(MODEL_PATH)
 
@@ -41,25 +34,9 @@ def main():
             for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
                 stream.truncate()
                 stream.seek(0)
-                #input_tensor = np.frombuffer(stream.getvalue(), dtype=np.uint8)
-                image = Image.frombuffer('RGB',(width,height), stream.getvalue())
-                #start_ms = time.time()
-                results = engine.detect_with_image(image,threshold=0.1,keep_aspect_ratio=True,relative_coord=False,top_k=10)
-                #results = detectionEngine.detect_with_input_tensor(input_tensor,threshold=0.1,top_k=10)
-                #elapsed_ms = time.time() - start_ms
-                
-                detectedObjs = []
-                for obj in results:
-                    #if (obj.label_id == 0 or obj.label_id == 36):
-                    if (obj.label_id in [32, 43]):
-                        box = obj.bounding_box.flatten().tolist()
-            count = 0
-            for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
-                stream.truncate()
-                stream.seek(0)
                 input_tensor = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 #image = Image.frombuffer('RGB',(width,height), stream.getvalue())
-                image = Image.frombuffer('RGB',(320,304), stream.getvalue())
+                image = Image.frombuffer('RGB',(320,304), stream.getvalue()) # to account for automatic upscaling by picamera when format='rgb'
                 draw = ImageDraw.Draw(image)
                 start_ms = time.time()
                 results = engine.detect_with_image(image,threshold=0.1,keep_aspect_ratio=True,relative_coord=False,top_k=10)
@@ -81,12 +58,11 @@ def main():
                                    'bbox_confidence': obj.score
                                    }
                         detectedObjs.append(objInfo)
-                #cv_publisher.send(detectedObjs)
-                print(detectedObjs)
+                cv_publisher.send(detectedObjs)
+                #print(detectedObjs)
 
                 with open('/home/ben/robotics/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
                     image.save(f)
-                print(detectedObjs)
                 count+=1
         except BaseException as e:
             with open(LOG_FILE,'w') as f:

@@ -41,9 +41,32 @@ def reset_imu():
 
     pi.i2c_close(h)
 
+def wait_for_imu():
+    start = dt.datetime.now()
+    connected = False
+    while not connected:
+        try:
+            pi.i2c_read_byte(h)
+            connected = True
+            break
+        except:
+            pass
+
+        time.sleep(10)
+
+    end = dt.datetime.now()
+    return start, end
+
+
+def init_imu():
+    os.system('sudo i2cdetect -y 10')
+    os.system('sudo i2cdetect -y 11')
+    os.system('sudo i2cdetect -y 0')
+
 class IMU(object):
     def __init__(self):
         #reset_imu()
+        init_imu()
         self.initSensor()
         self.means, self.variances = self.average_filter()
 

@@ -1,1 +1,1 @@
-Failed to run detection loop: 
+Failed to run detection loop: local variable 'count' referenced before assignment
