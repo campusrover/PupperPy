@@ -15,6 +15,9 @@ SCL_GPIO = 1
 SDA_GPIO = 0
 RST_GPIO = 16
 
+# I think the BNO055 just needs time to properly startup after power on
+# For calibration, the sensor automatically calibrates, but it seems cer
+
 def reset_imu():
     try_count = 0
     pi = pigpio.pi()
@@ -29,20 +32,20 @@ def reset_imu():
             pass
 
         try_count += 1
-        if try_count > 10:
+        if try_count > 20:
             raise Exception('IMU reset failed')
 
         pi.write(RST_GPIO, 0)
-        time.sleep(1)
+        time.sleep(5)
         pi.write(RST_GPIO, 1)
 
     pi.i2c_close(h)
 
 class IMU(object):
     def __init__(self):
-        reset_imu()
+        #reset_imu()
         self.initSensor()
-        #self.means, self.variances = self.average_filter()
+        self.means, self.variances = self.average_filter()
 
     def initSensor(self):
         try_count = 0
@@ -57,6 +60,13 @@ class IMU(object):
                 self.initSensor()
 
     def read(self):
+        calibration_status = self.sensor.calibration_status
+        # calibration status is a tuple with status for (system, gyro, accel, mag)
+        # If calibration is 0 its not calibrated, 3 is fully calibrated
+        # It needs to sit still to calibrate gyro, it needs to move to
+        # calibrate the magnetometer and it needs to sit on each plane, but
+        # even when not fully calibrated it work alright. Also it automatically
+        # calibrates as it moves around. 
         acc = self.sensor.linear_acceleration
         euler = self.sensor.euler
         if all([x is None for x in euler]) and all([x is None for x in acc]):
@@ -66,7 +76,9 @@ class IMU(object):
 
         out = {'time': dt.datetime.now(), 'roll': euler[0],
                'pitch': euler[1], 'yaw': euler[2], 'x_acc': acc[0],
-               'y_acc': acc[1], 'z_acc': acc[2]}
+               'y_acc': acc[1], 'z_acc': acc[2], 'sys_calibration': calibration_status[0],
+               'gyro_calibration': calibration_status[1], 'accel_calibration': calibration_status[2],
+               'mag_calibration': calibration_status[3]}
         return out
 
     def average_filter(self):

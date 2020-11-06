@@ -26,11 +26,13 @@ class DataLogger(object):
         self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None
         self.data_columns  = ['timestamp', 'x_acc', 'y_acc', 'z_acc', 'roll',
-                             'pitch', 'yaw', 'left_obj', 'right_obj',
-                             'center_obj', 'bbox_x', 'bbox_y', 'bbox_h',
-                             'bbox_w', 'bbox_label', 'bbox_confidence',
-                             'robo_x_vel', 'robo_y_vel',
-                             'robo_yaw_rate']
+                              'pitch', 'yaw', 'left_obj', 'right_obj',
+                              'center_obj', 'bbox_x', 'bbox_y', 'bbox_h',
+                              'bbox_w', 'bbox_label', 'bbox_confidence',
+                              'robo_x_vel', 'robo_y_vel',
+                              'robo_yaw_rate', 'imu_calibration',
+                              'gyro_calibration', 'accel_calibration',
+                              'mag_calibration']
         self.timer = RepeatTimer(rate, self.log)
 
     def log(self):
@@ -43,11 +45,13 @@ class DataLogger(object):
             # dictionaries, empty list is nothing
             cv = self.cv_sub.get()
             if cv == []:
-                cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w', 'bbox_label', 'bbox_confidence'], np.nan)
+                cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
+                                    'bbox_label', 'bbox_confidence'], np.nan)
             else:
                 cv = cv[0]
         except:
-            cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w', 'bbox_label', 'bbox_confidence'], np.nan)
+            cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
+                                'bbox_label', 'bbox_confidence'], np.nan)
 
         try:
             cmd = self.cmd_sub.get()
@@ -64,7 +68,8 @@ class DataLogger(object):
                         obj['left'], obj['right'], obj['center'],
                         cv['bbox_x'], cv['bbox_y'], cv['bbox_h'],
                         cv['bbox_w'], cv['bbox_label'], cv['bbox_confidence'],
-                        x_vel, y_vel, yaw_rate])
+                        x_vel, y_vel, yaw_rate, imu['sys_calibration'], imu['gyro_calibration'],
+                        imu['accel_calibration'], imu['mag_calibration']])
         self.add_data(row)
 
     def add_data(self, row):
