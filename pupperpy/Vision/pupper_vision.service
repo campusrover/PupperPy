@@ -1,0 +1,12 @@
+[Unit]
+Description=Object detection for pupper robot service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/python3 /home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/pupper_vision.py
+
+[Install]
+WantedBy=multi-user.target
