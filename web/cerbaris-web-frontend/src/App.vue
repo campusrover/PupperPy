@@ -1,17 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  Pinged: {{ pinged }}
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import Pusher from 'pusher-js';
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  const App = {
+    data() {
+      return {
+        pinged: false
+      }
+    },
+    created() {
+      this.subscribe();
+    },
+    methods: {
+      subscribe() {
+        const pusher = new Pusher(process.env.VUE_APP_PUSHER_KEY, {
+          cluster: process.env.VUE_APP_PUSHER_CLUSTER,
+        });
+
+        const channel = pusher.subscribe('data');
+        channel.bind('new', this.update);
+      },
+
+      update() {
+        this.pinged = true;
+      },
+    },
   }
-}
+
+  export default App;
 </script>
 
 <style>
