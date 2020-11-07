@@ -1,5 +1,7 @@
 <template>
+<div id="app">
   Pinged: {{ pinged }}
+</div>
 </template>
 
 <script>
