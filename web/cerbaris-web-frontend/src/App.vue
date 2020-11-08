@@ -1,7 +1,8 @@
 <template>
-<div id="app">
-  Pinged: {{ pinged }}
-</div>
+  <div id="app">
+    <h1>CERBARIS Dashboard</h1>
+    <b-table hover :items="data_table"></b-table>
+  </div>
 </template>
 
 <script>
@@ -10,7 +11,8 @@
   const App = {
     data() {
       return {
-        pinged: false
+        data_obj: {},
+        data_table: [],
       }
     },
     created() {
@@ -26,8 +28,27 @@
         channel.bind('new', this.update);
       },
 
-      update() {
-        this.pinged = true;
+      update(message) {
+        // message = {metadata: {timestamp, ...}, data: {state, x_acc, ...}}
+        let timestamp = new Date(message.metadata.timestamp * 1000).toLocaleString();
+
+        for (const [name, value] of Object.entries(message.data)) {
+          this.data_obj[name] = {value: value, timestamp: timestamp};
+        }
+
+        this.update_data_table();
+      },
+
+      update_data_table() {
+        let curr_table = []
+        for (const [name, info] of Object.entries(this.data_obj)) {
+          curr_table.push({
+            name: name,
+            value: info.value,
+            timestamp: info.timestamp,
+          });
+        }
+        this.data_table = curr_table;
       },
     },
   }

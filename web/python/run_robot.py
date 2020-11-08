@@ -20,10 +20,7 @@ def main():
             continue
         last_loop = time.time()
 
-        data = random.random()
-        print('now: ' + str(now), 'data: ' + str(data))
-
-        pusher_client.trigger('data', 'new', {'time': now, 'data': data})
+        pusher_client.trigger('data', 'new', {'metadata': {'timestamp': now}, 'data': {'first': 'SOME STRING', 'second': random.random()}})
 
 if __name__ == "__main__":
     main()
