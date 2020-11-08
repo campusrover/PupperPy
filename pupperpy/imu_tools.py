@@ -73,15 +73,16 @@ class IMU(object):
 
     def initSensor(self):
         try_count = 0
-        try:
-            self.i2c = I2C(SCL_GPIO, SDA_GPIO)
-            self.sensor = BNO055_I2C(self.i2c)
-        except:
-            if try_count > 3:
-                raise
-            else:
-                try_count += 1
-                self.initSensor()
+        connected = False
+        while not connected:
+            try:
+                self.i2c = I2C(SCL_GPIO, SDA_GPIO)
+                self.sensor = BNO055_I2C(self.i2c)
+            except:
+                if try_count > 3:
+                    raise
+                else:
+                    try_count += 1
 
     def read(self):
         calibration_status = self.sensor.calibration_status
