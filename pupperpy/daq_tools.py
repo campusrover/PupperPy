@@ -19,9 +19,13 @@ class RepeatTimer(Timer):
             self.function(*self.args, **self.kwargs)
 
 class DataLogger(object):
-    def __init__(self, rate=0.1):
+    def __init__(self, rate=0.1, imu=None):
         self.obj_sensors = ObjectSensors()
-        self.imu = IMU()
+        if imu is None:
+            self.imu = IMU()
+        else:
+            self.imu = imu
+
         self.cv_sub = Subscriber(CV_PORT)
         self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None

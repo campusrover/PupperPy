@@ -1,1 +1,1 @@
-Failed to run detection loop: local variable 'count' referenced before assignment
+Failed to run detection loop: [Errno 111] Connection refused

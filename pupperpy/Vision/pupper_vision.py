@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw
 from UDPComms import Publisher
 
 def main():
-    cv_publisher = Publisher(105)
+    #cv_publisher = Publisher(105)
     MODELS_DIR = '/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/models/'
     MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite'
     LABEL_PATH = MODELS_DIR + 'coco_labels.txt'
@@ -31,6 +31,7 @@ def main():
         _, height, width, _ = engine.get_input_tensor_shape()
         try:
             stream = io.BytesIO()
+            count = 0
             for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
                 stream.truncate()
                 stream.seek(0)
@@ -50,18 +51,18 @@ def main():
                         draw.text((box[0],box[1]), labels[obj.label_id] + " " + str(obj.score))
                         w = box[0] - box[2]
                         h = box[1] - box[3]
-                        objInfo = {'bbox_x':box[0],
-                                   'bbox_y':box[1],
-                                   'bbox_h':h,
-                                   'bbox_w':w,
+                        objInfo = {'bbox_x':float(box[0]),
+                                   'bbox_y':float(box[1]),
+                                   'bbox_h':float(h),
+                                   'bbox_w':float(w),
                                    'bbox_label':labels[obj.label_id],
-                                   'bbox_confidence': obj.score
+                                   'bbox_confidence': float(obj.score)
                                    }
                         detectedObjs.append(objInfo)
-                cv_publisher.send(detectedObjs)
+                #cv_publisher.send(detectedObjs)
                 #print(detectedObjs)
 
-                with open('/home/ben/robotics/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
+                with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
                     image.save(f)
                 count+=1
         except BaseException as e:

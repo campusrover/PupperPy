@@ -1,3 +1,4 @@
+import os
 import datetime as dt
 import time
 import numpy as np
@@ -66,7 +67,7 @@ def init_imu():
 class IMU(object):
     def __init__(self):
         #reset_imu()
-        init_imu()
+        #init_imu()
         self.initSensor()
         self.means, self.variances = self.average_filter()
 
