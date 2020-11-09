@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 from adafruit_bno055 import BNO055_I2C
-from busio import I2C
+from pupperpy.busio import I2C
 import pigpio
 
 # Setup to use GPIO 0 and 1 as I2C interface,
@@ -12,6 +12,7 @@ import pigpio
 #   dtparam=i2c_arm=on,i2c_arm_baudrate=10000
 #   dtparam=i2c0=on,
 #   dtparam=i2c1=off
+I2C_BUS = 3
 SCL_GPIO = 1
 SDA_GPIO = 0
 RST_GPIO = 16
@@ -76,7 +77,7 @@ class IMU(object):
         connected = False
         while not connected:
             try:
-                self.i2c = I2C(SCL_GPIO, SDA_GPIO)
+                self.i2c = I2C(I2C_BUS, SCL_GPIO, SDA_GPIO)
                 self.sensor = BNO055_I2C(self.i2c)
             except:
                 if try_count > 3:
