@@ -2,6 +2,7 @@ test_images/
 *.DS_Store
 *.swp
 *.swo
+~*.docx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
