@@ -1,1 +1,14 @@
-Failed to run detection loop: local variable 'count' referenced before assignment
+Failed to run detection loop:
+ Traceback (most recent call last):
+  File "pupper_vision.py", line 44, in main
+    results = engine.detect_with_image(image,threshold=0.2,keep_aspect_ratio=True,relative_coord=False,top_k=10)
+  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 154, in detect_with_image
+    candidates = self.detect_with_input_tensor(input_tensor, threshold, top_k)
+  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 184, in detect_with_input_tensor
+    _, raw_result = self.run_inference(input_tensor)
+  File "/usr/lib/python3/dist-packages/edgetpu/basic/basic_engine.py", line 136, in run_inference
+    result = self._engine.RunInference(input)
+  File "/usr/lib/python3/dist-packages/edgetpu/swig/edgetpu_cpp_wrapper.py", line 111, in RunInference
+    return _edgetpu_cpp_wrapper.BasicEnginePythonWrapper_RunInference(self, input)
+KeyboardInterrupt
+

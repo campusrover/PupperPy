@@ -8,6 +8,7 @@
 import argparse
 import io
 import time
+import traceback
 
 from edgetpu.detection.engine import DetectionEngine
 from edgetpu.utils import dataset_utils
@@ -31,6 +32,7 @@ def main():
         _, height, width, _ = engine.get_input_tensor_shape()
         try:
             stream = io.BytesIO()
+            count = 0
             for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
                 stream.truncate()
                 stream.seek(0)
@@ -39,34 +41,34 @@ def main():
                 image = Image.frombuffer('RGB',(320,304), stream.getvalue()) # to account for automatic upscaling by picamera when format='rgb'
                 draw = ImageDraw.Draw(image)
                 start_ms = time.time()
-                results = engine.detect_with_image(image,threshold=0.1,keep_aspect_ratio=True,relative_coord=False,top_k=10)
+                results = engine.detect_with_image(image,threshold=0.2,keep_aspect_ratio=True,relative_coord=False,top_k=10)
                 elapsed_ms = time.time() - start_ms
                 
                 detectedObjs = []
                 for obj in results:
-                    if (obj.label_id == 0 or obj.label_id == 36):
+                    if (obj.label_id in range(80)):
                         box = obj.bounding_box.flatten().tolist()
                         draw.rectangle(box, outline='red')
                         draw.text((box[0],box[1]), labels[obj.label_id] + " " + str(obj.score))
                         w = box[0] - box[2]
                         h = box[1] - box[3]
-                        objInfo = {'bbox_x':box[0],
-                                   'bbox_y':box[1],
-                                   'bbox_h':h,
-                                   'bbox_w':w,
+                        objInfo = {'bbox_x':float(box[0]),
+                                   'bbox_y':float(box[1]),
+                                   'bbox_h':float(h),
+                                   'bbox_w':float(w),
                                    'bbox_label':labels[obj.label_id],
-                                   'bbox_confidence': obj.score
+                                   'bbox_confidence': float(obj.score)
                                    }
                         detectedObjs.append(objInfo)
                 cv_publisher.send(detectedObjs)
                 #print(detectedObjs)
 
-                with open('/home/ben/robotics/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
+                with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
                     image.save(f)
                 count+=1
         except BaseException as e:
             with open(LOG_FILE,'w') as f:
-                f.write("Failed to run detection loop: {0}\n".format(str(e)))
+                f.write("Failed to run detection loop:\n {0}\n".format(traceback.format_exc()))
 
 if __name__ == '__main__':
   main()

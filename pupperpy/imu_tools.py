@@ -1,9 +1,10 @@
+import os
 import datetime as dt
 import time
 import numpy as np
 import pandas as pd
 from adafruit_bno055 import BNO055_I2C
-from busio import I2C
+from pupperpy.busio import I2C
 import pigpio
 
 # Setup to use GPIO 0 and 1 as I2C interface,
@@ -11,6 +12,7 @@ import pigpio
 #   dtparam=i2c_arm=on,i2c_arm_baudrate=10000
 #   dtparam=i2c0=on,
 #   dtparam=i2c1=off
+I2C_BUS = 3
 SCL_GPIO = 1
 SDA_GPIO = 0
 RST_GPIO = 16
@@ -66,36 +68,45 @@ def init_imu():
 class IMU(object):
     def __init__(self):
         #reset_imu()
-        init_imu()
+        #init_imu()
         self.initSensor()
         self.means, self.variances = self.average_filter()
 
     def initSensor(self):
-        try_count = 0
-        try:
-            self.i2c = I2C(SCL_GPIO, SDA_GPIO)
-            self.sensor = BNO055_I2C(self.i2c)
-        except:
-            if try_count > 3:
-                raise
-            else:
-                try_count += 1
-                self.initSensor()
+        start = dt.datetime.now()
+        connected = False
+        ex = True
+        while (dt.datetime.now() - start).seconds < 10 and not connected:
+            try:
+                self.i2c = I2C(I2C_BUS, SCL_GPIO, SDA_GPIO)
+                self.sensor = BNO055_I2C(self.i2c)
+                connected = True
+                ex = False
+            except BaseException as e:
+                ex = e
+
+        if not connected:
+            raise ex
 
     def read(self):
-        calibration_status = self.sensor.calibration_status
-        # calibration status is a tuple with status for (system, gyro, accel, mag)
-        # If calibration is 0 its not calibrated, 3 is fully calibrated
-        # It needs to sit still to calibrate gyro, it needs to move to
-        # calibrate the magnetometer and it needs to sit on each plane, but
-        # even when not fully calibrated it work alright. Also it automatically
-        # calibrates as it moves around. 
-        acc = self.sensor.linear_acceleration
-        euler = self.sensor.euler
-        if all([x is None for x in euler]) and all([x is None for x in acc]):
-            self.initSensor()
+        try:
+            calibration_status = self.sensor.calibration_status
+            # calibration status is a tuple with status for (system, gyro, accel, mag)
+            # If calibration is 0 its not calibrated, 3 is fully calibrated
+            # It needs to sit still to calibrate gyro, it needs to move to
+            # calibrate the magnetometer and it needs to sit on each plane, but
+            # even when not fully calibrated it work alright. Also it automatically
+            # calibrates as it moves around. 
             acc = self.sensor.linear_acceleration
             euler = self.sensor.euler
+        except:
+            euler = (None, None, None)
+            acc = (None, None, None)
+            calibration_status = (None, None, None, None)
+            self.initSensor()
+
+        if all([x is None for x in euler]) and all([x is None for x in acc]):
+            self.initSensor()
 
         out = {'time': dt.datetime.now(), 'roll': euler[0],
                'pitch': euler[1], 'yaw': euler[2], 'x_acc': acc[0],
