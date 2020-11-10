@@ -1,3 +1,4 @@
+import traceback
 from threading import Timer
 from pupperpy.imu_tools import IMU
 from pupperpy.object_detection import ObjectSensors
@@ -26,7 +27,7 @@ class DataLogger(object):
         else:
             self.imu = imu
 
-        self.cv_sub = Subscriber(CV_PORT)
+        self.cv_sub = Subscriber(CV_PORT, timeout=0.5)
         self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None
         self.data_columns  = ['timestamp', 'x_acc', 'y_acc', 'z_acc', 'roll',
@@ -38,6 +39,7 @@ class DataLogger(object):
                               'gyro_calibration', 'accel_calibration',
                               'mag_calibration']
         self.timer = RepeatTimer(rate, self.log)
+        self.all_img = []
 
     def log(self):
         imu = self.imu.read()
@@ -48,12 +50,16 @@ class DataLogger(object):
             # Ben's computer vision service is publishing a list of
             # dictionaries, empty list is nothing
             cv = self.cv_sub.get()
+           # print(cv)
             if cv == []:
                 cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
                                     'bbox_label', 'bbox_confidence'], np.nan)
             else:
+                tmp = {'time': dt.now().timestamp(), 'img': cv.copy()}
+                self.all_img.append(tmp)
                 cv = cv[0]
-        except:
+        except BaseException as e:
+            print(traceback.format_exc())
             cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
                                 'bbox_label', 'bbox_confidence'], np.nan)
 
@@ -67,26 +73,45 @@ class DataLogger(object):
         yaw_rate = cmd['rx'] * -max_yaw_rate
         time = dt.now().timestamp()
 
-        row = np.array([time, imu['x_acc'], imu['y_acc'], imu['z_acc'],
-                        imu['roll'], imu['pitch'], imu['yaw'],
-                        obj['left'], obj['right'], obj['center'],
-                        cv['bbox_x'], cv['bbox_y'], cv['bbox_h'],
-                        cv['bbox_w'], cv['bbox_label'], cv['bbox_confidence'],
-                        x_vel, y_vel, yaw_rate, imu['sys_calibration'], imu['gyro_calibration'],
-                        imu['accel_calibration'], imu['mag_calibration']])
+        row = [time, imu['x_acc'], imu['y_acc'], imu['z_acc'],
+                imu['roll'], imu['pitch'], imu['yaw'],
+                obj['left'], obj['right'], obj['center'],
+                cv['bbox_x'], cv['bbox_y'], cv['bbox_h'],
+                cv['bbox_w'], cv['bbox_label'], cv['bbox_confidence'],
+                x_vel, y_vel, yaw_rate, imu['sys_calibration'], imu['gyro_calibration'],
+                imu['accel_calibration'], imu['mag_calibration']]
         self.add_data(row)
 
     def add_data(self, row):
+        #print(row[0])
         if self.data is None:
             self.start_time = row[0]
             row[0] -= self.start_time
-            self.data = row
+            self.data = np.array(row)
         else:
             row[0] -= self.start_time
             self.data = np.vstack([self.data, row])
 
     def save_data(self, fn):
         np.save(fn, self.data)
+        df = self.get_pandas()
+        df.to_csv(fn.replace('npy', 'csv'))
+
+    def save_img_data(self, fn):
+        out = []
+        t0 = None
+        for x in self.all_img:
+            if t0 is None:
+                t0 = x['time']
+
+            t1 = x['time'] - t0
+            for y in x['img']:
+                tmp = y.copy()
+                tmp['time'] = t1
+                out.append(tmp.copy())
+
+        df = pd.DataFrame(out)
+        df.to_csv(fn)
 
     def run(self):
         print('Running logger...')
