@@ -8,6 +8,7 @@
 import argparse
 import io
 import time
+import traceback
 
 from edgetpu.detection.engine import DetectionEngine
 from edgetpu.utils import dataset_utils
@@ -17,7 +18,7 @@ from PIL import Image, ImageDraw
 from UDPComms import Publisher
 
 def main():
-    #cv_publisher = Publisher(105)
+    cv_publisher = Publisher(105)
     MODELS_DIR = '/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/models/'
     MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite'
     LABEL_PATH = MODELS_DIR + 'coco_labels.txt'
@@ -40,12 +41,12 @@ def main():
                 image = Image.frombuffer('RGB',(320,304), stream.getvalue()) # to account for automatic upscaling by picamera when format='rgb'
                 draw = ImageDraw.Draw(image)
                 start_ms = time.time()
-                results = engine.detect_with_image(image,threshold=0.1,keep_aspect_ratio=True,relative_coord=False,top_k=10)
+                results = engine.detect_with_image(image,threshold=0.2,keep_aspect_ratio=True,relative_coord=False,top_k=10)
                 elapsed_ms = time.time() - start_ms
                 
                 detectedObjs = []
                 for obj in results:
-                    if (obj.label_id == 0 or obj.label_id == 36):
+                    if (obj.label_id in range(80)):
                         box = obj.bounding_box.flatten().tolist()
                         draw.rectangle(box, outline='red')
                         draw.text((box[0],box[1]), labels[obj.label_id] + " " + str(obj.score))
@@ -59,7 +60,7 @@ def main():
                                    'bbox_confidence': float(obj.score)
                                    }
                         detectedObjs.append(objInfo)
-                #cv_publisher.send(detectedObjs)
+                cv_publisher.send(detectedObjs)
                 #print(detectedObjs)
 
                 with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
@@ -67,7 +68,7 @@ def main():
                 count+=1
         except BaseException as e:
             with open(LOG_FILE,'w') as f:
-                f.write("Failed to run detection loop: {0}\n".format(str(e)))
+                f.write("Failed to run detection loop:\n {0}\n".format(traceback.format_exc()))
 
 if __name__ == '__main__':
   main()

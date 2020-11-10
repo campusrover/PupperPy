@@ -73,32 +73,40 @@ class IMU(object):
         self.means, self.variances = self.average_filter()
 
     def initSensor(self):
-        try_count = 0
+        start = dt.datetime.now()
         connected = False
-        while not connected:
+        ex = True
+        while (dt.datetime.now() - start).seconds < 10 and not connected:
             try:
                 self.i2c = I2C(I2C_BUS, SCL_GPIO, SDA_GPIO)
                 self.sensor = BNO055_I2C(self.i2c)
-            except:
-                if try_count > 3:
-                    raise
-                else:
-                    try_count += 1
+                connected = True
+                ex = False
+            except BaseException as e:
+                ex = e
+
+        if not connected:
+            raise ex
 
     def read(self):
-        calibration_status = self.sensor.calibration_status
-        # calibration status is a tuple with status for (system, gyro, accel, mag)
-        # If calibration is 0 its not calibrated, 3 is fully calibrated
-        # It needs to sit still to calibrate gyro, it needs to move to
-        # calibrate the magnetometer and it needs to sit on each plane, but
-        # even when not fully calibrated it work alright. Also it automatically
-        # calibrates as it moves around. 
-        acc = self.sensor.linear_acceleration
-        euler = self.sensor.euler
-        if all([x is None for x in euler]) and all([x is None for x in acc]):
-            self.initSensor()
+        try:
+            calibration_status = self.sensor.calibration_status
+            # calibration status is a tuple with status for (system, gyro, accel, mag)
+            # If calibration is 0 its not calibrated, 3 is fully calibrated
+            # It needs to sit still to calibrate gyro, it needs to move to
+            # calibrate the magnetometer and it needs to sit on each plane, but
+            # even when not fully calibrated it work alright. Also it automatically
+            # calibrates as it moves around. 
             acc = self.sensor.linear_acceleration
             euler = self.sensor.euler
+        except:
+            euler = (None, None, None)
+            acc = (None, None, None)
+            calibration_status = (None, None, None, None)
+            self.initSensor()
+
+        if all([x is None for x in euler]) and all([x is None for x in acc]):
+            self.initSensor()
 
         out = {'time': dt.datetime.now(), 'roll': euler[0],
                'pitch': euler[1], 'yaw': euler[2], 'x_acc': acc[0],
