@@ -1,26 +1,27 @@
 import random
+import numpy as np
 from ControllerState import ControllerState
-from imu_tools import IMU
-from object_detection import ObjectSensors
-from UDPComms import Subscriber
+from datetime import datetime as dt
+
+from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
 
 TURNING_VELOCITY = .1
 FORWARD_VELOCITY = .1
 BOX_SIZE_LIMIT = 200
 MAXIMUM_WAIT_TIME = 60
 
-#cam_dat = CameraData()
-#front_sensor_dat = False
+# cam_dat = CameraData()
+# front_sensor_dat = False
 
 CV_PORT = 105  # computer vision
 CMD_PORT = 8810
-pupper_pub = Publisher(8830)
-pupper_sub = Subscriber(8840, timeout=0.01)
+# pupper_pub = Publisher(8830)
+# pupper_sub = Subscriber(8840, timeout=0.01)
 
 robot_state = "RANDOM_SEARCH"
 data = None
 
-#pos = None
+# pos = None
 timer = 0
 
 max_x_velocity = 0.4
@@ -31,14 +32,14 @@ max_yaw_rate = 2.0
 class RobotData():
 
     def __init__(self, rate=0.1, imu=None):
-        self.obj_sensors = ObjectSensors()
+        self.obj_sensors = TestObjectSensors()
         if imu is None:
-            self.imu = IMU()
+            self.imu = TestIMU()
         else:
             self.imu = imu
 
-        self.cv_sub = Subscriber(CV_PORT)
-        self.cmd_sub = Subscriber(CMD_PORT)
+        self.cv_sub = TestCVSub()  # Subscriber(CV_PORT)
+        self.cmd_sub = TestCMDSub()  # Subscriber(CMD_PORT)
         self.data = None
 
     def update(self):
@@ -88,10 +89,10 @@ class RobotData():
                      'x_vel': x_vel,
                      'y_vel': y_vel,
                      'yaw_rate': yaw_rate,
-                     'sys_calibration': imu[sys_calibration],
-                     'gyro_calibration': imu[gyro_calibration],
-                     'accel_calibration': imu[accel_calibration],
-                     'mag_calibration': imu[mag_calibration]}
+                     'sys_calibration': imu['sys_calibration'],
+                     'gyro_calibration': imu['gyro_calibration'],
+                     'accel_calibration': imu['accel_calibration'],
+                     'mag_calibration': imu['mag_calibration']}
 
 
 """
@@ -102,9 +103,10 @@ Does random search (roomba) until target is found.
 def randomSearch():
     global data, robot_state
     new_command = ControllerState()
-
+    # print(data)
     if not data["bbox_confidence"] > .5:  # target not found yet
         if data["center_sensor"]:
+            # print(data["center_sensor"])
             new_command.right_analog_x = TURNING_VELOCITY  # just turn
             new_command.left_analog_y = FORWARD_VELOCITY
             # TODO use other sensors
@@ -222,11 +224,13 @@ while True:
         # success
         # waitOutSuccess()
 
+    # print(data)
     print(robot_state + " " + robot_command.__str__())
-    pupper_pub.send(robot_command.get_state())
+    # pupper_pub.send(robot_command.get_state())
 
     try:
-        msg = pupper_sub.get()
-        print(msg)
+        # msg = pupper_sub.get()
+        # print(msg)
+        pass
     except timeout:
         pass

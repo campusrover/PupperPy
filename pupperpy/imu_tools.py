@@ -20,6 +20,7 @@ RST_GPIO = 16
 # I think the BNO055 just needs time to properly startup after power on
 # For calibration, the sensor automatically calibrates, but it seems cer
 
+
 def reset_imu():
     try_count = 0
     pi = pigpio.pi()
@@ -43,6 +44,7 @@ def reset_imu():
 
     pi.i2c_close(h)
 
+
 def wait_for_imu():
     start = dt.datetime.now()
     connected = False
@@ -65,10 +67,11 @@ def init_imu():
     os.system('sudo i2cdetect -y 11')
     os.system('sudo i2cdetect -y 0')
 
+
 class IMU(object):
     def __init__(self):
-        #reset_imu()
-        #init_imu()
+        # reset_imu()
+        # init_imu()
         self.initSensor()
         self.means, self.variances = self.average_filter()
 
@@ -95,7 +98,7 @@ class IMU(object):
         # It needs to sit still to calibrate gyro, it needs to move to
         # calibrate the magnetometer and it needs to sit on each plane, but
         # even when not fully calibrated it work alright. Also it automatically
-        # calibrates as it moves around. 
+        # calibrates as it moves around.
         acc = self.sensor.linear_acceleration
         euler = self.sensor.euler
         if all([x is None for x in euler]) and all([x is None for x in acc]):
@@ -111,13 +114,14 @@ class IMU(object):
         return out
 
     def average_filter(self):
-        sums = dict.fromkeys(['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
+        sums = dict.fromkeys(
+            ['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw'], 0)
         for k in sums.keys():
             sums[k] = []
 
         for i in range(100):
             dat = self.read()
-            for k,v in dat.items():
+            for k, v in dat.items():
                 if k in sums.keys() and v is not None:
                     sums[k].append(v)
 
@@ -125,7 +129,7 @@ class IMU(object):
 
         mean = {}
         variance = {}
-        for k,v in sums.items():
+        for k, v in sums.items():
             mean[k] = np.mean(v)
             variance[k] = np.var(v)
 
@@ -156,10 +160,12 @@ class IMU(object):
 def save_data(df, fn):
     df.to_json(fn)
 
+
 def read_data(fn):
     df = pd.read_json(fn)
     df['time'] = df.time.apply(lambda x: dt.datetime.fromtimestamp(x/1000))
     return df
+
 
 def get_pos(time, acc, window=2):
     pos = []

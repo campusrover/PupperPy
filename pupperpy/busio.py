@@ -5,6 +5,7 @@ try:
 except ImportError:
     threading = None
 
+
 class I2C(_bI2C):
     def __init__(self, port_id, sda, scl, frequency=400000):
         self.init(port_id, sda, scl, frequency)
