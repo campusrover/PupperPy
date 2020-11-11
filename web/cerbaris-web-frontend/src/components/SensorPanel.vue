@@ -1,7 +1,7 @@
 <template>
   <div>
-    <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart>
     <b-table hover :items="dataTable"></b-table>
+    <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart>
   </div>
 </template>
 
@@ -39,9 +39,9 @@
       channel.bind('new', this.update);
     },
     methods: {
-      update({timestamp, x_acc, y_acc, z_acc, imu_calibration, gyro_calibration, accel_calibration}) {
+      update({timestamp, x_acc, y_acc, z_acc, imu_calibration, gyro_calibration, accel_calibration, left_obj, center_obj, right_obj}) {
         this.update_acc_line_chart(timestamp, x_acc, y_acc, z_acc)
-        this.update_data_table(timestamp, {imu_calibration, gyro_calibration, accel_calibration})
+        this.update_data_table(timestamp, {gyro_calibration, left_obj, center_obj, right_obj})
       },
 
       update_acc_line_chart(timestamp, xAcc, yAcc, zAcc) {

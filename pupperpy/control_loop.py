@@ -2,6 +2,7 @@ import random
 import numpy as np
 from ControllerState import ControllerState
 from datetime import datetime as dt
+from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
 
@@ -203,11 +204,13 @@ Main loop.
 """
 
 data_fetcher = RobotData()
+pusher_client = PusherClient()
 
 while True:
 
     data_fetcher.update()
     data = data_fetcher.data  # update global data
+    pusher_client.send(data)
 
     robot_command = None
 

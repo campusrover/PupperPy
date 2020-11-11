@@ -2,7 +2,6 @@
   <div id="app">
     <h1>CERBARIS Dashboard</h1>
     <b-table hover :items="data_table"></b-table>
-    <vision-panel></vision-panel>
     <sensor-panel></sensor-panel>
   </div>
 </template>
