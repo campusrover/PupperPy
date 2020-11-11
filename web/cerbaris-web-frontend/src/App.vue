@@ -2,13 +2,18 @@
   <div id="app">
     <h1>CERBARIS Dashboard</h1>
     <b-table hover :items="data_table"></b-table>
+    <vision-panel></vision-panel>
+    <sensor-panel></sensor-panel>
   </div>
 </template>
 
 <script>
   import Pusher from 'pusher-js';
+  import SensorPanel from '@/components/SensorPanel'
+  import VisionPanel from '@/components/VisionPanel'
 
   const App = {
+    components: {SensorPanel, VisionPanel},
     data() {
       return {
         data_obj: {},

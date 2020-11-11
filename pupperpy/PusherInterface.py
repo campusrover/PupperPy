@@ -12,5 +12,5 @@ class PusherClient:
         secret=os.getenv('PUSHER_SECRET'), \
         cluster=os.getenv('PUSHER_CLUSTER'))
 
-  def send(self, message, channel='data', event='new'):
-    self.client.trigger(channel, event, message)
+  def send(self, message):
+    self.client.trigger('sensor_data', 'new', {'timestamp': message['timestamp'], 'x_acc': message['x_acc'], 'y_acc': message['y_acc'], 'z_acc': message['z_acc']})

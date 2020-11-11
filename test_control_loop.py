@@ -14,7 +14,7 @@ def main():
             continue
         last_loop = time.time()
 
-        pusher_client.send({'metadata': {'timestamp': now}, 'data': {'first': 'SOME STRING', 'second': random.random()}})
+        pusher_client.send({'timestamp': now, 'x_acc': random.random(), 'y_acc': random.random(), 'z_acc': random.random()})
 
 if __name__ == "__main__":
     main()
