@@ -2,6 +2,7 @@
   <div id="app">
     <h1>CERBARIS Dashboard</h1>
     <b-table hover :items="data_table"></b-table>
+    <vision-panel></vision-panel>
     <sensor-panel></sensor-panel>
   </div>
 </template>
@@ -68,5 +69,9 @@
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+canvas {
+  border: .5px solid gray
 }
 </style>

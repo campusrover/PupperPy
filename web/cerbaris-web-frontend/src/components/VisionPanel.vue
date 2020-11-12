@@ -1,5 +1,8 @@
 <template>
-  <bounding-box-chart :bbox-data="bboxData"></bounding-box-chart>
+  <div class="d-flex">
+    <bounding-box-diagram :bboxData="bboxData" :timestamp="timestamp"></bounding-box-diagram>
+    <b-table hover :items="dataTable"></b-table>
+  </div>
 </template>
 
 <script>
@@ -8,13 +11,15 @@
   */
   // table: bbox_x, bbox_y, bbox_width, bbox_height, depth?
   // bubble chart: bbox_x, bbox_y, bbox_width, bbox_height
-  import BoundingBoxChart from '@/components/BoundingBoxChart'
+  import BoundingBoxDiagram from '@/components/BoundingBoxDiagram'
 
-  const SensorPanel = {
-    components: {BoundingBoxChart},
+  const VisionPanel = {
+    components: {BoundingBoxDiagram},
     data() {
       return {
-        bboxData: [{x: 0, y: 0, r: 30}],
+        bboxData: {x: 0, y: 0, w: 0, h: 0},
+        timestamp: 0,
+        dataTable: [{name: null, value: null, date: null}],
       }
     },
     created() {
@@ -26,15 +31,32 @@
       channel.bind('new', this.update)
     },
     methods: {
-      update({timestamp, bbox_x, bbox_y, bbox_width, bbox_height}) {
-        this.update_bbox_chart(timestamp, bbox_x, bbox_y, bbox_width, bbox_height)
+      update(data) {
+        this.timestamp = data.timestamp
+        delete data.timestamp
+        this.update_bbox_chart(data)
+        this.update_data_table(data)
       },
 
-      update_bbox_chart(timestamp, bboxX, bboxY, bboxWidth, bboxHeight) {
-        bboxData.push({x: bboxX, y: bboxY, width: bboxWidth, height: bboxHeight})
+      update_bbox_chart({bbox_x, bbox_y, bbox_w, bbox_h}) {
+        this.bboxData = {
+          x: bbox_x,
+          y: bbox_y,
+          w: bbox_w,
+          h: bbox_h,
+        }
       },
+
+      update_data_table(data) {
+        let currDataTable = []
+        let date = new Date(this.timestamp * 1000).toLocaleString()
+        for (const [name, value] of Object.entries(data)) {
+          currDataTable.push({name, value, date})
+        }
+        this.dataTable = currDataTable
+      }
     },
   }
 
-  export default SensorPanel;
+  export default VisionPanel;
 </script>

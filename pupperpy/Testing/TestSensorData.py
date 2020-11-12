@@ -34,11 +34,17 @@ class TestCVSub:
         keys = ['bbox_x', 'bbox_y', 'bbox_h',
                 'bbox_w', 'bbox_label', 'bbox_confidence']
         for key in keys:
-            self.data[key] = random.random()
+            if key == 'bbox_h' or key == 'bbox_w':
+                self.data[key] = random.uniform(200, 300)
+            else:
+                self.data[key] = random.uniform(0, 300)
 
     def get(self):
         for key in self.data.keys():
-            self.data[key] = random.random()
+            if key == 'bbox_h' or key == 'bbox_w':
+                self.data[key] = random.uniform(200, 300)
+            else:
+                self.data[key] = random.uniform(0, 300)
         return self.data
 
 

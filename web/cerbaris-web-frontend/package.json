@@ -12,6 +12,7 @@
     "bootstrap-vue": "^2.18.1",
     "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
+    "paper": "^0.12.11",
     "pusher-js": "^7.0.1",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1"

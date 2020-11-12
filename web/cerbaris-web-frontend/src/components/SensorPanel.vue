@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="d-flex">
+    <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
+    <sensor-diagram :sensor-data="sensorData" :timestamp="timestamp"></sensor-diagram>
     <b-table hover :items="dataTable"></b-table>
-    <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart>
   </div>
 </template>
 
@@ -18,16 +19,19 @@
   // diagram: yaw, x_acc, y_acc, robo_x_vel, robo_y_vel, robo_yaw_rate, left_obj, right_obj, center_obj
 
   import AccLineChart from '@/components/AccLineChart'
+  import SensorDiagram from '@/components/SensorDiagram'
 
   const SensorPanel = {
-    components: {AccLineChart},
+    components: {AccLineChart, SensorDiagram},
     data() {
       return {
         xAccData: [],
         yAccData: [],
         zAccData: [],
+        timestamp: 0,
+        sensorData: {},
         dataObj: {},
-        dataTable: [],
+        dataTable: [{name: null, value: null, date: null}],
       }
     },
     created() {
@@ -39,12 +43,16 @@
       channel.bind('new', this.update);
     },
     methods: {
-      update({timestamp, x_acc, y_acc, z_acc, imu_calibration, gyro_calibration, accel_calibration, left_obj, center_obj, right_obj}) {
-        this.update_acc_line_chart(timestamp, x_acc, y_acc, z_acc)
-        this.update_data_table(timestamp, {gyro_calibration, left_obj, center_obj, right_obj})
+      update(data) {
+        let {timestamp, x_acc, y_acc, z_acc, left_obj, center_obj, right_obj} = data
+        this.timestamp = timestamp
+        delete data.timestamp
+        this.updateAccLineChart(timestamp, x_acc, y_acc, z_acc)
+        this.updateSensorDiagram(timestamp, {left_obj, center_obj, right_obj})
+        this.updateDataTable(timestamp, data)
       },
 
-      update_acc_line_chart(timestamp, xAcc, yAcc, zAcc) {
+      updateAccLineChart(timestamp, xAcc, yAcc, zAcc) {
         if (xAcc !== undefined) {
           this.xAccData.push({x: timestamp, y: xAcc})
         }
@@ -56,7 +64,11 @@
         }
       },
 
-      update_data_table(timestamp, data) {
+      updateSensorDiagram(timestamp, sensorData) {
+        this.sensorData = sensorData
+      },
+
+      updateDataTable(timestamp, data) {
         let date = new Date(timestamp * 1000).toLocaleString();
 
         for (const [name, value] of Object.entries(data)) {

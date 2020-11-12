@@ -55,8 +55,6 @@ class RobotData():
             cv = self.cv_sub.get()
             if cv == []:
                 cv = default_cv_dict
-            else:
-                cv = cv[0]
         except:
             cv = default_cv_dict
 
@@ -210,6 +208,7 @@ while True:
 
     data_fetcher.update()
     data = data_fetcher.data  # update global data
+    data["state"] = robot_state
     pusher_client.send(data)
 
     robot_command = None
