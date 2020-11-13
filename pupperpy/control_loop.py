@@ -3,7 +3,7 @@ import numpy as np
 import time
 from ControllerState import ControllerState
 from datetime import datetime as dt
-from PusherInterface import PusherClient
+#from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
 
@@ -227,10 +227,9 @@ def memoryNavigation():
 """
 Main loop.
 """
-
 data_fetcher = RobotData()
 data_fetcher.update()
-pusher_client = PusherClient()
+# pusher_client = PusherClient() #WEB
 
 robot_command = ControllerState()
 robot_command.l1 = True
@@ -255,7 +254,7 @@ while True:
     data_fetcher.update()
     data = data_fetcher.data  # update global data
     data["state"] = robot_state
-    pusher_client.send(data)
+    # pusher_client.send(data) #WEB
     # print(data["bbox_w"])
 
     robot_command = None
