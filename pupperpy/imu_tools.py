@@ -92,7 +92,6 @@ class IMU(object):
             raise ex
 
     def read(self):
-<<<<<<< HEAD
         calibration_status = self.sensor.calibration_status
         # calibration status is a tuple with status for (system, gyro, accel, mag)
         # If calibration is 0 its not calibrated, 3 is fully calibrated
@@ -104,7 +103,6 @@ class IMU(object):
         euler = self.sensor.euler
         if all([x is None for x in euler]) and all([x is None for x in acc]):
             self.initSensor()
-=======
         try:
             calibration_status = self.sensor.calibration_status
             # calibration status is a tuple with status for (system, gyro, accel, mag)
@@ -112,8 +110,7 @@ class IMU(object):
             # It needs to sit still to calibrate gyro, it needs to move to
             # calibrate the magnetometer and it needs to sit on each plane, but
             # even when not fully calibrated it work alright. Also it automatically
-            # calibrates as it moves around. 
->>>>>>> 7c81a90b4adb46fc528a3efbf9f0736ab5f68d0b
+            # calibrates as it moves around.
             acc = self.sensor.linear_acceleration
             euler = self.sensor.euler
         except:
