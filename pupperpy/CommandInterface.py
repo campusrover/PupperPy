@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class ControllerState(object):
     LEFT_ANALOG_X_STEP = 0.05
     LEFT_ANALOG_Y_STEP = 0.05
@@ -102,7 +103,7 @@ class ControllerState(object):
             x = getattr(self, attr)
             step = getattr(self, (attr + '_step').upper())
             x += step
-            setattr(self, attr, round(x,4))
+            setattr(self, attr, round(x, 4))
         except:
             print('Attribute %s not found.' % attr)
 
@@ -111,12 +112,13 @@ class ControllerState(object):
             x = getattr(self, attr)
             step = getattr(self, (attr + '_step').upper())
             x -= step
-            setattr(self, attr, round(x,4))
+            setattr(self, attr, round(x, 4))
         except:
             print('Attribute %s not found.' % attr)
 
     def get_state(self):
         out = {}
+        out['message_rate'] = 2
         out['left_analog_x'] = self.left_analog_x
         out['left_analog_y'] = self.left_analog_y
         out['right_analog_x'] = self.right_analog_x
