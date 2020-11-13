@@ -1,4 +1,6 @@
-# How to run
+# cerbaris-web-frontend
+
+## How to run
 
 1. Get `.env` files and move to correct places
 
@@ -16,18 +18,15 @@
 
 7. Don't forget to ctrl-C the Python script when you're finished
 
-# Notes
+## Compiles and minifies for production
+```
+npm run build
+```
 
-* It doesn't remove rows, only adds and updates existing ones
+## Lints and fixes files
+```
+npm run lint
+```
 
-# TODO
-
-* Test out camera
-
-* Display visual using velocities/yaw and goal pose
-
-* Remove and hide rows
-
-* Sort
-
-* Track data
+## Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
