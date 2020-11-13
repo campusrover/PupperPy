@@ -27,13 +27,13 @@ CMD_PORT = 8810
 
 if not CONFINED_TESTING_MODE:
     pupper_pub = Publisher(8830)
-    # pupper_sub = Subscriber(8840, timeout=0.01)
+    pupper_sub = Subscriber(8840, timeout=0.01)
 
 robot_state = "RANDOM_SEARCH"
 data = None
 
 # pos = None
-timer = 0
+# timer = 0
 
 max_x_velocity = 0.4
 max_y_velocity = 0.3
@@ -59,7 +59,7 @@ class RobotData():
         else:
             self.obj_sensors = ObjectSensors()
             if imu is None:
-                self.imu = IMU()
+                self.imu = TestIMU()
             else:
                 self.imu = imu
             self.cv_sub = Subscriber(CV_PORT)
