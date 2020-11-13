@@ -224,7 +224,23 @@ Main loop.
 data_fetcher = RobotData()
 pusher_client = PusherClient()
 
+robot_command = ControllerState()
+robot_command.l1 = True
+
+print(robot_state + " " + robot_command.__str__())
+pupper_pub.send(robot_command.get_state())
+
+time.sleep(1)
+
+robot_command = ControllerState()
+robot_command.r1 = True
+
+print(robot_state + " " + robot_command.__str__())
+pupper_pub.send(robot_command.get_state())
+
 while True:
+
+    time.sleep(.5)
 
     data_fetcher.update()
     data = data_fetcher.data  # update global data
@@ -257,5 +273,3 @@ while True:
             pass
         except timeout:
             pass
-
-    time.sleep(.5)
