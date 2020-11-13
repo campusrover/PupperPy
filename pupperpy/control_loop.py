@@ -1,21 +1,27 @@
 import random
 import numpy as np
+import time
 from ControllerState import ControllerState
 from datetime import datetime as dt
-from PusherInterface import PusherClient
+#from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
+"""
+#actual robot imports
+from pupperpy.imu_tools import IMU
+from pupperpy.object_detection import ObjectSensors
+from UDPComms import Subscriber
+"""
+
 
 TURNING_VELOCITY = .1
-FORWARD_VELOCITY = .1
+FORWARD_VELOCITY = .2
 BOX_SIZE_LIMIT = 200
 MAXIMUM_WAIT_TIME = 60
 
-# cam_dat = CameraData()
-# front_sensor_dat = False
-
 CV_PORT = 105  # computer vision
 CMD_PORT = 8810
+
 # pupper_pub = Publisher(8830)
 # pupper_sub = Subscriber(8840, timeout=0.01)
 
@@ -29,6 +35,10 @@ max_x_velocity = 0.4
 max_y_velocity = 0.3
 max_yaw_rate = 2.0
 
+"""
+Class containing sensor data that can update with new information.
+"""
+
 
 class RobotData():
 
@@ -39,8 +49,11 @@ class RobotData():
         else:
             self.imu = imu
 
-        self.cv_sub = TestCVSub()  # Subscriber(CV_PORT)
-        self.cmd_sub = TestCMDSub()  # Subscriber(CMD_PORT)
+        # switch between test and ports
+        self.cv_sub = TestCVSub()
+        self.cmd_sub = TestCMDSub()
+        #self.cv_sub = Subscriber(CV_PORT)
+        #self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None
 
     def update(self):
@@ -50,11 +63,12 @@ class RobotData():
         default_cv_dict = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
                                          'bbox_label', 'bbox_confidence'], np.nan)
         try:
-            # Ben's computer vision service is publishing a list of
-            # dictionaries, empty list is nothing
+            # Ben's computer vision service is publishing a list of dictionaries per object
             cv = self.cv_sub.get()
-            if cv == []:
+            if cv == []:  # if no objects detected
                 cv = default_cv_dict
+            else:
+                cv = cv[0]  # supposedly the first object
         except:
             cv = default_cv_dict
 
@@ -102,17 +116,19 @@ Does random search (roomba) until target is found.
 def randomSearch():
     global data, robot_state
     new_command = ControllerState()
-    # print(data)
-    if not data["bbox_confidence"] > .5:  # target not found yet
-        if data["center_sensor"]:
-            # print(data["center_sensor"])
-            new_command.right_analog_x = TURNING_VELOCITY  # just turn
-            new_command.left_analog_y = FORWARD_VELOCITY
-            # TODO use other sensors
-        else:
-            new_command.left_analog_y = FORWARD_VELOCITY  # go forward
+
+    # if not data["bbox_confidence"] > .5:  # target not found yet
+
+    if data["center_sensor"]:
+        # print(data["center_sensor"])
+        new_command.right_analog_x = TURNING_VELOCITY  # just turn
+        new_command.left_analog_y = FORWARD_VELOCITY * .3
+        # TODO use other sensors
     else:
-        robot_state = "MOVE_TO_TARGET"
+        new_command.left_analog_y = FORWARD_VELOCITY  # go forward
+
+    # else:
+    #    robot_state = "MOVE_TO_TARGET"
 
     return new_command
 
@@ -202,14 +218,14 @@ Main loop.
 """
 
 data_fetcher = RobotData()
-pusher_client = PusherClient()
+#pusher_client = PusherClient()
 
 while True:
 
     data_fetcher.update()
     data = data_fetcher.data  # update global data
     data["state"] = robot_state
-    pusher_client.send(data)
+    # pusher_client.send(data)
 
     robot_command = None
 
@@ -226,7 +242,6 @@ while True:
         # success
         # waitOutSuccess()
 
-    # print(data)
     print(robot_state + " " + robot_command.__str__())
     # pupper_pub.send(robot_command.get_state())
 
@@ -236,3 +251,5 @@ while True:
         pass
     except timeout:
         pass
+
+    time.sleep(.5)
