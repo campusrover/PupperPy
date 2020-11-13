@@ -3,7 +3,7 @@ import numpy as np
 import time
 from ControllerState import ControllerState
 from datetime import datetime as dt
-from PusherInterface import PusherClient
+#from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
 from UDPComms import Publisher
@@ -17,6 +17,7 @@ from UDPComms import Subscriber
 CONFINED_TESTING_MODE = True
 WEB_MODE = False
 
+MESSAGE_RATE = .5
 TURNING_VELOCITY = .1
 FORWARD_VELOCITY = .2
 BOX_SIZE_LIMIT = 200
@@ -87,7 +88,8 @@ class RobotData():
         yaw_rate = cmd['rx'] * -max_yaw_rate
         time = dt.now().timestamp()
 
-        self.data = {'time': time,
+        self.data = {'message_rate': MESSAGE_RATE,
+                     'time': time,
                      'x_acc': imu['x_acc'],
                      'y_acc': imu['y_acc'],
                      'z_acc': imu['z_acc'],
@@ -222,7 +224,7 @@ Main loop.
 """
 
 data_fetcher = RobotData()
-pusher_client = PusherClient()
+#pusher_client = PusherClient()
 
 robot_command = ControllerState()
 robot_command.l1 = True
@@ -245,7 +247,7 @@ while True:
     data_fetcher.update()
     data = data_fetcher.data  # update global data
     data["state"] = robot_state
-    pusher_client.send(data)
+    # pusher_client.send(data)
 
     robot_command = None
 
