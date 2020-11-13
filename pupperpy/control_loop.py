@@ -10,8 +10,8 @@ from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSen
 # actual robot imports
 from UDPComms import Publisher
 from UDPComms import Subscriber
-from pupperpy.imu_tools import IMU
-from pupperpy.object_detection import ObjectSensors
+from imu_tools import IMU
+from object_detection import ObjectSensors
 
 CONFINED_TESTING_MODE = False
 WEB_MODE = False
