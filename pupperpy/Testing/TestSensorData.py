@@ -40,7 +40,7 @@ class TestCVSub:
                 self.data[0][key] = random.uniform(0, 300)
 
     def get(self):
-        for key in self.data.keys():
+        for key in self.data[0].keys():
             if key == 'bbox_h' or key == 'bbox_w':
                 self.data[0][key] = random.uniform(200, 300)
             else:
