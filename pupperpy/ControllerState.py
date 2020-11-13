@@ -118,6 +118,7 @@ class ControllerState(object):
 
     def get_state(self):
         out = {}
+        out['message_rate'] = 2
         out['lx'] = self.left_analog_x
         out['ly'] = self.left_analog_y
         out['rx'] = self.right_analog_x
