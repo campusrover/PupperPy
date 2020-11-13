@@ -6,28 +6,28 @@ from datetime import datetime as dt
 #from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
+
+# actual robot imports
 from UDPComms import Publisher
-"""
-#actual robot imports
+from UDPComms import Subscriber
 from pupperpy.imu_tools import IMU
 from pupperpy.object_detection import ObjectSensors
-from UDPComms import Subscriber
-"""
 
-CONFINED_TESTING_MODE = True
+CONFINED_TESTING_MODE = False
 WEB_MODE = False
 
 MESSAGE_RATE = .5
-TURNING_VELOCITY = .1
-FORWARD_VELOCITY = .2
+TURNING_VELOCITY = .5
+FORWARD_VELOCITY = 1
 BOX_SIZE_LIMIT = 200
 MAXIMUM_WAIT_TIME = 60
 
 CV_PORT = 105  # computer vision
 CMD_PORT = 8810
 
-pupper_pub = Publisher(8830)
-# pupper_sub = Subscriber(8840, timeout=0.01)
+if not CONFINED_TESTING_MODE:
+    pupper_pub = Publisher(8830)
+    # pupper_sub = Subscriber(8840, timeout=0.01)
 
 robot_state = "RANDOM_SEARCH"
 data = None
@@ -47,16 +47,21 @@ Class containing sensor data that can update with new information.
 class RobotData():
 
     def __init__(self, rate=0.1, imu=None):
-        self.obj_sensors = TestObjectSensors()
-        if imu is None:
-            self.imu = TestIMU()
-        else:
-            self.imu = imu
 
         if CONFINED_TESTING_MODE:
+            self.obj_sensors = TestObjectSensors()
+            if imu is None:
+                self.imu = TestIMU()
+            else:
+                self.imu = imu
             self.cv_sub = TestCVSub()
             self.cmd_sub = TestCMDSub()
         else:
+            self.obj_sensors = ObjectSensors()
+            if imu is None:
+                self.imu = IMU()
+            else:
+                self.imu = imu
             self.cv_sub = Subscriber(CV_PORT)
             self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None
@@ -231,7 +236,8 @@ robot_command = ControllerState()
 robot_command.l1 = True
 
 print(robot_state + " " + robot_command.__str__())
-pupper_pub.send(robot_command.get_state())
+if not CONFINED_TESTING_MODE:
+    pupper_pub.send(robot_command.get_state())
 
 time.sleep(1)
 
@@ -239,7 +245,8 @@ robot_command = ControllerState()
 robot_command.r1 = True
 
 print(robot_state + " " + robot_command.__str__())
-pupper_pub.send(robot_command.get_state())
+if not CONFINED_TESTING_MODE:
+    pupper_pub.send(robot_command.get_state())
 
 while True:
 
@@ -266,10 +273,9 @@ while True:
         # waitOutSuccess()
 
     print(robot_state + " " + robot_command.__str__())
-    pupper_pub.send(robot_command.get_state())
 
     if not CONFINED_TESTING_MODE:
-
+        pupper_pub.send(robot_command.get_state())
         try:
             # msg = pupper_sub.get()
             # print(msg)
