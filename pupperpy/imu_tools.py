@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 from adafruit_bno055 import BNO055_I2C
-from pupperpy.busio import I2C
+from busioi2c import I2C
 import pigpio
 
 # Setup to use GPIO 0 and 1 as I2C interface,
