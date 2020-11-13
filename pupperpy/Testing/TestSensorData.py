@@ -7,11 +7,11 @@ class TestIMU:
         keys = ['x_acc', 'y_acc', 'z_acc', 'roll', 'pitch', 'yaw', 'sys_calibration',
                 'gyro_calibration', 'accel_calibration', 'mag_calibration']
         for key in keys:
-            self.data[key] = random.random()
+            self.data[key] = random.uniform(-30, 30)
 
     def read(self):
         for key in self.data.keys():
-            self.data[key] = random.random()
+            self.data[key] = random.uniform(-30, 30)
         return self.data
 
 

@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <h1>CERBARIS Dashboard</h1>
     <b-table hover :items="data_table"></b-table>
-    <vision-panel></vision-panel>
     <sensor-panel></sensor-panel>
+    <div class="d-flex">
+      <vision-panel class="flex-fill"></vision-panel>
+      <state-panel class="flex-fill"></state-panel>
+    </div>
   </div>
 </template>
 
@@ -11,9 +13,10 @@
   import Pusher from 'pusher-js';
   import SensorPanel from '@/components/SensorPanel'
   import VisionPanel from '@/components/VisionPanel'
+  import StatePanel from '@/components/StatePanel'
 
   const App = {
-    components: {SensorPanel, VisionPanel},
+    components: {SensorPanel, VisionPanel, StatePanel},
     data() {
       return {
         data_obj: {},
@@ -68,10 +71,13 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 canvas {
-  border: .5px solid gray
+  border: .5px solid gray;
+}
+
+.card {
+  margin: 10px;
 }
 </style>

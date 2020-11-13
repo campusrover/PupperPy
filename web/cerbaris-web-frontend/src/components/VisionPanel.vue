@@ -1,8 +1,13 @@
 <template>
-  <div class="d-flex">
-    <bounding-box-diagram :bboxData="bboxData" :timestamp="timestamp"></bounding-box-diagram>
-    <b-table hover :items="dataTable"></b-table>
-  </div>
+  <b-card no-body>
+    <b-card-header class="panel-heading">
+      Vision Panel
+    </b-card-header>
+    <b-card-body class="panel-body d-flex">
+      <bounding-box-diagram class="mr-3" :bboxData="bboxData" :timestamp="timestamp"></bounding-box-diagram>
+      <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
+    </b-card-body>
+  </b-card>
 </template>
 
 <script>

@@ -1,9 +1,14 @@
 <template>
-  <div class="d-flex">
-    <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
-    <sensor-diagram :sensor-data="sensorData" :timestamp="timestamp"></sensor-diagram>
-    <b-table hover :items="dataTable"></b-table>
-  </div>
+  <b-card no-body style="max-height: 40vh">
+    <b-card-header class="panel-heading">
+      Sensor Panel
+    </b-card-header>
+    <b-card-body class="panel-body d-flex">
+      <sensor-diagram class="mr-3" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
+      <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
+      <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
+    </b-card-body>
+  </b-card>
 </template>
 
 <script>
@@ -30,6 +35,7 @@
         zAccData: [],
         timestamp: 0,
         sensorData: {},
+        yaw: 0,
         dataObj: {},
         dataTable: [{name: null, value: null, date: null}],
       }
@@ -44,9 +50,10 @@
     },
     methods: {
       update(data) {
-        let {timestamp, x_acc, y_acc, z_acc, left_obj, center_obj, right_obj} = data
+        let {timestamp, x_acc, y_acc, z_acc, left_obj, center_obj, right_obj, yaw} = data
         this.timestamp = timestamp
         delete data.timestamp
+        this.yaw = yaw
         this.updateAccLineChart(timestamp, x_acc, y_acc, z_acc)
         this.updateSensorDiagram(timestamp, {left_obj, center_obj, right_obj})
         this.updateDataTable(timestamp, data)

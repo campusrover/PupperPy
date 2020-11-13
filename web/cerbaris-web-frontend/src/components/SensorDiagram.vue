@@ -3,19 +3,20 @@
 </template>
 
 <script>
-  import paper, { Path, Point, Tool } from 'paper'
+  import paper, { Path, Point, Tool, Group } from 'paper'
 
-  const BoundingBoxCanvas = {
+  const SensorDiagram = {
     components: {},
-    props: ['sensorData', 'timestamp'],
+    props: ['sensorData', 'yaw', 'timestamp'],
     data() {
       return {
         scope: null,
         leftSensor: null,
         centerSensor: null,
         rightSensor: null,
-        width: 300,
-        height: 300,
+        robotGroup: null,
+        width: 200,
+        height: 200,
       }
     },
     mounted() {
@@ -26,33 +27,77 @@
     watch: {
       sensorData() {
         this.updateRangeSensors()
+        this.updateYaw()
       }
     },
     methods: {
       reset() {
+        // resize canvas
+        // const c = document.getElementById('sensorCanvas')
+        // let ctx = c.getContext('2d')
+        // ctx.scale(.5, .5)
         this.scope.project.activeLayer.removeChildren()
         this.scope.activate()
-        this.leftSensor = new Path.Rectangle({
-          point: [this.width / 3, this.height / 2],
-          size: [20, 20],
-          fillColor: 'green',
+        // radial axes
+        let num_axes = 8
+        for (let i = 0; i < num_axes; i++) {
+          let axis = new Path.Line({
+            from: [this.width/2, this.height/2],
+            to: [this.width/2, -this.height],
+            strokeColor: 'black',
+            opacity: .2
+          })
+          axis.rotate(i * 360 / num_axes, new Point(this.width/2, this.height/2))
+        }
+        // forward arrow
+        let arrow_w = 10
+        let arrow_h = 10
+        let forward_arrow = new Path.Line({
+          from: [this.width/2, this.height/2],
+          to: [this.width/2, 0],
           strokeColor: 'black',
-          opacity: .4,
         })
+        forward_arrow.add({point: [this.width/2 - arrow_w/2, arrow_h]})
+        forward_arrow.add({point: [this.width/2, 0]})
+        forward_arrow.add({point: [this.width/2 + arrow_w/2, arrow_h]})
+        // robot body
+        let robot_w = 60
+        let robot_h = 1.5 * robot_w
+        let robot = new Path.Rectangle({
+          point: [(this.width - robot_w) / 2, (this.height - robot_h) / 2],
+          size: [robot_w, robot_h],
+          fillColor: 'black',
+          opacity: .5,
+        })
+        // robot group
+        this.robotGroup = new Group([forward_arrow, robot])
+        this.robotGroup.applyMatrix = false
+        // range sensors
+        let sensor_w = 10
+        let sensor_h = 2 * sensor_w
+        this.leftSensor = new Path.Rectangle({
+          // point: [this.width/2 - robot_w/3.5 - sensor_w/2, this.height/2 - robot_h/2.5],
+          point: [10, 10],
+          size: [sensor_w, sensor_h],
+          fillColor: 'rgba(15, 234, 0)',
+          opacity: 1,
+        })
+        // this.leftSensor.rotate(-30)
         this.centerSensor = new Path.Rectangle({
-          point: [this.width / 2, this.height / 2],
-          size: [20, 20],
-          fillColor: 'green',
-          strokeColor: 'black',
-          opacity: .4,
+          // point: [(this.width - sensor_w) / 2, this.height/2 - robot_h/2.5],
+          point: [sensor_w * 2 + 10, 10],
+          size: [sensor_w, sensor_h],
+          fillColor: 'rgba(15, 234, 0)',
+          opacity: 1,
         })
         this.rightSensor = new Path.Rectangle({
-          point: [2 * this.width / 3, this.height / 2],
-          size: [20, 20],
-          fillColor: 'green',
-          strokeColor: 'black',
-          opacity: .4,
+          // point: [this.width/2 + robot_w/3.5 - sensor_w/2, this.height/2 - robot_h/2.5],
+          point: [sensor_w * 4 + 10, 10],
+          size: [sensor_w, sensor_h],
+          fillColor: 'rgba(15, 234, 0)',
+          opacity: 1,
         })
+        // this.rightSensor.rotate(30)
       },
       updateRangeSensors() {
         this.scope.activate()
@@ -62,19 +107,23 @@
         this.updateRangeSensor(this.rightSensor, right_obj === 'True')
         console.table('range sensor delay: ' + Math.trunc(Date.now() - this.timestamp * 1000) + 'ms')
       },
+      updateYaw() {
+        this.robotGroup.rotate(-this.robotGroup.rotation, new Point(this.width/2, this.height/2))
+        this.robotGroup.rotate(this.yaw, new Point(this.width/2, this.height/2))
+      },
       updateRangeSensor(sensor, value) {
         if (value) {
           sensor.fillColor = 'red'
         } else {
-          sensor.fillColor = 'green'
+          sensor.fillColor = 'rgba(15, 234, 0)'
         }
       },
       createTool(scope) {
-          scope.activate();
-          return new Tool();
+        scope.activate();
+        return new Tool();
       },
     }
   }
 
-  export default BoundingBoxCanvas;
+  export default SensorDiagram;
 </script>
