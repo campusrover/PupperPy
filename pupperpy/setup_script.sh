@@ -20,7 +20,7 @@ sud nano /etc/hosts
 sudo apt-get update
 sudo apg-get upgrade
 sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools 
-sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera pandas pathlib dotenv pusher
+sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera pandas pathlib python-dotenv pusher
 
 # Git grabs
 mkdir /home/cerbaris/pupper_code
