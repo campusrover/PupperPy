@@ -4,7 +4,7 @@
       State Panel
     </b-card-header>
     <b-card-body class="panel-body d-flex">
-      {{ state }}
+      <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
     </b-card-body>
   </b-card>
 </template>
@@ -20,7 +20,8 @@
     props: [],
     data() {
       return {
-        state: '',
+        dataObj: {},
+        dataTable: [{name: null, value: null, date: null}],
       }
     },
     created() {
@@ -33,8 +34,30 @@
     },
     methods: {
       update(message) {
-        this.state = message.state
-      }
+        let timestamp = message['timestamp']
+        delete message.timestamp
+        this.updateDataTable(timestamp, message)
+      },
+
+      updateDataTable(timestamp, data) {
+        let date = new Date(timestamp * 1000).toLocaleString();
+
+        for (const [name, value] of Object.entries(data)) {
+          if (value !== undefined) {
+            this.dataObj[name] = {value, date};
+          }
+        }
+
+        let currTable = []
+        for (const [name, {value, date}] of Object.entries(this.dataObj)) {
+          currTable.push({
+            name,
+            value,
+            date,
+          });
+        }
+        this.dataTable = currTable;
+      },
     }
   }
 
