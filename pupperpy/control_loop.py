@@ -62,8 +62,10 @@ class RobotData():
                 self.imu = TestIMU()
             else:
                 self.imu = imu
-            self.cv_sub = Subscriber(CV_PORT)
-            self.cmd_sub = Subscriber(CMD_PORT)
+            #self.cv_sub = Subscriber(CV_PORT)
+            #self.cmd_sub = Subscriber(CMD_PORT)
+            self.cv_sub = TestCVSub()
+            self.cmd_sub = TestCMDSub()
         self.data = None
 
     def update(self):
