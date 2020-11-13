@@ -3,9 +3,10 @@ import numpy as np
 import time
 from ControllerState import ControllerState
 from datetime import datetime as dt
-#from PusherInterface import PusherClient
+from PusherInterface import PusherClient
 
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
+from UDPComms import Publisher
 """
 #actual robot imports
 from pupperpy.imu_tools import IMU
@@ -13,6 +14,8 @@ from pupperpy.object_detection import ObjectSensors
 from UDPComms import Subscriber
 """
 
+CONFINED_TESTING_MODE = True
+WEB_MODE = False
 
 TURNING_VELOCITY = .1
 FORWARD_VELOCITY = .2
@@ -22,7 +25,7 @@ MAXIMUM_WAIT_TIME = 60
 CV_PORT = 105  # computer vision
 CMD_PORT = 8810
 
-# pupper_pub = Publisher(8830)
+pupper_pub = Publisher(8830)
 # pupper_sub = Subscriber(8840, timeout=0.01)
 
 robot_state = "RANDOM_SEARCH"
@@ -49,11 +52,12 @@ class RobotData():
         else:
             self.imu = imu
 
-        # switch between test and ports
-        self.cv_sub = TestCVSub()
-        self.cmd_sub = TestCMDSub()
-        #self.cv_sub = Subscriber(CV_PORT)
-        #self.cmd_sub = Subscriber(CMD_PORT)
+        if CONFINED_TESTING_MODE:
+            self.cv_sub = TestCVSub()
+            self.cmd_sub = TestCMDSub()
+        else:
+            self.cv_sub = Subscriber(CV_PORT)
+            self.cmd_sub = Subscriber(CMD_PORT)
         self.data = None
 
     def update(self):
@@ -119,7 +123,7 @@ def randomSearch():
 
     # if not data["bbox_confidence"] > .5:  # target not found yet
 
-    if data["center_sensor"]:
+    if data["center_sensor"] or data["left_sensor"]:
         # print(data["center_sensor"])
         new_command.right_analog_x = TURNING_VELOCITY  # just turn
         new_command.left_analog_y = FORWARD_VELOCITY * .3
@@ -218,14 +222,14 @@ Main loop.
 """
 
 data_fetcher = RobotData()
-#pusher_client = PusherClient()
+pusher_client = PusherClient()
 
 while True:
 
     data_fetcher.update()
     data = data_fetcher.data  # update global data
     data["state"] = robot_state
-    # pusher_client.send(data)
+    pusher_client.send(data)
 
     robot_command = None
 
@@ -243,13 +247,15 @@ while True:
         # waitOutSuccess()
 
     print(robot_state + " " + robot_command.__str__())
-    # pupper_pub.send(robot_command.get_state())
+    pupper_pub.send(robot_command.get_state())
 
-    try:
-        # msg = pupper_sub.get()
-        # print(msg)
-        pass
-    except timeout:
-        pass
+    if not CONFINED_TESTING_MODE:
+
+        try:
+            # msg = pupper_sub.get()
+            # print(msg)
+            pass
+        except timeout:
+            pass
 
     time.sleep(.5)
