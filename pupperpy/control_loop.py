@@ -224,6 +224,7 @@ Main loop.
 """
 
 data_fetcher = RobotData()
+data_fetcher.update()
 #pusher_client = PusherClient()
 
 robot_command = ControllerState()
