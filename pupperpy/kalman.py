@@ -5,30 +5,137 @@ from numpy import cos, sin
 
 
 class KalmanFilter(object):
-    def __init__(self, dt):
-        self.dt = dt
+    def __init__(self, est_err, obs_err):
         self.X = np.array([[0,0,0,0,0,0]]).T # x, y, vx, vy, ax, ay
-        self.est_err = np.array([[1, 1, 1, 1, 1, 1]]) # estimate this somehow
-        self.obs_err = np.array([[0, 0, 1, 1, 1, 1]]) # snag these from sensor
+        # self.est_err = np.array([[1, 1, 1, 1, 1, 1]]) # estimate this somehow
+        # self.obs_err = np.array([[0, 0, 1, 1, 1, 1]]) # snag these from sensor
+        self.est_err = est_err
+        self.obs_err = obs_err
         self.Q = self.est_err * self.est_err.T
         self.R = self.obs_err * self.obs_err.T
-        self.A = np.array([[1, 0, dt, 0, 0.5*(dt**2), 0],
-                           [0, 1, 0, dt, 0, 0.5*(dt**2)],
-                           [0, 0, 1, 0, dt, 0],
-                           [0, 0, 0, 1, 0, dt],
-                           [0, 0, 0, 0, 1, 0],
-                           [0, 0, 0, 0, 0, 1]])
+        self.P = np.identity(self.X.shape[0]) * 0.1
+        #self.P = self.R
 
+    def step(self, dt, vx, vy, ax, ay):
+        n = self.X.shape[0]
+        A = np.array([[1, 0, dt, 0, 0.5*(dt**2), 0],
+                      [0, 1, 0, dt, 0, 0.5*(dt**2)],
+                      [0, 0, 1, 0, dt, 0],
+                      [0, 0, 0, 1, 0, dt],
+                      [0, 0, 0, 0, 1, 0],
+                      [0, 0, 0, 0, 0, 1]])
+        X_prime = A.dot(self.X)
+        #P_prime = A.dot(self.P).dot(A.T) + self.Q
+        P_prime = np.diag(np.diag(A.dot(self.P).dot(A.T) + self.Q))
+        # ignoring nothing
+        # H = np.identity(n)
+        # Ignoring pos and velocity input
+        H = np.array([[0,0,0,0,0,0],
+                      [0,0,0,0,0,0],
+                      [0,0,0,0,0,0],
+                      [0,0,0,0,0,0],
+                      [0,0,0,0,1,0],
+                      [0,0,0,0,0,1]])
+        # Ignoring only non-existant position measure
+        # H = np.array([[0,0,0,0,0,0],
+        #               [0,0,0,0,0,0],
+        #               [0,0,1,0,0,0],
+        #               [0,0,0,1,0,0],
+        #               [0,0,0,0,1,0],
+        #               [0,0,0,0,0,1]])
+
+        S = H.dot(P_prime).dot(H.T) + self.R
+        #K = P_prime.dot(H).dot(np.linalg.inv(S))
+        K = P_prime.dot(H.T) / S
+
+        #vx = self.X[2][0] + dt*ax
+        #vy = self.X[3][0] + dt*ay
+        #Y = np.array([[self.X[0][0]+vx*dt+0.5*ax*dt**2,
+        #               self.X[1][0]+vy*dt+0.5*ay*dt**2,
+        #               vx, vy, ax, ay]]).T
+        Y = np.array([[0, 0, vx, vy, ax, ay]]).T
+        Y = H.dot(Y)
+        X = X_prime + K.dot(Y - H.dot(X_prime))
+        P = (np.identity(len(K)) - K.dot(H)).dot(P_prime)
+        self.X = X
+        self.P = P
+
+
+def rotate_imu_acceleration(yaw, pitch, roll, x_acc, y_acc, z_acc):
+    X = np.array([x_acc, y_acc, z_acc])
+    a = np.deg2rad(yaw)
+    b = np.deg2rad(pitch)
+    c = np.deg2rad(roll)
+    R = np.array([[np.cos(a)*np.cos(b),
+                   np.cos(a)*np.sin(b)*np.sin(c) - np.sin(a)*np.cos(c),
+                   np.cos(a)*np.sin(b)*np.cos(c) - np.sin(a)*np.sin(c)],
+                  [np.sin(a)*np.cos(b),
+                   np.sin(a)*np.sin(b)*np.sin(c) + np.cos(a)*np.cos(c),
+                   np.sin(a)*np.sin(b)*np.cos(c) - np.cos(a)*np.sin(c)],
+                  [-np.sin(b), np.cos(b)*np.sin(c), np.cos(b)*np.sin(c)]])
+    Xr = np.dot(R,X)
+    return Xr
+
+def simple_rotation(yaw, x_acc, y_acc):
+    a = np.deg2rad(yaw)
+    ax = np.cos(a)*x_acc + np.sin(a)*y_acc
+    ay = np.sin(a)*x_acc + np.cos(a)*y_acc
+    return ax, ay
+
+
+def decode_kalman_position(df):
+    cols = ['yaw', 'pitch', 'roll', 'x_acc', 'y_acc', 'z_acc']
+    df = df.copy().dropna(subset=cols)
+    means = df[:30][cols].mean().to_numpy()
+    stds = df[:30][cols].std().to_numpy()
+    time = 0
+    out = []
+    # large change in decoding with choice of error
+    est_err = np.array([[5,5,.05,.05,.01,.01]])/4
+    #def rotate(row):
+    #    ax, ay, az = rotate_imu_acceleration(*row[cols])
+    #    return pd.Series({'ax':ax, 'ay':ay, 'az':az})
+
+    #df[['ax', 'ay', 'az']] = df.apply(rotate, axis=1)
+    def rotate(row):
+        ax, ay = simple_rotation(row['yaw'], row['x_acc'], row['y_acc'])
+        return pd.Series({'ax':ax,'ay':ay})
+
+    df[['ax', 'ay']] = df.apply(rotate, axis=1)
+    err = df[:30][['ax', 'ay']].std().to_list()
+    means = df[:30][['ax', 'ay']].mean().to_numpy()
+    means = [0,0]
+    # negligble difference when subtracting mean offset
+
+    obs_err = np.array([[1, 1, 5, 5, *err]])/4
+
+    # Get rolling average of acceleration
+    # Rolling average doesn't really help at all
+    df[['max', 'may']] = df[['ax', 'ay']].rolling(30).mean()
+    df = df.dropna(subset=['max', 'may'])
+
+    model = KalmanFilter(est_err, obs_err)
+    for i,row in df.iterrows():
+        dt = row['timestamp'] - time
+        time = row['timestamp']
+        model.step(dt, row['robo_x_vel'], row['robo_y_vel'], row['ax']-means[0], row['ay']-means[1])
+        X = model.X.flatten()
+        tmp = {k:v for k,v in zip(['x', 'y', 'vx', 'vy', 'ax', 'ay'], X)}
+        tmp['time'] = time
+        out.append(tmp)
+
+    return pd.DataFrame(out), model
 
 
 def decode_simple_position(df):
     cols = ['yaw', 'pitch', 'roll', 'x_acc', 'y_acc', 'z_acc']
     df = df.copy().dropna(subset=cols)
+    means = df[:30][cols].mean().to_numpy()
     time = 0
     model = SimpleModel()
     out = []
     for i, row in df.iterrows():
-        dat = row[cols]
+        dat = row[cols] - means
         dt = row['timestamp'] - time
         time = row['timestamp']
         model.step(*dat, dt)
@@ -55,6 +162,7 @@ class SimpleModel(object):
         self.z_vel = 0
 
     def step(self, yaw, pitch, roll, x_accel, y_accel, z_accel, dt):
+        ax, ay, az = rotate_imu_acceleration(yaw, pitch, roll, x_accel, y_accel, z_accel)
         a = np.deg2rad(self.yaw)
         b = np.deg2rad(self.pitch)
         c = np.deg2rad(self.roll)

@@ -59,13 +59,14 @@ class DataLogger(object):
                 self.all_img.append(tmp)
                 cv = cv[0]
         except BaseException as e:
-            print(traceback.format_exc())
+            #print(traceback.format_exc())
             cv = dict.fromkeys(['bbox_x', 'bbox_y', 'bbox_h', 'bbox_w',
                                 'bbox_label', 'bbox_confidence'], np.nan)
 
         try:
             cmd = self.cmd_sub.get()
         except:
+            print('Not getting control data')
             cmd = {'ly': 0, 'lx': 0, 'rx': 0}
 
         x_vel = cmd['ly'] * max_x_velocity
