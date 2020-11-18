@@ -8,12 +8,12 @@ from PusherInterface import PusherClient
 from Testing.TestSensorData import TestCMDSub, TestCVSub, TestIMU, TestObjectSensors
 
 # actual robot imports
-from UDPComms import Publisher
-from UDPComms import Subscriber
-from imu_tools import IMU
-from object_detection import ObjectSensors
+#from UDPComms import Publisher
+#from UDPComms import Subscriber
+#from imu_tools import IMU
+#from object_detection import ObjectSensors
 
-CONFINED_TESTING_MODE = False
+CONFINED_TESTING_MODE = True
 WEB_MODE = False
 
 MESSAGE_RATE = .5
@@ -21,6 +21,7 @@ TURNING_VELOCITY = .5
 FORWARD_VELOCITY = 1
 BOX_SIZE_LIMIT = 200
 MAXIMUM_WAIT_TIME = 60
+CAMERA_SIZE = 300
 
 CV_PORT = 105  # computer vision
 CMD_PORT = 8810
@@ -62,8 +63,8 @@ class RobotData():
                 self.imu = TestIMU()
             else:
                 self.imu = imu
-            #self.cv_sub = Subscriber(CV_PORT)
-            #self.cmd_sub = Subscriber(CMD_PORT)
+            # self.cv_sub = Subscriber(CV_PORT)
+            # self.cmd_sub = Subscriber(CMD_PORT)
             self.cv_sub = TestCVSub()
             self.cmd_sub = TestCMDSub()
         self.data = None
@@ -95,6 +96,7 @@ class RobotData():
         yaw_rate = cmd['rx'] * -max_yaw_rate
         time = dt.now().timestamp()
 
+        # construct the dictionary
         self.data = {'message_rate': MESSAGE_RATE,
                      'time': time,
                      'x_acc': imu['x_acc'],
@@ -130,17 +132,16 @@ def randomSearch():
     global data, robot_state
     new_command = ControllerState()
 
-    # if not data["bbox_confidence"] > .5:  # target not found yet
+    if not data["bbox_confidence"]:  # target not found yet
 
-    if data["center_sensor"] or data["left_sensor"]:
-        # print(data["center_sensor"])
-        new_command.right_analog_x = TURNING_VELOCITY  # just turn
-        new_command.left_analog_y = FORWARD_VELOCITY * .3
-        # TODO use other sensors
+        if data["center_sensor"] or data["left_sensor"]:
+            new_command.right_analog_x = TURNING_VELOCITY  # just turn
+            new_command.left_analog_y = FORWARD_VELOCITY * .3
+        else:
+            new_command.left_analog_y = FORWARD_VELOCITY  # go forward
+
     else:
-        new_command.left_analog_y = FORWARD_VELOCITY  # go forward
-
-    # else:
+        pass
     #    robot_state = "MOVE_TO_TARGET"
 
     return new_command
@@ -155,30 +156,33 @@ def moveToTarget():
     global data, robot_state
     new_command = ControllerState()
 
-    if data["bbox_confidence"] > .5:
-        # TODO: change so this works with new data
-        '''
+    if data["bbox_confidence"]:
+
+        """
         if cam_dat.target_bounding_box.area() > BOX_SIZE_LIMIT:  # if too close to object, stop
             robot_state = "SUCCESS"
             return new_command
-
+        """
         # calculate how far bounding box is from center into offset
-        target_x = cam_dat.target_bounding_box.median_point()[0]
-        offset = target_x - cam_dat.SIZE_X / 2
+        target_median_x = data["bbox_x"] + data["bbox_w"] / 2
+        offset = target_median_x - CAMERA_SIZE / 2
 
         # adjust yaw based on offset
-        new_command.right_analog_x = offset * TURNING_VELOCITY / cam_dat.SIZE_X
+        new_command.right_analog_x = offset * TURNING_VELOCITY / CAMERA_SIZE
         new_command.left_analog_y = FORWARD_VELOCITY
-        '''
-
-        # print(new_command.right_analog_x)
 
     else:  # no target found
 
+        #robot_state = "RANDOM_SEARCH"
+
+        pass
+
+        """
         if data["center_sensor"]:
             robot_state = "AVOID_OBSTACLES"
         else:
             robot_state = "RANDOM_SEARCH"  # object probably moved
+        """
 
     return new_command
 
@@ -231,8 +235,10 @@ Main loop.
 """
 data_fetcher = RobotData()
 data_fetcher.update()
-pusher_client = PusherClient() #WEB
+pusher_client = PusherClient()  # WEB
 
+
+# quick and dirty way to send start commands
 robot_command = ControllerState()
 robot_command.l1 = True
 
@@ -256,8 +262,7 @@ while True:
     data_fetcher.update()
     data = data_fetcher.data  # update global data
     data["state"] = robot_state
-    pusher_client.send(data) #WEB
-    # print(data["bbox_w"])
+    pusher_client.send(data)  # WEB
 
     robot_command = None
 
