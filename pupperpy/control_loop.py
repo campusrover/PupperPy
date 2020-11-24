@@ -102,6 +102,8 @@ class RobotData():
                      'x_acc': imu['x_acc'],
                      'y_acc': imu['y_acc'],
                      'z_acc': imu['z_acc'],
+                     'x_pos': imu['x_pos'],
+                     'y_pos': imu['y_pos'],
                      'roll': imu['roll'],
                      'pitch': imu['pitch'],
                      'yaw': imu['yaw'],

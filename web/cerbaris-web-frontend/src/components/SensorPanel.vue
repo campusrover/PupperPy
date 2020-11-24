@@ -5,6 +5,7 @@
     </b-card-header>
     <b-card-body class="panel-body d-flex">
       <sensor-diagram class="mr-3" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
+      <map-diagram :pos-data="posData" :timestamp="timestamp"></map-diagram>
       <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
       <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
     </b-card-body>
@@ -25,9 +26,10 @@
 
   import AccLineChart from '@/components/AccLineChart'
   import SensorDiagram from '@/components/SensorDiagram'
+  import MapDiagram from '@/components/MapDiagram'
 
   const SensorPanel = {
-    components: {AccLineChart, SensorDiagram},
+    components: {AccLineChart, SensorDiagram, MapDiagram},
     data() {
       return {
         xAccData: [],
@@ -35,6 +37,7 @@
         zAccData: [],
         timestamp: 0,
         sensorData: {},
+        posData: {},
         yaw: 0,
         dataObj: {},
         dataTable: [{name: null, value: null, date: null}],
@@ -50,12 +53,13 @@
     },
     methods: {
       update(data) {
-        let {timestamp, x_acc, y_acc, z_acc, left_obj, center_obj, right_obj, yaw} = data
+        let {timestamp, x_acc, y_acc, z_acc, x_pos, y_pos, left_obj, center_obj, right_obj, yaw} = data
         this.timestamp = timestamp
         delete data.timestamp
         this.yaw = yaw
         this.updateAccLineChart(timestamp, x_acc, y_acc, z_acc)
         this.updateSensorDiagram(timestamp, {left_obj, center_obj, right_obj})
+        this.updateMapDiagram(timestamp, {x: x_pos, y: y_pos})
         this.updateDataTable(timestamp, data)
       },
 
@@ -73,6 +77,10 @@
 
       updateSensorDiagram(timestamp, sensorData) {
         this.sensorData = sensorData
+      },
+
+      updateMapDiagram(timestamp, posData) {
+        this.posData = posData
       },
 
       updateDataTable(timestamp, data) {

@@ -84,10 +84,6 @@
         })
         console.table('bounding box delay: ' + Math.trunc(Date.now() - this.timestamp * 1000) + 'ms')
       },
-      createTool(scope) {
-          scope.activate();
-          return new Tool();
-      },
     }
   }
 

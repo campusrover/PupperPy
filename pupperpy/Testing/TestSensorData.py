@@ -12,10 +12,15 @@ class TestIMU:
                 'gyro_calibration', 'accel_calibration', 'mag_calibration']
         for key in keys:
             self.data[key] = random.uniform(-30, 30)
+        self.data['x_pos'] = 0
+        self.data['y_pos'] = 0
 
     def read(self):
         for key in self.data.keys():
-            self.data[key] = random.uniform(-30, 30)
+            if not (key == 'x_pos' or key == 'y_pos'):
+                self.data[key] = random.uniform(-30, 30)
+        self.data['x_pos'] += random.uniform(0, 5)
+        self.data['y_pos'] += random.uniform(-5, 5)
         return self.data
 
 
