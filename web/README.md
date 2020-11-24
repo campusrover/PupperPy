@@ -1,10 +1,10 @@
-# cerbaris-web-frontend
+# cerbaris-client (frontend)
 
-## How to run
+## How to run locally
 
 1. Get `.env` files and move to correct places
 
-2. `cd` into `cerbaris-web-frontend` directory
+2. `cd` into `web/cerbaris-client` directory
 
 3. `npm install`
 

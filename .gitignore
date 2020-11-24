@@ -115,7 +115,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-web/cerbaris-web-frontend/.env
 
 # Spyder project settings
 .spyderproject
@@ -137,3 +136,6 @@ dmypy.json
 
 # Yarn packages
 /web/node_modules/
+
+# Local Netlify folder
+.netlify

@@ -5,7 +5,7 @@
     </b-card-header>
     <b-card-body class="panel-body d-flex">
       <sensor-diagram class="mr-3" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
-      <map-diagram :pos-data="posData" :timestamp="timestamp"></map-diagram>
+      <map-diagram class="mr-3" :pos-data="posData" :timestamp="timestamp"></map-diagram>
       <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
       <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
     </b-card-body>
