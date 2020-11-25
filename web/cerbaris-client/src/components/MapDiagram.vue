@@ -16,8 +16,8 @@
         path: null,
         scale: 1,
         mapBounds: {xMin: 0, xMax: 0, yMin: 0, yMax: 0},
-        width: 200,
-        height: 200,
+        width: 250,
+        height: 250,
       }
     },
     mounted() {

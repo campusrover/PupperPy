@@ -1,13 +1,13 @@
 <template>
-  <b-card no-body style="max-height: 40vh">
+  <b-card no-body>
     <b-card-header class="panel-heading">
       Sensor Panel
     </b-card-header>
-    <b-card-body class="panel-body d-flex">
-      <sensor-diagram class="mr-3" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
-      <map-diagram class="mr-3" :pos-data="posData" :timestamp="timestamp"></map-diagram>
+    <b-card-body class="panel-body d-flex justify-content-center flex-wrap p-2">
+      <sensor-diagram class="m-1" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
+      <map-diagram class="m-1" :pos-data="posData" :timestamp="timestamp"></map-diagram>
       <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->
-      <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
+      <b-table hover sticky-header small class="m-1 flex-fill" style="max-height: 250px" :items="dataTable"></b-table>
     </b-card-body>
   </b-card>
 </template>

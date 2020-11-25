@@ -3,8 +3,8 @@
     <b-card-header class="panel-heading">
       State Panel
     </b-card-header>
-    <b-card-body class="panel-body d-flex">
-      <b-table hover sticky-header small class="flex-fill" :items="dataTable"></b-table>
+    <b-card-body class="panel-body d-flex p-2">
+      <b-table hover sticky-header small class="m-1 flex-fill" :items="dataTable"></b-table>
     </b-card-body>
   </b-card>
 </template>
