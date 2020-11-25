@@ -18,6 +18,11 @@
 
 7. Don't forget to ctrl-C the Python script when you're finished
 
+## Deploys
+```
+npm run deploy
+```
+
 ## Compiles and minifies for production
 ```
 npm run build
