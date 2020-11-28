@@ -3,7 +3,7 @@
     <b-card-header class="panel-heading">
       Vision Panel
     </b-card-header>
-    <b-card-body class="panel-body d-flex justify-content-center flex-wrap flex-md-nowrap p-2">
+    <b-card-body class="panel-body d-flex justify-content-center flex-wrap flex-lg-nowrap p-2">
       <bounding-box-diagram class="m-1" :bboxData="bboxData" :timestamp="timestamp"></bounding-box-diagram>
       <b-table hover sticky-header small class="m-1 flex-fill" :items="dataTable"></b-table>
     </b-card-body>

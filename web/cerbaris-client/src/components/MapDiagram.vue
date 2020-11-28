@@ -14,13 +14,14 @@
         pathData: [{x: 0, y: 0}],
         pos: null,
         path: null,
-        scale: 1,
+        scale: 5,
         mapBounds: {xMin: 0, xMax: 0, yMin: 0, yMax: 0},
         width: 250,
         height: 250,
       }
     },
     mounted() {
+      this.minScale = this.scale
       this.origin = {x: this.width / 2, y: this.height / 2}
       this.margin = 10
       this.scope = new paper.PaperScope()
@@ -30,7 +31,7 @@
     },
     watch: {
       mapBounds() {
-        this.scale = Math.min(1,
+        this.scale = Math.min(this.minScale,
           (this.origin.y - this.margin) / (this.mapBounds.yMax || 1),
           (this.margin - this.origin.y) / (this.mapBounds.yMin || -1),
           (this.origin.x - this.margin) / (this.mapBounds.xMax || 1),
@@ -67,28 +68,44 @@
             strokeColor: 'black',
             strokeWidth: .5,
           })
-          let tick_width = 50 * this.scale
-          let tick_height = 50 * this.scale
+          let tick_width = 10 * this.scale
+          let tick_height = 10 * this.scale
           let x_ticks = Math.trunc(this.width / tick_width) + 1
           let y_ticks = Math.trunc(this.height / tick_height) + 1
           // vertical lines
           for (let x = 0; x < x_ticks; x++) {
+            let xCoord = this.width/2 + tick_width*(-Math.trunc(x_ticks/2)+x)
             new Path.Line({
-              from: [this.width/2 + tick_width*(-Math.trunc(x_ticks/2)+x), 0],
-              to: [this.width/2 + tick_width*(-Math.trunc(x_ticks/2)+x), this.height],
+              from: [xCoord, 0],
+              to: [xCoord, this.height],
               strokeColor: 'black',
               strokeWidth: .5,
               opacity: .2,
             })
+            new PointText({
+              point: [xCoord + 2, this.height/2 - 2],
+              content: 10 * Math.round(x - x_ticks/2),
+              fillColor: 'black',
+              fontFamily: 'Helvetica',
+              fontSize: 10,
+            })
           }
           // horiz lines
           for (let y = 0; y < y_ticks; y++) {
+            let yCoord = this.height/2 + tick_height*(-Math.trunc(y_ticks/2)+y)
             new Path.Line({
-              from: [0, this.height/2 + tick_height*(-Math.trunc(y_ticks/2)+y)],
-              to: [this.width, this.height/2 + tick_height*(-Math.trunc(y_ticks/2)+y)],
+              from: [0, yCoord],
+              to: [this.width, yCoord],
               strokeColor: 'black',
               strokeWidth: .5,
               opacity: .2,
+            })
+            new PointText({
+              point: [this.width/2 + 2, yCoord - 2],
+              content: 10 * Math.round(y - y_ticks/2),
+              fillColro: 'black',
+              fontFamily: 'Helvetica',
+              fontSize: 10,
             })
           }
       },

@@ -3,7 +3,7 @@
     <b-card-header class="panel-heading">
       Sensor Panel
     </b-card-header>
-    <b-card-body class="panel-body d-flex justify-content-center flex-wrap p-2">
+    <b-card-body class="panel-body d-flex justify-content-center flex-wrap flex-lg-nowrap p-2">
       <sensor-diagram class="m-1" :sensor-data="sensorData" :yaw="yaw" :timestamp="timestamp"></sensor-diagram>
       <map-diagram class="m-1" :pos-data="posData" :timestamp="timestamp"></map-diagram>
       <!-- <acc-line-chart :xAccData="xAccData" :yAccData="yAccData" :zAccData="zAccData"></acc-line-chart> -->

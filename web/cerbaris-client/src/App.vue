@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <sensor-panel></sensor-panel>
-    <div class="d-flex flex-wrap flex-md-nowrap">
+    <div class="d-flex flex-wrap flex-lg-nowrap">
       <vision-panel class="flex-fill"></vision-panel>
       <state-panel class="flex-fill"></state-panel>
     </div>
