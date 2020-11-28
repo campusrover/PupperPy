@@ -32,10 +32,6 @@
     },
     methods: {
       reset() {
-        // resize canvas
-        // const c = document.getElementById('sensorCanvas')
-        // let ctx = c.getContext('2d')
-        // ctx.scale(.5, .5)
         this.scope.project.activeLayer.removeChildren()
         this.scope.activate()
         // radial axes
@@ -72,32 +68,27 @@
         // robot group
         this.robotGroup = new Group([forward_arrow, robot])
         this.robotGroup.applyMatrix = false
-        // range sensors
+        // proximity sensors
         let sensor_w = 10
         let sensor_h = 2 * sensor_w
         this.leftSensor = new Path.Rectangle({
-          // point: [this.width/2 - robot_w/3.5 - sensor_w/2, this.height/2 - robot_h/2.5],
           point: [10, 10],
           size: [sensor_w, sensor_h],
           fillColor: 'rgba(15, 234, 0)',
           opacity: 1,
         })
-        // this.leftSensor.rotate(-30)
         this.centerSensor = new Path.Rectangle({
-          // point: [(this.width - sensor_w) / 2, this.height/2 - robot_h/2.5],
           point: [sensor_w * 2 + 10, 10],
           size: [sensor_w, sensor_h],
           fillColor: 'rgba(15, 234, 0)',
           opacity: 1,
         })
         this.rightSensor = new Path.Rectangle({
-          // point: [this.width/2 + robot_w/3.5 - sensor_w/2, this.height/2 - robot_h/2.5],
           point: [sensor_w * 4 + 10, 10],
           size: [sensor_w, sensor_h],
           fillColor: 'rgba(15, 234, 0)',
           opacity: 1,
         })
-        // this.rightSensor.rotate(30)
       },
       updateRangeSensors() {
         this.scope.activate()

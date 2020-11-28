@@ -1,0 +1,35 @@
+fetch ball
+	then
+		unless I see a ball
+			continue
+				look for ball
+		unless a ball is close enough
+			continue
+				move towards ball
+		wait
+
+look for ball
+	then
+		turn 432 degrees
+		unless I see an obstacle
+			move forward for 5 seconds
+		unless I don't see an obstacle
+			continue
+				avoid obstacle
+
+avoid obstacle
+	unless obstacle is in front for 1 second
+		continue
+			move forward
+	unless no obstacle is in front
+		continue
+			while
+				turn right
+				move backward
+
+move towards ball
+	then
+		turn towards ball
+		unless not facing the ball
+			continue
+				move forward

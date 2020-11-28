@@ -5,6 +5,7 @@
       <vision-panel class="flex-fill"></vision-panel>
       <state-panel class="flex-fill"></state-panel>
     </div>
+    <behavior-tree-diagram></behavior-tree-diagram>
   </div>
 </template>
 
@@ -13,9 +14,10 @@
   import SensorPanel from '@/components/SensorPanel'
   import VisionPanel from '@/components/VisionPanel'
   import StatePanel from '@/components/StatePanel'
+  import BehaviorTreeDiagram from '@/components/BehaviorTreeDiagram'
 
   const App = {
-    components: {SensorPanel, VisionPanel, StatePanel},
+    components: {SensorPanel, VisionPanel, StatePanel, BehaviorTreeDiagram},
   }
 
   export default App;
