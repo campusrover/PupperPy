@@ -1,11 +1,12 @@
 <template>
   <div id="app">
-    <sensor-panel></sensor-panel>
+    <p class="m-3">Press enter to toggle between panels and behavior tree</p>
+    <sensor-panel class="toggle-enter"></sensor-panel>
     <div class="d-flex flex-wrap flex-lg-nowrap">
-      <vision-panel class="flex-fill"></vision-panel>
-      <state-panel class="flex-fill"></state-panel>
+      <vision-panel class="toggle-enter flex-fill"></vision-panel>
+      <state-panel class="toggle-enter flex-fill"></state-panel>
     </div>
-    <behavior-tree-diagram></behavior-tree-diagram>
+    <behavior-tree-diagram class="d-none-on-mount toggle-enter"></behavior-tree-diagram>
   </div>
 </template>
 
@@ -18,6 +19,18 @@
 
   const App = {
     components: {SensorPanel, VisionPanel, StatePanel, BehaviorTreeDiagram},
+    mounted() {
+      Array.from(document.querySelectorAll('.d-none-on-mount')).forEach(elt => {
+        elt.classList.add('d-none')
+      })
+      document.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+          Array.from(document.querySelectorAll('.toggle-enter')).forEach(elt => {
+            elt.classList.toggle('d-none')
+          })
+        }
+      }
+    },
   }
 
   export default App;

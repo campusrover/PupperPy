@@ -136,7 +136,7 @@ move towards ball
         let graphBBox = joint.layout.DirectedGraph.layout(graph, {
           dagre: dagre,
           graphlib: graphlib,
-          nodeSep: 40,
+          nodeSep: 30,
           edgeSep: 80,
           marginX: 20,
           marginY: 20,
