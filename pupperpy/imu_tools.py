@@ -62,16 +62,8 @@ def wait_for_imu():
     return start, end
 
 
-def init_imu():
-    os.system('sudo i2cdetect -y 10')
-    os.system('sudo i2cdetect -y 11')
-    os.system('sudo i2cdetect -y 0')
-
-
 class IMU(object):
     def __init__(self):
-        # reset_imu()
-        # init_imu()
         self.initSensor()
         self.means, self.variances = self.average_filter()
 
