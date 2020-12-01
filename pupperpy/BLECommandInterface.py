@@ -17,10 +17,6 @@ class ControllerState(object):
     DPAD_Y_MAX = 1
 
     def __init__(self):
-        self.walking = False
-        self.reset()
-
-    def reset(self):
         self.left_analog_x = 0
         self.left_analog_y = 0
         self.right_analog_x = 0
@@ -123,20 +119,20 @@ class ControllerState(object):
     def get_state(self):
         out = {}
         out['message_rate'] = 2
-        out['lx'] = self.left_analog_x
-        out['ly'] = self.left_analog_y
-        out['rx'] = self.right_analog_x
-        out['ry'] = self.right_analog_y
-        out['dpadx'] = self.dpad_x
-        out['dpady'] = self.dpad_y
-        out['L1'] = self.l1
-        out['L2'] = self.l2
-        out['R1'] = self.r1
-        out['R2'] = self.r2
-        out['square'] = self.square
-        out['circle'] = self.circle
-        out['triangle'] = self.triangle
-        out['x'] = self.cross
+        out['left_analog_x'] = self.left_analog_x
+        out['left_analog_y'] = self.left_analog_y
+        out['right_analog_x'] = self.right_analog_x
+        out['right_analog_y'] = self.right_analog_y
+        out['dpad_x'] = self.dpad_x
+        out['dpad_y'] = self.dpad_y
+        out['l1'] = self.l1
+        out['l2'] = self.l2
+        out['r1'] = self.r1
+        out['r2'] = self.r2
+        out['button_square'] = self.square
+        out['button_circle'] = self.circle
+        out['button_triangle'] = self.triangle
+        out['button_cross'] = self.cross
         return out
 
     def __str__(self):
