@@ -60,7 +60,10 @@ def main():
                                    'bbox_confidence': float(obj.score)
                                    }
                         detectedObjs.append(objInfo)
-                cv_publisher.send(detectedObjs)
+                try:
+                    cv_publisher.send(detectedObjs)
+                except BaseException as e:
+                    pass
                 #print(detectedObjs)
 
                 with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images_120120/' + str(count) + '.png','wb') as f:

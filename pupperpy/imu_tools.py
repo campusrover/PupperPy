@@ -133,7 +133,7 @@ class IMU(object):
                 if k in sums.keys() and v is not None:
                     sums[k].append(v)
 
-            time.sleep(0.0001)
+            time.sleep(0.001)
 
         mean = {}
         variance = {}
