@@ -1,14 +1,19 @@
 Failed to run detection loop:
  Traceback (most recent call last):
-  File "pupper_vision.py", line 36, in main
-    for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
-  File "/usr/local/lib/python3.7/dist-packages/picamera/camera.py", line 1702, in capture_continuous
-    if not encoder.wait(self.CAPTURE_TIMEOUT):
-  File "/usr/local/lib/python3.7/dist-packages/picamera/encoders.py", line 393, in wait
-    result = self.event.wait(timeout)
-  File "/usr/lib/python3.7/threading.py", line 552, in wait
-    signaled = self._cond.wait(timeout)
-  File "/usr/lib/python3.7/threading.py", line 300, in wait
-    gotit = waiter.acquire(True, timeout)
+  File "/usr/local/lib/python3.7/dist-packages/PIL/ImageFile.py", line 510, in _save
+    fh = fp.fileno()
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "pupper_vision.py", line 70, in main
+    image.save(f)
+  File "/usr/local/lib/python3.7/dist-packages/PIL/Image.py", line 2151, in save
+    save_handler(self, fp, filename)
+  File "/usr/local/lib/python3.7/dist-packages/PIL/PngImagePlugin.py", line 1339, in _save
+    ImageFile._save(im, _idat(fp, chunk), [("zip", (0, 0) + im.size, 0, rawmode)])
+  File "/usr/local/lib/python3.7/dist-packages/PIL/ImageFile.py", line 524, in _save
+    l, s, d = e.encode(bufsize)
 KeyboardInterrupt
 

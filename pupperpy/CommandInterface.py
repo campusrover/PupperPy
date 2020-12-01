@@ -5,6 +5,7 @@ from pupperpy.ControllerState import ControllerState
 from pupperpy.object_detection import ObjectSensors
 from pupperpy.PusherInterface import PusherClient
 from UDPComms import Publisher, Subscriber, timeout
+import numpy as np
 from PS4Joystick import Joystick
 import time
 
@@ -17,7 +18,7 @@ PUPPER_COLOR = {"red":0, "blue":0, "green":255}
 class Control(object):
     STATES = ['off', 'rest', 'meander', 'goto', 'avoid']
     SCREEN_MID_X = 150
-    def __init__(self, target='ball'):
+    def __init__(self, target='tennsi_ball'):
         self.timer = RepeatTimer(1/MESSAGE_RATE, self._step)
         self.control_state = ControllerState()
         self.pos = PositionTracker(self.control_state)
@@ -44,10 +45,10 @@ class Control(object):
     def move_stop(self):
         self.control_state.left_analog_y = 0
 
-    def turn_right(self, rate=-ControllerState.RIGHT_ANALOG_X_MAX):
+    def turn_right(self, rate=ControllerState.RIGHT_ANALOG_X_MAX):
         self.control_state.right_analog_x = rate
 
-    def turn_left(self, rate=ControllerState.RIGHT_ANALOG_X_MAX):
+    def turn_left(self, rate=-ControllerState.RIGHT_ANALOG_X_MAX):
         self.control_state.right_analog_x = rate
 
     def turn_stop(self):
@@ -102,8 +103,9 @@ class Control(object):
         self.timer.cancel()
         self.reset()
         self.stop_walk()
+        self.pos.stop()
         self.active = False
-        self.send_msg()
+        self.send_cmd()
         self.user_stop = True
 
     def toggle_cmd(self):
@@ -142,6 +144,10 @@ class Control(object):
             self.send_cmd()
             return
 
+        if not self.walking:
+            self.start_walk()
+            return
+
         # grab data
         obj = self.obj_sensors.read()
         pos = self.pos.data
@@ -153,16 +159,17 @@ class Control(object):
         if any(obj.values()):
             # If object, dodge
             self.state = 'avoid'
-            self.dodge()
+            self.dodge(obj)
         elif any([x['bbox_label'] == self.target for x in cv]):
             # if target, chase
             self.state = 'goto'
-            self.goto()
+            self.goto(cv)
         else:
             # if nothing, wander
             self.state = 'meander'
             self.meander()
 
+        print(str(time.time()) +': ' + self.state)
         self.send_cmd()
         self.send_pusher_message(pos, obj, cv)
 
@@ -191,7 +198,7 @@ class Control(object):
         '''takes a list of bounding boxes, picks the most likely ball and moves
         toward it
         '''
-        tmp = [x if x['bbox_label'] == self.target for x in cv]
+        tmp = [x for x in cv if x['bbox_label'] == self.target]
         if len(tmp) == 0:
             self.meander()
 
@@ -230,7 +237,8 @@ class Control(object):
                    'left_sensor': obj['left'],
                    'center_sensor': obj['center'],
                    'right_sensor': obj['right'],
-                   'state': self.state}
+                   'state': self.state,
+                   **bbox}
 
         self.pusher_client.send(message)
 

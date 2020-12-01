@@ -64,7 +64,7 @@ def main():
                     cv_publisher.send(detectedObjs)
                 except BaseException as e:
                     pass
-                #print(detectedObjs)
+                print(detectedObjs)
 
                 with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images_120120/' + str(count) + '.png','wb') as f:
                     image.save(f)

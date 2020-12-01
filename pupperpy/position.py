@@ -2,6 +2,7 @@ from pupperpy.imu_tools import IMU
 from pupperpy.kalman import KalmanFilter, simple_rotation, rotate_imu_acceleration
 from pupperpy.daq_tools import RepeatTimer
 from pupperpy.ControllerState import ControllerState
+import numpy as np
 import time
 
 # From StandfordQuadrupped.pupper.Config
@@ -24,14 +25,14 @@ class PositionTracker(object):
         self._init_model()
 
     def _init_model(self):
-        variances = self.imu.means
+        means = self.imu.means
         variances = self.imu.variances
         ax = variances['x_acc']
         ay = variances['y_acc']
         yaw_err = variances['yaw']
-        est_err = np.array([[5, 5, .05, .05, .01, .01, .1]])
-        obs_err = np.array([[10, 10, 5, 5, ax, ay, yaw]])
-        X0 = np.array([[0, 0, 0, 0, 0, 0, mean['yaw'], 0]]).T
+        est_err = np.array([[5, 5, .05, .05, .01, .01, .1, .1]])
+        obs_err = np.array([[10, 10, 5, 5, ax, ay, yaw_err, yaw_err]])
+        X0 = np.array([[0, 0, 0, 0, 0, 0, means['yaw'], 0]]).T
         self.model = KalmanFilter(est_err, obs_err, X0=X0)
         x, y, vx, vy, ax, ay, y, yr = self.model.X.T[0]
         # x & y are in cartesian coordinates
@@ -54,9 +55,14 @@ class PositionTracker(object):
         #                                      data['x_acc'] - means['x_acc'],
         #                                      data['y_acc'] - means['y_acc'],
         #                                      data['z_acc'] - means['z_acc'])
-        x_acc = data['x_acc']
-        y_acc = data['y_acc']
-        yaw = data['yaw']
+        if data is None:
+            x_acc = 0
+            y_acc = 0
+            yaw = 0
+        else:
+            x_acc = data['x_acc']
+            y_acc = data['y_acc']
+            yaw = data['yaw']
 
         cmd = self.control.get_state()
         walking = self.control.walking
@@ -72,9 +78,9 @@ class PositionTracker(object):
         x_vel = cmd['ly'] * max_x_velocity
         y_vel = cmd['lx'] * -max_y_velocity
         yaw_rate = cmd['rx'] * -max_yaw_rate
-        time = time.time()
-        dt = time - self._last_time
-        self._last_time = time
+        timestamp = time.time()
+        dt = timestamp - self._last_time
+        self._last_time = timestamp
 
         # This is so that any joystick commands are ignored while robot is not
         # in a walking state
