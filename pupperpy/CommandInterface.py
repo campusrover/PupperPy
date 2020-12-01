@@ -16,8 +16,8 @@ CV_SUB_PORT = 105
 class Control(object):
     STATES = ['off', 'rest', 'meander', 'goto', 'avoid']
     SCREEN_MID_X = 150
-    def __init__(self):
-        self.timer = RepeatTimer(1/MESSAGE_RATE, self._step, target='ball')
+    def __init__(self, target='ball'):
+        self.timer = RepeatTimer(1/MESSAGE_RATE, self._step)
         self.control_state = ControllerState()
         self.pos = PositionTracker(self.control_state)
         self.obj_sensors = ObjectSensors()
@@ -138,7 +138,7 @@ class Control(object):
             self.reset()
             return
 
-        if self.user_stop:
+        if self.user_stop or not self.active:
             self.reset()
             self.send_cmd()
             return
@@ -234,3 +234,7 @@ class Control(object):
                    'state': self.state}
 
         self.pusher_client.send(message)
+
+if __name__ == "__main__":
+    control = Control()
+    control.run_loop()
