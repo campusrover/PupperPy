@@ -20,8 +20,8 @@ from UDPComms import Publisher
 def main():
     cv_publisher = Publisher(105)
     MODELS_DIR = '/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/models/'
-    MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite'
-    LABEL_PATH = MODELS_DIR + 'coco_labels.txt'
+    MODEL_PATH = MODELS_DIR + 'ssd_mobilenet_v2_pupper_quant_edgetpu.tflite'
+    LABEL_PATH = MODELS_DIR + 'pupper_labels.txt'
     LOG_FILE = '/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/vision_log.txt'
     labels = dataset_utils.read_label_file(LABEL_PATH)
     engine = DetectionEngine(MODEL_PATH)
@@ -46,7 +46,7 @@ def main():
                 
                 detectedObjs = []
                 for obj in results:
-                    if (obj.label_id in range(80)):
+                    if (obj.label_id in range(3)):
                         box = obj.bounding_box.flatten().tolist()
                         draw.rectangle(box, outline='red')
                         draw.text((box[0],box[1]), labels[obj.label_id] + " " + str(obj.score))
@@ -63,7 +63,7 @@ def main():
                 cv_publisher.send(detectedObjs)
                 #print(detectedObjs)
 
-                with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images/' + str(count) + '.png','wb') as f:
+                with open('/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/test_images_120120/' + str(count) + '.png','wb') as f:
                     image.save(f)
                 count+=1
         except BaseException as e:

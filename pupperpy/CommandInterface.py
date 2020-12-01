@@ -12,6 +12,7 @@ MESSAGE_RATE = 20
 CMD_PUB_PORT = 8830
 CMD_SUB_PORT = 8840
 CV_SUB_PORT = 105
+PUPPER_COLOR = {"red":0, "blue":0, "green":255}
 
 class Control(object):
     STATES = ['off', 'rest', 'meander', 'goto', 'avoid']
@@ -28,6 +29,7 @@ class Control(object):
         self.cmd_sub = Subscriber(CMD_SUB_PORT)
         self.cv_sub = Subscriber(CV_SUB_PORT)
         self.joystick = Joystick()
+        self.joystick.led_color(**PUPPER_COLOR)
         self.state = 'off'
         self.target = target
         self.current_target = None
@@ -125,17 +127,14 @@ class Control(object):
         
         # Force stop moving
         if js_msg['button_l2']:
-            self.reset()
             self.user_stop = True
             self.stop_walk()
             return
 
         # User activate
         if js_msg['button_l1']:
-            self.reset()
             self.user_stop = False
             self.activate()
-            self.reset()
             return
 
         if self.user_stop or not self.active:

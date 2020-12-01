@@ -1,0 +1,11 @@
+[Unit]
+Description=Robot control service
+
+[Service]
+ExecStartPre=-sudo pigpiod
+ExecStart=/usr/bin/python3 /home/cerbaris/pupper_code/StanfordQuadruped/run_robot.py
+KillSignal=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
