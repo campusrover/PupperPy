@@ -3,7 +3,9 @@ from pupperpy.kalman import KalmanFilter, simple_rotation, rotate_imu_accelerati
 from pupperpy.daq_tools import RepeatTimer
 from pupperpy.ControllerState import ControllerState
 import numpy as np
+import pandas as pd
 import time
+import os
 
 # From StandfordQuadrupped.pupper.Config
 max_x_velocity = 0.4
@@ -23,6 +25,8 @@ class PositionTracker(object):
         self.running = False
         #self.cmd_sub = Subscriber(CMD_PORT)
         self._init_model()
+        self.measure_log = []
+        self.data_log = []
 
     def _init_model(self):
         means = self.imu.means
@@ -94,6 +98,10 @@ class PositionTracker(object):
         self.data = {'x':x, 'y':y, 'x_vel': vx, 'y_vel': vy,
                      'x_acc': ax, 'y_acc': ay, 'yaw': y,
                      'yaw_rate': yr}
+        self.measure_log.append({'timestamp': timestamp, 'x_vel': x_vel, 'y_vel': y_vel,
+                                 'yaw_rate': yaw_rate, 'x_acc': x_acc,
+                                 'y_acc': y_acc, 'yaw': yaw})
+        self.data_log.append(self.data.copy())
 
     def run(self):
         self._last_time = time.time()
@@ -103,3 +111,11 @@ class PositionTracker(object):
     def stop(self):
         self.timer.cancel()
         self.running = False
+
+    def save_logs(self, file_dir):
+        df1 = pd.DataFrame(self.measure_log)
+        df2 = pd.DataFrame(self.data_log)
+        fn1 = os.path.join(file_dir, 'kalman_measurements.log')
+        fn2 = os.path.join(file_dir, 'kalman_output.log')
+        df1.to_csv(fn1)
+        df2.to_csv(fn2)
