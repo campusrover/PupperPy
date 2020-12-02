@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <p class="m-3">Press enter to toggle between panels and behavior tree</p>
+    <p class="m-3">Press enter to toggle between panels and decision tree</p>
     <sensor-panel class="toggle-enter"></sensor-panel>
     <div class="d-flex flex-wrap flex-lg-nowrap">
       <vision-panel class="toggle-enter flex-fill"></vision-panel>
       <state-panel class="toggle-enter flex-fill"></state-panel>
     </div>
-    <behavior-tree-diagram class="d-none-on-mount toggle-enter"></behavior-tree-diagram>
+    <tree-diagram class="d-none-on-mount toggle-enter"></tree-diagram>
   </div>
 </template>
 
@@ -15,21 +15,21 @@
   import SensorPanel from '@/components/SensorPanel'
   import VisionPanel from '@/components/VisionPanel'
   import StatePanel from '@/components/StatePanel'
-  import BehaviorTreeDiagram from '@/components/BehaviorTreeDiagram'
+  import TreeDiagram from '@/components/TreeDiagram'
 
   const App = {
-    components: {SensorPanel, VisionPanel, StatePanel, BehaviorTreeDiagram},
+    components: {SensorPanel, VisionPanel, StatePanel, TreeDiagram},
     mounted() {
       Array.from(document.querySelectorAll('.d-none-on-mount')).forEach(elt => {
         elt.classList.add('d-none')
       })
-      document.onkeydown = function(e) {
+      document.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
           Array.from(document.querySelectorAll('.toggle-enter')).forEach(elt => {
             elt.classList.toggle('d-none')
           })
         }
-      }
+      })
     },
   }
 

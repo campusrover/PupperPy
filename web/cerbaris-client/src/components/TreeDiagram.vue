@@ -1,5 +1,8 @@
 <template>
-  <div id="behaviorTreeDiagram"></div>
+  <div>
+    <p>Shift-click + drag to create. Alt-click to delete. Double-click to edit text.</p>
+    <div id="behaviorTreeDiagram"></div>
+  </div>
 </template>
 
 <script>
@@ -49,7 +52,7 @@ move towards ball
 /*
 */
 
-  const BehaviorTreeDiagram = {
+  const TreeDiagram = {
     components: {},
     props: [],
     data() {
@@ -64,6 +67,7 @@ move towards ball
       }
       this.context.font = this.font.size + 'px ' + this.font.family
       this.drawTree(this.parseTree(this.tokenize(behaviorTreeString), 0))
+      this.keymap = {}
     },
     methods: {
       tokenize(text) {
@@ -77,18 +81,18 @@ move towards ball
           }
           let tabs = line.lastIndexOf('\t') + 1
           let value = line.trim()
-          let type = this.determineType(tabs, value)
+          let type = this.determineType(tabs === 0, value)
           tokens.push({tabs, value, type})
         })
         return tokens
       },
 
-      determineType(tabs, value) {
+      determineType(root, value) {
         if (value.startsWith('then')) {
           return 'then'
         } else if (value.startsWith('unless')) {
           return 'condition'
-        } else if (tabs === 0) {
+        } else if (root) {
           return 'definition'
         } else {
           return 'action'
@@ -129,6 +133,93 @@ move towards ball
           width: paperSize.width,
           height: paperSize.height,
           gridSize: 1,
+          interactive: true,
+        })
+
+        paper.on('element:pointerdown', (elementView, evt, x, y) => {
+          if (evt.shiftKey) {
+            // prevent element from being dragged
+            elementView.options.interactive = false
+            let width = 145
+            let height = 50
+            let child = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(child, 'new node', 'blank')
+            child.addTo(graph)
+            evt.data.draggedElement = child
+            // create link
+            let link = new joint.shapes.standard.Link()
+            link.attr('line/strokeWidth', 1)
+            link.source(elementView.model)
+            link.target(child)
+            link.addTo(graph)
+          } else {
+            elementView.options.interactive = true
+          }
+
+          if (evt.altKey) {
+            elementView.model.remove()
+          }
+        })
+
+        paper.on('element:pointermove', (elementView, evt, x, y) => {
+          if (evt.data.draggedElement) {
+            let {width, height} = evt.data.draggedElement.get('size')
+            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+          }
+        })
+
+        paper.on('element:pointerdblclick', (elementView, evt) => {
+          let text = prompt('Enter new text:')
+          if (text) {
+            elementView.model.attr('label/text', text)
+            let links = graph.getConnectedLinks(elementView.model, { inbound: true })
+            this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
+          }
+        })
+
+        paper.on('link:pointerdown', (linkView, evt) => {
+          if (evt.altKey) {
+            linkView.model.remove()
+          }
+        })
+
+        paper.on('blank:pointerdown', (evt, x, y) => {
+          if (evt.shiftKey) {
+            // create parent
+            let width = 145
+            let height = 50
+            let parent = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(parent, 'new node', 'blank')
+            parent.addTo(graph)
+            // create child
+            let child = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(child, 'new node', 'blank')
+            child.addTo(graph)
+            evt.data = evt.data ? evt.data : {}
+            evt.data.draggedElement = child
+            // create link
+            let link = new joint.shapes.standard.Link()
+            link.attr('line/strokeWidth', 1)
+            link.source(parent)
+            link.target(child)
+            link.addTo(graph)
+          }
+        })
+
+        paper.on('blank:pointermove', (evt, x, y) => {
+          if (evt.data.draggedElement) {
+            let {width, height} = evt.data.draggedElement.get('size')
+            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+          }
         })
 
         let tokens = this.tokenize(behaviorTreeString)
@@ -139,22 +230,17 @@ move towards ball
           nodeSep: 30,
           edgeSep: 80,
           marginX: 20,
-          marginY: 20,
+          marginY: 2,
           rankDir: "LR",
         })
 
-        paper.setDimensions(window.innerWidth, graphBBox.height + 40)
+        paper.setDimensions(window.innerWidth, graphBBox.height + 4)
       },
 
       drawNode(graph, parent, nodeObj) {
         let node = new joint.shapes.standard.Rectangle()
-        // calculate dimensions
-        let width = 120
-        let wrapText = joint.util.breakText(nodeObj.value || '', {width})
-        let {height} = this.getTextSize(wrapText)
-        node.resize(width + 25, height + 25)
         // style node and add label
-        this.styleNode(node, wrapText, nodeObj.type)
+        this.styleNode(node, nodeObj.value, nodeObj.type)
         // draw self
         if (nodeObj.value !== null) {
           node.addTo(graph)
@@ -188,12 +274,17 @@ move towards ball
       },
 
       styleNode(node, text, type) {
+        // calculate dimensions
+        let width = 120
+        let wrapText = joint.util.breakText(text || '', {width})
+        let {height} = this.getTextSize(wrapText)
+        node.resize(width + 25, height + 25)
         node.attr({
           body: {
             strokeWidth: 1,
           },
           label: {
-            text: text,
+            text: wrapText,
             fill: 'black',
             fontFamily: this.font.family,
             fontSize: this.font.size,
@@ -205,12 +296,12 @@ move towards ball
           node.attr('body/fill', 'lightyellow')
         } else if (type === 'action') {
           node.attr('body/fill', 'moccasin')
-        } else {
+        } else if (type === 'definition') {
           node.attr('body/fill', 'pink')
         }
       },
     }
   }
 
-  export default BehaviorTreeDiagram;
+  export default TreeDiagram;
 </script>

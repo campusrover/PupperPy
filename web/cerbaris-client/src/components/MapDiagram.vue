@@ -43,6 +43,7 @@
         this.drawPos()
       },
       posData() {
+        if (this.posData.x == null || this.posData.y == null) return
         this.calcMapBounds()
         this.pathData.push(this.posData)
         this.addToPath(this.posData)
