@@ -18,7 +18,7 @@ PUPPER_COLOR = {"red":0, "blue":0, "green":255}
 class Control(object):
     STATES = ['off', 'rest', 'meander', 'goto', 'avoid']
     SCREEN_MID_X = 150
-    def __init__(self, target='tennsi_ball'):
+    def __init__(self, target='tennis_ball'):
         self.timer = RepeatTimer(1/MESSAGE_RATE, self._step)
         self.control_state = ControllerState()
         self.pos = PositionTracker(self.control_state)
@@ -156,6 +156,9 @@ class Control(object):
         except timeout:
             cv = []
 
+        if not any(obj.values()) and self.state == 'avoid':
+            self.turn_stop()
+
         if any(obj.values()):
             # If object, dodge
             self.state = 'avoid'
@@ -169,7 +172,7 @@ class Control(object):
             self.state = 'meander'
             self.meander()
 
-        print(str(time.time()) +': ' + self.state)
+        #print(str(time.time()) +': ' + self.state)
         self.send_cmd()
         self.send_pusher_message(pos, obj, cv)
 
@@ -177,12 +180,17 @@ class Control(object):
         '''Takes the object sensor data and adjusts the command to avoid any
         objects
         '''
-        if obj['left'] and obj['right']:
+        if obj['left'] and obj['center']:
             self.move_stop()
             self.turn_right()
+        elif obj['right'] and obj['center']:
+            self.move_stop()
+            self.turn_left()
         elif obj['left']:
+            self.move_forward(vel=ControllerState.LEFT_ANALOG_Y_MAX/2)
             self.turn_right()
         elif obj['right']:
+            self.move_forward(vel=ControllerState.LEFT_ANALOG_Y_MAX/2)
             self.turn_left()
         elif not any(obj.values()):
             self.turn_stop()
@@ -218,12 +226,12 @@ class Control(object):
         bbox = self.current_target
         timestamp = time.time()
         if bbox is None:
-            bbox = {'bbox_x': np.nan,
-                    'bbox_y': np.nan,
-                    'bbox_h': np.nan,
-                    'bbox_w': np.nan,
-                    'bbox_label': '',
-                    'bbox_confidence': np.nan}
+            bbox = {'bbox_x': None,
+                    'bbox_y': None,
+                    'bbox_h': None,
+                    'bbox_w': None,
+                    'bbox_label': None,
+                    'bbox_confidence': None}
 
         message = {'time': timestamp,
                    'x_pos': pos['x'],
