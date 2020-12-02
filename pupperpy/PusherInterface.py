@@ -20,7 +20,7 @@ class PusherClient:
         'y_pos': message['y_pos'],
         'x_acc': message['x_acc'],
         'y_acc': message['y_acc'],
-        'z_acc': message['z_acc'],
+    #    'z_acc': message['z_acc'],
         'left_obj': str(message['left_sensor']), 
         'center_obj': str(message['center_sensor']), 
         'right_obj': str(message['right_sensor'])

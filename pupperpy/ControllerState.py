@@ -17,6 +17,10 @@ class ControllerState(object):
     DPAD_Y_MAX = 1
 
     def __init__(self):
+        self.walking = False
+        self.reset()
+
+    def reset(self):
         self.left_analog_x = 0
         self.left_analog_y = 0
         self.right_analog_x = 0
