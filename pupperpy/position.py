@@ -47,7 +47,7 @@ class PositionTracker(object):
 
     def _step(self):
         try:
-            data = imu.read()
+            data = self.imu.read()
         except:
             data = self._last_imu_read
 
