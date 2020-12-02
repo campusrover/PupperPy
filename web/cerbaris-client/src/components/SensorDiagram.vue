@@ -99,6 +99,7 @@
         console.table('range sensor delay: ' + Math.trunc(Date.now() - this.timestamp * 1000) + 'ms')
       },
       updateYaw() {
+        if (this.yaw == null) return
         this.robotGroup.rotate(-this.robotGroup.rotation, new Point(this.width/2, this.height/2))
         this.robotGroup.rotate(this.yaw, new Point(this.width/2, this.height/2))
       },
