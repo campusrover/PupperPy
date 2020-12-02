@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Shift-click + drag to create. Alt-click to delete.</p>
+    <p>Shift-click + drag to create. Alt-click to delete. Double-click to edit text.</p>
     <div id="behaviorTreeDiagram"></div>
   </div>
 </template>
@@ -81,18 +81,18 @@ move towards ball
           }
           let tabs = line.lastIndexOf('\t') + 1
           let value = line.trim()
-          let type = this.determineType(tabs, value)
+          let type = this.determineType(tabs === 0, value)
           tokens.push({tabs, value, type})
         })
         return tokens
       },
 
-      determineType(tabs, value) {
+      determineType(root, value) {
         if (value.startsWith('then')) {
           return 'then'
         } else if (value.startsWith('unless')) {
           return 'condition'
-        } else if (tabs === 0) {
+        } else if (root) {
           return 'definition'
         } else {
           return 'action'
@@ -140,7 +140,7 @@ move towards ball
           if (evt.shiftKey) {
             // prevent element from being dragged
             elementView.options.interactive = false
-            let width = 100
+            let width = 145
             let height = 50
             let child = new joint.shapes.standard.Rectangle({
               position: { x: x - width/2, y: y - height/2 },
@@ -171,6 +171,15 @@ move towards ball
           }
         })
 
+        paper.on('element:pointerdblclick', (elementView, evt) => {
+          let text = prompt('Enter new text:')
+          if (text) {
+            elementView.model.attr('label/text', text)
+            let links = graph.getConnectedLinks(elementView.model, { inbound: true })
+            this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
+          }
+        })
+
         paper.on('link:pointerdown', (linkView, evt) => {
           if (evt.altKey) {
             linkView.model.remove()
@@ -180,7 +189,7 @@ move towards ball
         paper.on('blank:pointerdown', (evt, x, y) => {
           if (evt.shiftKey) {
             // create parent
-            let width = 100
+            let width = 145
             let height = 50
             let parent = new joint.shapes.standard.Rectangle({
               position: { x: x - width/2, y: y - height/2 },
@@ -230,13 +239,8 @@ move towards ball
 
       drawNode(graph, parent, nodeObj) {
         let node = new joint.shapes.standard.Rectangle()
-        // calculate dimensions
-        let width = 120
-        let wrapText = joint.util.breakText(nodeObj.value || '', {width})
-        let {height} = this.getTextSize(wrapText)
-        node.resize(width + 25, height + 25)
         // style node and add label
-        this.styleNode(node, wrapText, nodeObj.type)
+        this.styleNode(node, nodeObj.value, nodeObj.type)
         // draw self
         if (nodeObj.value !== null) {
           node.addTo(graph)
@@ -270,12 +274,17 @@ move towards ball
       },
 
       styleNode(node, text, type) {
+        // calculate dimensions
+        let width = 120
+        let wrapText = joint.util.breakText(text || '', {width})
+        let {height} = this.getTextSize(wrapText)
+        node.resize(width + 25, height + 25)
         node.attr({
           body: {
             strokeWidth: 1,
           },
           label: {
-            text: text,
+            text: wrapText,
             fill: 'black',
             fontFamily: this.font.family,
             fontSize: this.font.size,
