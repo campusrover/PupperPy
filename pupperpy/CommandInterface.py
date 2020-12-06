@@ -156,7 +156,7 @@ class Control(object):
         except timeout:
             cv = []
 
-        if not any(obj.values()) and self.state == 'avoid':
+        if not any(obj.values()):
             self.turn_stop()
 
         if any(obj.values()):
