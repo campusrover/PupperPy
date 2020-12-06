@@ -1,3 +1,7 @@
+# Enable eduroam
+sudo bash PupperPy/pupperpy/resrouces/downgrade_wpa_supplicant.sh
+sudo cp PupperPy/pupperpy/resources/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+
 # change username to cerbaris
 # be sure to disable auto-login in raspi-config
 sudo adduser cerbaris
@@ -86,10 +90,6 @@ sudo systemctl start pupper_vision
 sudo systemctl start cerbaris_robot
 # After connecting the PS4 Controller, you may need to restart cerbaris_robot
 # sudo systemctl restart cerbaris_robot
-
-# Enable eduroam
-sudo bash PupperPy/pupperpy/resrouces/downgrade_wpa_supplicant.sh
-sudo cp PupperPy/pupperpy/resources/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 
 
 # Setup network insterfaces for use with UDPComms
