@@ -1,4 +1,4 @@
-import os, pusher
+import os, pusher, random
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -40,4 +40,7 @@ class PusherClient:
         'yaw_rate': message['yaw_rate'],
         'x_vel': message['x_vel'], 
         'y_vel': message['y_vel']
+    })
+    self.client.trigger('tree_data', 'new', {
+        'node_id': random.randint(0, 15)
     })

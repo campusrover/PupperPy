@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <p class="m-3">Press enter to toggle between panels and decision tree</p>
+    <p class="m-3">Press enter to toggle between panels and tree diagram</p>
     <sensor-panel class="toggle-enter"></sensor-panel>
     <div class="d-flex flex-wrap flex-lg-nowrap">
       <vision-panel class="toggle-enter flex-fill"></vision-panel>
       <state-panel class="toggle-enter flex-fill"></state-panel>
     </div>
-    <tree-diagram class="d-none-on-mount toggle-enter"></tree-diagram>
+    <tree class="d-none-on-mount toggle-enter"></tree>
   </div>
 </template>
 
@@ -15,10 +15,10 @@
   import SensorPanel from '@/components/SensorPanel'
   import VisionPanel from '@/components/VisionPanel'
   import StatePanel from '@/components/StatePanel'
-  import TreeDiagram from '@/components/TreeDiagram'
+  import Tree from '@/components/Tree'
 
   const App = {
-    components: {SensorPanel, VisionPanel, StatePanel, TreeDiagram},
+    components: {SensorPanel, VisionPanel, StatePanel, Tree},
     mounted() {
       Array.from(document.querySelectorAll('.d-none-on-mount')).forEach(elt => {
         elt.classList.add('d-none')

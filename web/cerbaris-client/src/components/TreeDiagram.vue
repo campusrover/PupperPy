@@ -1,8 +1,5 @@
 <template>
-  <div>
-    <p>Shift-click + drag to create. Alt-click to delete. Double-click to edit text.</p>
-    <div id="behaviorTreeDiagram"></div>
-  </div>
+  <div id="behaviorTreeDiagram"></div>
 </template>
 
 <script>
@@ -49,14 +46,19 @@ move towards ball
 \t\t\tcontinue
 \t\t\t\tmove forward
 `
-/*
-*/
 
   const TreeDiagram = {
-    components: {},
-    props: [],
-    data() {
-      return {
+    props: ['currNodeId'],
+    watch: {
+      currNodeId() {
+        if (this.currPath) {
+          this.unhighlight(this.currPath.nodes, this.currPath.links)
+        }
+        if (this.currNodeId !== null) {
+          this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId], 
+            {nodes: [], links: []})
+          this.highlight(this.currPath.nodes, this.currPath.links)
+        }
       }
     },
     mounted() {
@@ -67,7 +69,10 @@ move towards ball
       }
       this.context.font = this.font.size + 'px ' + this.font.family
       this.drawTree(this.parseTree(this.tokenize(behaviorTreeString), 0))
-      this.keymap = {}
+      if (this.currNodeId !== null) {
+        this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId], {nodes: [], links: []})
+        this.highlight(this.currPath.nodes, this.currPath.links)
+      }
     },
     methods: {
       tokenize(text) {
@@ -125,6 +130,7 @@ move towards ball
 
       drawTree(treeObj) {
         let graph = new joint.dia.Graph
+        this.graph = graph
         let paperSize = {width: window.innerWidth, height: window.innerHeight}
 
         let paper = new joint.dia.Paper({
@@ -136,91 +142,93 @@ move towards ball
           interactive: true,
         })
 
-        paper.on('element:pointerdown', (elementView, evt, x, y) => {
-          if (evt.shiftKey) {
-            // prevent element from being dragged
-            elementView.options.interactive = false
-            let width = 145
-            let height = 50
-            let child = new joint.shapes.standard.Rectangle({
-              position: { x: x - width/2, y: y - height/2 },
-              size: { width, height },
-            })
-            this.styleNode(child, 'new node', 'blank')
-            child.addTo(graph)
-            evt.data.draggedElement = child
-            // create link
-            let link = new joint.shapes.standard.Link()
-            link.attr('line/strokeWidth', 1)
-            link.source(elementView.model)
-            link.target(child)
-            link.addTo(graph)
-          } else {
-            elementView.options.interactive = true
-          }
+        this.nodeList = []
 
-          if (evt.altKey) {
-            elementView.model.remove()
-          }
-        })
-
-        paper.on('element:pointermove', (elementView, evt, x, y) => {
-          if (evt.data.draggedElement) {
-            let {width, height} = evt.data.draggedElement.get('size')
-            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
-          }
-        })
-
-        paper.on('element:pointerdblclick', (elementView, evt) => {
-          let text = prompt('Enter new text:')
-          if (text) {
-            elementView.model.attr('label/text', text)
-            let links = graph.getConnectedLinks(elementView.model, { inbound: true })
-            this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
-          }
-        })
-
-        paper.on('link:pointerdown', (linkView, evt) => {
-          if (evt.altKey) {
-            linkView.model.remove()
-          }
-        })
-
-        paper.on('blank:pointerdown', (evt, x, y) => {
-          if (evt.shiftKey) {
-            // create parent
-            let width = 145
-            let height = 50
-            let parent = new joint.shapes.standard.Rectangle({
-              position: { x: x - width/2, y: y - height/2 },
-              size: { width, height },
-            })
-            this.styleNode(parent, 'new node', 'blank')
-            parent.addTo(graph)
-            // create child
-            let child = new joint.shapes.standard.Rectangle({
-              position: { x: x - width/2, y: y - height/2 },
-              size: { width, height },
-            })
-            this.styleNode(child, 'new node', 'blank')
-            child.addTo(graph)
-            evt.data = evt.data ? evt.data : {}
-            evt.data.draggedElement = child
-            // create link
-            let link = new joint.shapes.standard.Link()
-            link.attr('line/strokeWidth', 1)
-            link.source(parent)
-            link.target(child)
-            link.addTo(graph)
-          }
-        })
-
-        paper.on('blank:pointermove', (evt, x, y) => {
-          if (evt.data.draggedElement) {
-            let {width, height} = evt.data.draggedElement.get('size')
-            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
-          }
-        })
+//         paper.on('element:pointerdown', (elementView, evt, x, y) => {
+//           if (evt.shiftKey) {
+//             // prevent element from being dragged
+//             elementView.options.interactive = false
+//             let width = 145
+//             let height = 50
+//             let child = new joint.shapes.standard.Rectangle({
+//               position: { x: x - width/2, y: y - height/2 },
+//               size: { width, height },
+//             })
+//             this.styleNode(child, 'new node', 'blank')
+//             child.addTo(graph)
+//             evt.data.draggedElement = child
+//             // create link
+//             let link = new joint.shapes.standard.Link()
+//             link.attr('line/strokeWidth', 1)
+//             link.source(elementView.model)
+//             link.target(child)
+//             link.addTo(graph)
+//           } else {
+//             elementView.options.interactive = true
+//           }
+// 
+//           if (evt.altKey) {
+//             elementView.model.remove()
+//           }
+//         })
+// 
+//         paper.on('element:pointermove', (elementView, evt, x, y) => {
+//           if (evt.data.draggedElement) {
+//             let {width, height} = evt.data.draggedElement.get('size')
+//             evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+//           }
+//         })
+// 
+//         paper.on('element:pointerdblclick', (elementView, evt) => {
+//           let text = prompt('Enter new text:')
+//           if (text) {
+//             elementView.model.attr('label/text', text)
+//             let links = graph.getConnectedLinks(elementView.model, { inbound: true })
+//             this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
+//           }
+//         })
+// 
+//         paper.on('link:pointerdown', (linkView, evt) => {
+//           if (evt.altKey) {
+//             linkView.model.remove()
+//           }
+//         })
+// 
+//         paper.on('blank:pointerdown', (evt, x, y) => {
+//           if (evt.shiftKey) {
+//             // create parent
+//             let width = 145
+//             let height = 50
+//             let parent = new joint.shapes.standard.Rectangle({
+//               position: { x: x - width/2, y: y - height/2 },
+//               size: { width, height },
+//             })
+//             this.styleNode(parent, 'new node', 'blank')
+//             parent.addTo(graph)
+//             // create child
+//             let child = new joint.shapes.standard.Rectangle({
+//               position: { x: x - width/2, y: y - height/2 },
+//               size: { width, height },
+//             })
+//             this.styleNode(child, 'new node', 'blank')
+//             child.addTo(graph)
+//             evt.data = evt.data ? evt.data : {}
+//             evt.data.draggedElement = child
+//             // create link
+//             let link = new joint.shapes.standard.Link()
+//             link.attr('line/strokeWidth', 1)
+//             link.source(parent)
+//             link.target(child)
+//             link.addTo(graph)
+//           }
+//         })
+// 
+//         paper.on('blank:pointermove', (evt, x, y) => {
+//           if (evt.data.draggedElement) {
+//             let {width, height} = evt.data.draggedElement.get('size')
+//             evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+//           }
+//         })
 
         let tokens = this.tokenize(behaviorTreeString)
         this.drawNode(graph, null, this.parseTree(tokens, 0))
@@ -244,6 +252,7 @@ move towards ball
         // draw self
         if (nodeObj.value !== null) {
           node.addTo(graph)
+          this.nodeList.push(node)
         }
         // draw link
         if (parent && parent.attr('label/text').length > 0) {
@@ -299,6 +308,65 @@ move towards ball
         } else if (type === 'definition') {
           node.attr('body/fill', 'pink')
         }
+      },
+
+      getPathToRoot(node, path) {
+        // base case: node is root
+        path.nodes.push(node)
+        let links = this.graph.getConnectedLinks(node, { inbound: true })
+        if (links.length > 0) {
+          links.forEach(link => {
+            path.links.push(link)
+            this.getPathToRoot(link.getSourceElement(), path)
+          })
+        }
+        return path
+      },
+
+      highlightLink(link) {
+        link.attr({
+          line: {
+            strokeWidth: 2,
+            stroke: 'red',
+          }
+        })
+      },
+
+      highlightNode(node) {
+        node.attr({
+          body: {
+            strokeWidth: 2,
+            stroke: 'red',
+          }
+        })
+      },
+
+      highlight(nodes, links) {
+        nodes.forEach(this.highlightNode)
+        links.forEach(this.highlightLink)
+      },
+
+      unhighlightLink(link) {
+        link.attr({
+          line: {
+            strokeWidth: 1,
+            stroke: 'black',
+          }
+        })
+      },
+
+      unhighlightNode(node) {
+        node.attr({
+          body: {
+            strokeWidth: 1,
+            stroke: 'black',
+          }
+        })
+      },
+
+      unhighlight(nodes, links) {
+        nodes.forEach(this.unhighlightNode)
+        links.forEach(this.unhighlightLink)
       },
     }
   }
