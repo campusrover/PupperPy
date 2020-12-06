@@ -101,6 +101,12 @@ cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/
 # GPIO_1, RST: GPIO_16 (or any open GPIO, set to high, pulse low to reset)
 cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
 
+# To pip install pupperpy package in editable form and allow pupperpy imports
+# in ipython from anywhere
+cd PupperPy
+sudo pip3 install -e pupperpy
+cd ..
+
 ################################################################################
 ################    IMU and Camera Setup    ######################
 ################################################################################
