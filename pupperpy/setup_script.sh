@@ -9,7 +9,7 @@ sudo deluser -remove-home pi
 
 # Change hostname
 sudo hostnamectl set-hostname cerbaris
-sud nano /etc/hosts
+sudo nano /etc/hosts
 ## replace raspberrypi with cerbaris
 
 # Enable ssh
@@ -46,10 +46,18 @@ sudo pip3 install -e UDPComms
 sudo bash uDHCPd/install.sh
 
 # Setup symlinks and services
+
+## For basic PS4 controller control
 # go to PupperCommand/joystick.service and StanfordQuadruped/robot.service and change the paths to match your configuration
 sudo ln -s $(realpath .)/StanfordQuadruped/robot.service /etc/systemd/system/
 sudo ln -s $(realpath .)/PupperCommand/joystick.service /lib/systemd/system/
-sudo ln -s $(realpath .)/UDPComms/rover.py /usr/local/bin/rover
+
+## For autonomous robot control
+sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/cerbaris_control.service /lib/systemd/system/
+sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/cerbaris_robot.service /etc/systemd/system/
+sudo ln -s $(realpath .)/PupperPy/pupperpy/Vision/pupper_vision.service /etc/systemd/system/
+
+## For laptop bluetooth control
 sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/pupperble.service /lib/systemd/system/
 sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/robotble.service /etc/systemd/system/
 
@@ -57,7 +65,7 @@ sudo ln -s $(realpath .)/PupperPy/pupperpy/resources/robotble.service /etc/syste
 sudo systemctl daemon-reload
 sudo pigpiod
 
-#### For PS4 Controller ###
+### For PS4 Controller ###
 sudo systemctl enable joystick
 sudo systemctl enable robot
 sudo systemctl start joystick
@@ -69,6 +77,15 @@ sudo systemctl start robot
 #sudo systemctl start pupperble
 #sudo systemctl start robotble
 
+### For autonomous control ###
+sudo systemctl enable cerbaris_control
+sudo systemctl enable cerbaris_robot
+sudo systemctl enable pupper_vision
+sudo systemctl start cerbaris_control
+sudo systemctl start pupper_vision
+sudo systemctl start cerbaris_robot
+# After connecting the PS4 Controller, you may need to restart cerbaris_robot
+# sudo systemctl restart cerbaris_robot
 
 # Enable eduroam
 sudo bash PupperPy/pupperpy/resrouces/downgrade_wpa_supplicant.sh
