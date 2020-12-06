@@ -55,12 +55,12 @@ do something
     watch: {
       currNodeId() {
         if (this.currPath) {
-          this.unhighlight(this.currPath.nodes, this.currPath.links)
+          this.changeStroke(this.currPath.nodes, this.currPath.links, 1, 'black')
         }
         if (this.currNodeId !== null) {
           this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId], 
             {nodes: [], links: []})
-          this.highlight(this.currPath.nodes, this.currPath.links)
+          this.changeStroke(this.currPath.nodes, this.currPath.links, 2, 'red')
         }
       }
     },
@@ -132,13 +132,12 @@ do something
       },
 
       drawTree(treeObj) {
-        let graph = new joint.dia.Graph
-        this.graph = graph
+        this.graph = new joint.dia.Graph
         let paperSize = {width: window.innerWidth, height: window.innerHeight * 0.85}
 
         let paper = new joint.dia.Paper({
           el: document.getElementById('behaviorTreeDiagram'),
-          model: graph,
+          model: this.graph,
           width: paperSize.width,
           height: paperSize.height,
           gridSize: 1,
@@ -156,14 +155,14 @@ do something
 //               size: { width, height },
 //             })
 //             this.styleNode(child, 'new node', 'blank')
-//             child.addTo(graph)
+//             child.addTo(this.graph)
 //             evt.data.draggedElement = child
 //             // create link
 //             let link = new joint.shapes.standard.Link()
 //             link.attr('line/strokeWidth', 1)
 //             link.source(elementView.model)
 //             link.target(child)
-//             link.addTo(graph)
+//             link.addTo(this.graph)
 //           } else {
 //             elementView.options.interactive = true
 //           }
@@ -184,7 +183,7 @@ do something
 //           let text = prompt('Enter new text:')
 //           if (text) {
 //             elementView.model.attr('label/text', text)
-//             let links = graph.getConnectedLinks(elementView.model, { inbound: true })
+//             let links = this.graph.getConnectedLinks(elementView.model, { inbound: true })
 //             this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
 //           }
 //         })
@@ -205,14 +204,14 @@ do something
 //               size: { width, height },
 //             })
 //             this.styleNode(parent, 'new node', 'blank')
-//             parent.addTo(graph)
+//             parent.addTo(this.graph)
 //             // create child
 //             let child = new joint.shapes.standard.Rectangle({
 //               position: { x: x - width/2, y: y - height/2 },
 //               size: { width, height },
 //             })
 //             this.styleNode(child, 'new node', 'blank')
-//             child.addTo(graph)
+//             child.addTo(this.graph)
 //             evt.data = evt.data ? evt.data : {}
 //             evt.data.draggedElement = child
 //             // create link
@@ -220,7 +219,7 @@ do something
 //             link.attr('line/strokeWidth', 1)
 //             link.source(parent)
 //             link.target(child)
-//             link.addTo(graph)
+//             link.addTo(this.graph)
 //           }
 //         })
 // 
@@ -233,10 +232,10 @@ do something
 
         let tokens = this.tokenize(behaviorTreeString)
         this.nodeList = []
-        this.drawNode(graph, null, this.parseTree(tokens, 0))
+        this.drawNode(this.graph, null, this.parseTree(tokens, 0))
         let marginX = 20
         let marginY = 2
-        let graphBBox = joint.layout.DirectedGraph.layout(graph, {
+        let graphBBox = joint.layout.DirectedGraph.layout(this.graph, {
           dagre: dagre,
           graphlib: graphlib,
           nodeSep: 30,
@@ -329,50 +328,24 @@ do something
         return path
       },
 
-      highlightLink(link) {
-        link.attr({
-          line: {
-            strokeWidth: 2,
-            stroke: 'red',
-          }
+      changeStroke(nodes, links, strokeWidth, stroke) {
+        nodes.forEach(node => {
+          node.attr({
+            body: {
+              strokeWidth,
+              stroke,
+            }
+          })
         })
-      },
 
-      highlightNode(node) {
-        node.attr({
-          body: {
-            strokeWidth: 2,
-            stroke: 'red',
-          }
+        links.forEach(link => {
+          link.attr({
+            line: {
+              strokeWidth,
+              stroke,
+            }
+          })
         })
-      },
-
-      highlight(nodes, links) {
-        nodes.forEach(this.highlightNode)
-        links.forEach(this.highlightLink)
-      },
-
-      unhighlightLink(link) {
-        link.attr({
-          line: {
-            strokeWidth: 1,
-            stroke: 'black',
-          }
-        })
-      },
-
-      unhighlightNode(node) {
-        node.attr({
-          body: {
-            strokeWidth: 1,
-            stroke: 'black',
-          }
-        })
-      },
-
-      unhighlight(nodes, links) {
-        nodes.forEach(this.unhighlightNode)
-        links.forEach(this.unhighlightLink)
       },
     }
   }
