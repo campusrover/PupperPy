@@ -6,8 +6,8 @@ with open("README.md", "r") as fh:
         setuptools.setup(
                 name="nubs01",
                 version="0.0.1",
-                author="Roshan Nanu",
-                author_email="roshan.nanu@gmail.com",
+                author="Brandies Autonomous Robotics Lab",
+                author_email="robotics@brandeis.edu",
                 description="Brandeis Automomous Robotics Lab Pupper Robot Software",
                 long_description=long_description,
                 long_description_content_type="text/markdown",
