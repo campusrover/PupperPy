@@ -45,6 +45,9 @@ move towards ball
 \t\tunless not facing the ball
 \t\t\tcontinue
 \t\t\t\tmove forward
+do something
+\tthen
+\t\tdo another thing
 `
 
   const TreeDiagram = {
@@ -131,7 +134,7 @@ move towards ball
       drawTree(treeObj) {
         let graph = new joint.dia.Graph
         this.graph = graph
-        let paperSize = {width: window.innerWidth, height: window.innerHeight}
+        let paperSize = {width: window.innerWidth, height: window.innerHeight * 0.85}
 
         let paper = new joint.dia.Paper({
           el: document.getElementById('behaviorTreeDiagram'),
@@ -141,8 +144,6 @@ move towards ball
           gridSize: 1,
           interactive: true,
         })
-
-        this.nodeList = []
 
 //         paper.on('element:pointerdown', (elementView, evt, x, y) => {
 //           if (evt.shiftKey) {
@@ -231,18 +232,23 @@ move towards ball
 //         })
 
         let tokens = this.tokenize(behaviorTreeString)
+        this.nodeList = []
         this.drawNode(graph, null, this.parseTree(tokens, 0))
+        let marginX = 20
+        let marginY = 2
         let graphBBox = joint.layout.DirectedGraph.layout(graph, {
           dagre: dagre,
           graphlib: graphlib,
           nodeSep: 30,
           edgeSep: 80,
-          marginX: 20,
-          marginY: 2,
+          marginX: marginX,
+          marginY: marginY,
           rankDir: "LR",
         })
 
-        paper.setDimensions(window.innerWidth, graphBBox.height + 4)
+        let scale = Math.min(paperSize.width / (graphBBox.width + marginX*2), 
+          paperSize.height / (graphBBox.height + marginY*2))
+        paper.scale(scale, scale)
       },
 
       drawNode(graph, parent, nodeObj) {
