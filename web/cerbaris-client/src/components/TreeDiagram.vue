@@ -147,91 +147,91 @@ do blah
           interactive: true,
         })
 
-//         paper.on('element:pointerdown', (elementView, evt, x, y) => {
-//           if (evt.shiftKey) {
-//             // prevent element from being dragged
-//             elementView.options.interactive = false
-//             let width = 145
-//             let height = 50
-//             let child = new joint.shapes.standard.Rectangle({
-//               position: { x: x - width/2, y: y - height/2 },
-//               size: { width, height },
-//             })
-//             this.styleNode(child, 'new node', 'blank')
-//             child.addTo(this.graph)
-//             evt.data.draggedElement = child
-//             // create link
-//             let link = new joint.shapes.standard.Link()
-//             link.attr('line/strokeWidth', 1)
-//             link.source(elementView.model)
-//             link.target(child)
-//             link.addTo(this.graph)
-//           } else {
-//             elementView.options.interactive = true
-//           }
-// 
-//           if (evt.altKey) {
-//             elementView.model.remove()
-//           }
-//         })
-// 
-//         paper.on('element:pointermove', (elementView, evt, x, y) => {
-//           if (evt.data.draggedElement) {
-//             let {width, height} = evt.data.draggedElement.get('size')
-//             evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
-//           }
-//         })
-// 
-//         paper.on('element:pointerdblclick', (elementView, evt) => {
-//           let text = prompt('Enter new text:')
-//           if (text) {
-//             elementView.model.attr('label/text', text)
-//             let links = this.graph.getConnectedLinks(elementView.model, { inbound: true })
-//             this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
-//           }
-//         })
-// 
-//         paper.on('link:pointerdown', (linkView, evt) => {
-//           if (evt.altKey) {
-//             linkView.model.remove()
-//           }
-//         })
-// 
-//         paper.on('blank:pointerdown', (evt, x, y) => {
-//           if (evt.shiftKey) {
-//             // create parent
-//             let width = 145
-//             let height = 50
-//             let parent = new joint.shapes.standard.Rectangle({
-//               position: { x: x - width/2, y: y - height/2 },
-//               size: { width, height },
-//             })
-//             this.styleNode(parent, 'new node', 'blank')
-//             parent.addTo(this.graph)
-//             // create child
-//             let child = new joint.shapes.standard.Rectangle({
-//               position: { x: x - width/2, y: y - height/2 },
-//               size: { width, height },
-//             })
-//             this.styleNode(child, 'new node', 'blank')
-//             child.addTo(this.graph)
-//             evt.data = evt.data ? evt.data : {}
-//             evt.data.draggedElement = child
-//             // create link
-//             let link = new joint.shapes.standard.Link()
-//             link.attr('line/strokeWidth', 1)
-//             link.source(parent)
-//             link.target(child)
-//             link.addTo(this.graph)
-//           }
-//         })
-// 
-//         paper.on('blank:pointermove', (evt, x, y) => {
-//           if (evt.data.draggedElement) {
-//             let {width, height} = evt.data.draggedElement.get('size')
-//             evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
-//           }
-//         })
+        paper.on('element:pointerdown', (elementView, evt, x, y) => {
+          if (evt.shiftKey) {
+            // prevent element from being dragged
+            elementView.options.interactive = false
+            let width = 145
+            let height = 50
+            let child = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(child, 'new node', 'blank')
+            child.addTo(this.graph)
+            evt.data.draggedElement = child
+            // create link
+            let link = new joint.shapes.standard.Link()
+            link.attr('line/strokeWidth', 1)
+            link.source(elementView.model)
+            link.target(child)
+            link.addTo(this.graph)
+          } else {
+            elementView.options.interactive = true
+          }
+
+          if (evt.altKey) {
+            elementView.model.remove()
+          }
+        })
+
+        paper.on('element:pointermove', (elementView, evt, x, y) => {
+          if (evt.data.draggedElement) {
+            let {width, height} = evt.data.draggedElement.get('size')
+            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+          }
+        })
+
+        paper.on('element:pointerdblclick', (elementView, evt) => {
+          let text = prompt('Enter new text:')
+          if (text) {
+            elementView.model.attr('label/text', text)
+            let links = this.graph.getConnectedLinks(elementView.model, { inbound: true })
+            this.styleNode(elementView.model, text, this.determineType(links.length === 0, text))
+          }
+        })
+
+        paper.on('link:pointerdown', (linkView, evt) => {
+          if (evt.altKey) {
+            linkView.model.remove()
+          }
+        })
+
+        paper.on('blank:pointerdown', (evt, x, y) => {
+          if (evt.shiftKey) {
+            // create parent
+            let width = 145
+            let height = 50
+            let parent = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(parent, 'new node', 'blank')
+            parent.addTo(this.graph)
+            // create child
+            let child = new joint.shapes.standard.Rectangle({
+              position: { x: x - width/2, y: y - height/2 },
+              size: { width, height },
+            })
+            this.styleNode(child, 'new node', 'blank')
+            child.addTo(this.graph)
+            evt.data = evt.data ? evt.data : {}
+            evt.data.draggedElement = child
+            // create link
+            let link = new joint.shapes.standard.Link()
+            link.attr('line/strokeWidth', 1)
+            link.source(parent)
+            link.target(child)
+            link.addTo(this.graph)
+          }
+        })
+
+        paper.on('blank:pointermove', (evt, x, y) => {
+          if (evt.data.draggedElement) {
+            let {width, height} = evt.data.draggedElement.get('size')
+            evt.data.draggedElement.set('position', {x: x - width/2, y: y - height/2})
+          }
+        })
 
         let tokens = this.tokenize(behaviorTreeString)
         this.nodeList = []
