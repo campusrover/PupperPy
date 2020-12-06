@@ -48,6 +48,9 @@ move towards ball
 do something
 \tthen
 \t\tdo another thing
+do blah
+\tthen
+\t\tdo blah2
 `
 
   const TreeDiagram = {
@@ -74,7 +77,7 @@ do something
       this.drawTree(this.parseTree(this.tokenize(behaviorTreeString), 0))
       if (this.currNodeId !== null) {
         this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId], {nodes: [], links: []})
-        this.highlight(this.currPath.nodes, this.currPath.links)
+        this.changeStroke(this.currPath.nodes, this.currPath.links, 2, 'red')
       }
     },
     methods: {
@@ -346,6 +349,37 @@ do something
             }
           })
         })
+      },
+
+      serializeTree() {
+        let roots = this.graph.getSources()
+        roots.sort((firstElt, secondElt) => firstElt.get('position').y - secondElt.get('position').y)
+        let text = ''
+        roots.forEach(root => {
+          text += this.serializeNode(root, 0)
+        })
+        return text
+      },
+
+      serializeNode(node, tabs) {
+        // base case: leaf node
+        let text = '\n'
+        for (let i = 0; i < tabs; i++) {
+          text += '\t'
+        }
+        text += node.attr('label/text').replace('\n', ' ')
+        let links = this.graph.getConnectedLinks(node, { outbound: true })
+        if (links.length > 0) {
+          let children = []
+          links.forEach(link => {
+            children.push(link.getTargetElement())
+          })
+          children.sort((firstElt, secondElt) => firstElt.get('position').y - secondElt.get('position').y)
+          children.forEach(child => {
+            text += this.serializeNode(child, tabs + 1)
+          })
+        }
+        return text
       },
     }
   }
