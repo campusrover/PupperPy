@@ -7,10 +7,10 @@ class FrontObstacleNode(py_trees.behaviour.Behaviour):
     Primitive condition that senses if an object is in front of the robot.
     """
 
-    def __init__(self, obstacle_data=None):
+    def __init__(self, tsh):
         super(ObstacleDetectNode, self).__init__(
             "Detect Front Obstacle")
-        this.obstacle_data = obstacle_data
+        this.tsh = tsh
 
     def setup(self):
         return
@@ -19,14 +19,14 @@ class FrontObstacleNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if obstacle_data.front:
+        if tsh.data.front:
             self.feedback_message = "Detected front obstacle!"
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "No obstacles..."
             print(self.name)
             # update command interface
-            return py_trees.common.Status.RUNNING
+            return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
         return
@@ -37,10 +37,10 @@ class LeftObstacleNode(py_trees.behaviour.Behaviour):
     Primitive condition that senses if an object is to the right of the robot.
     """
 
-    def __init__(self, obstacle_data=None):
+    def __init__(self, tsh=None):
         super(LeftObstacleNode, self).__init__(
             "Detect Left Obstacle")
-        this.obstacle_data = obstacle_data
+        this.tsh = tsh
 
     def setup(self):
         return
@@ -49,14 +49,14 @@ class LeftObstacleNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if obstacle_data.left:
+        if tsh.data.left:
             self.feedback_message = "Detected left obstacle!"
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "No obstacles..."
             print(self.name)
             # update command interface
-            return py_trees.common.Status.RUNNING
+            return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
         return
@@ -67,10 +67,10 @@ class RightObstacleNode(py_trees.behaviour.Behaviour):
     Primitive condition that senses if an object is to the left of the robot.
     """
 
-    def __init__(self, obstacle_data=None):
+    def __init__(self, tsh):
         super(RightObstacleNode, self).__init__(
             "Detect Right Obstacle")
-        this.obstacle_data = obstacle_data
+        this.tsh = tsh
 
     def setup(self):
         return
@@ -79,14 +79,14 @@ class RightObstacleNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if obstacle_data.left:
+        if tsh.data.right:
             self.feedback_message = "Detected right obstacle!"
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "No obstacles..."
             print(self.name)
             # update command interface
-            return py_trees.common.Status.RUNNING
+            return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
         return
@@ -97,10 +97,10 @@ class TargetFoundNode(py_trees.behaviour.Behaviour):
     Primitive condition that senses if a ball is in sight.
     """
 
-    def __init__(self, obstacle_data=None):
+    def __init__(self, tsh):
         super(LeftObstacleNode, self).__init__(
             "Detect Target Found")
-        this.vision_data = vision_data
+        this.tsh = tsh
 
     def setup(self):
         return
@@ -109,14 +109,14 @@ class TargetFoundNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if vision_data.bbox_confidence:
+        if tsh.data.bbox_confidence:
             self.feedback_message = "Detected ball!"
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still looking..."
             print(self.name)
             # update command interface
-            return py_trees.common.Status.RUNNING
+            return py_trees.common.Status.FAILURE
 
     def terminate(self, new_status):
         return

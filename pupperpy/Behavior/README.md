@@ -1,14 +1,16 @@
-This module should contain logic classes and instruction definitions necessary to construct on-demand decision trees based on English commands. To use this module:
+**Decision Trees**
 
--import Behavior
--pass your given command to the parser with Parser.parse_command()
--retrieve your updated tree with Parser.get_tree()
--to run the decision tree on a given set of inputs, run Tree.decide(data)
+Complex behavior for the CERBaris is a behavior tree implementation dependent on py_trees. To run the current behavior iteration, simply run control_loop.py from the main pupperpy directory.
 
-The decision tree will look a lot like the control loop, with conditionals and state transitions.
+```bash
+cd /your/path/to/PupperPy
+python3 control_loop.py
+```
 
-Commands should consist only of words in the dictionary, with the following supported syntax:
-...TBA...
+[insert visual diagram of current behavior tree here]
 
-This module should also have the capability to pass tree information in a readbale format to the web server.
-If the web server somehow makes adjustments to the tree, the parser should update with that also in the control loop.
+- All action leaves are subscribed to the incoming data stream from CommandInterface.
+
+- The structure of the behavior tree can be expressed as an indented file, which is parsed and read by the CERBaris web service.
+
+- Every node in the behavior tree is labelled as running, succeeded, or failed, depending on whether its conditions for completion are met. This code assigns ids to each node in the tree and highlights the active path.
