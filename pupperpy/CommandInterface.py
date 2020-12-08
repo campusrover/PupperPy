@@ -183,7 +183,7 @@ class Control(object):
         if obj['left'] and obj['center']:
             self.move_stop()
             self.turn_right()
-        elif obj['right'] and obj['center']:
+        elif (obj['right'] and obj['center']) or obj['center']:
             self.move_stop()
             self.turn_left()
         elif obj['left']:

@@ -7,7 +7,7 @@ AttributeError: '_idat' object has no attribute 'fileno'
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "pupper_vision.py", line 70, in main
+  File "pupper_vision.py", line 71, in main
     image.save(f)
   File "/usr/local/lib/python3.7/dist-packages/PIL/Image.py", line 2151, in save
     save_handler(self, fp, filename)

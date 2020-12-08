@@ -55,6 +55,12 @@ class KalmanFilter(object):
                       [0,0,0,0,0,0,1,0],
                       [0,0,0,0,0,0,0,1]])
 
+        Y = np.array([[0, 0, vx, vy, ax, ay, new_yaw, yaw_rate]]).T
+        for i in range(Y.shape[0]):
+            if Y[i, 0] is None:
+                Y[i,0] = 0
+                H[i,i] = 0
+
         S = H.dot(P_prime).dot(H.T) + self.R
         #K = P_prime.dot(H).dot(np.linalg.inv(S))
         K = P_prime.dot(H.T) / S
@@ -64,7 +70,7 @@ class KalmanFilter(object):
         #Y = np.array([[self.X[0][0]+vx*dt+0.5*ax*dt**2,
         #               self.X[1][0]+vy*dt+0.5*ay*dt**2,
         #               vx, vy, ax, ay]]).T
-        Y = np.array([[0, 0, vx, vy, ax, ay, new_yaw, yaw_rate]]).T
+
         Y = H.dot(Y)
         X = X_prime + K.dot(Y - H.dot(X_prime))
         P = (np.identity(len(K)) - K.dot(H)).dot(P_prime)

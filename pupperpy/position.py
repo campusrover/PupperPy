@@ -59,13 +59,16 @@ class PositionTracker(object):
         #                                      data['x_acc'] - means['x_acc'],
         #                                      data['y_acc'] - means['y_acc'],
         #                                      data['z_acc'] - means['z_acc'])
-        if data is None:
-            x_acc = 0
-            y_acc = 0
-            yaw = 0
-        else:
+        x_acc = 0
+        y_acc = 0
+        yaw = 0
+        if data['x_acc'] is not None:
             x_acc = data['x_acc']
+
+        if data['y_acc'] is not None:
             y_acc = data['y_acc']
+
+        if data['yaw'] is not None:
             yaw = data['yaw']
 
         cmd = self.control.get_state()
