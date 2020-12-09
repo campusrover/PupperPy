@@ -1,3 +1,7 @@
+---
+layout: template
+---
+
 # [Introduction](introduction.md)
 ## Project Goals
 ## Team Members

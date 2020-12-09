@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: template
 title: Introduction
 ---
 # Example Stuff
