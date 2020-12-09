@@ -8,9 +8,9 @@ class FrontObstacleNode(py_trees.behaviour.Behaviour):
     """
 
     def __init__(self, tsh):
-        super(ObstacleDetectNode, self).__init__(
+        super(FrontObstacleNode, self).__init__(
             "Detect Front Obstacle")
-        this.tsh = tsh
+        self.tsh = tsh
 
     def setup(self):
         return
@@ -40,7 +40,7 @@ class LeftObstacleNode(py_trees.behaviour.Behaviour):
     def __init__(self, tsh=None):
         super(LeftObstacleNode, self).__init__(
             "Detect Left Obstacle")
-        this.tsh = tsh
+        self.tsh = tsh
 
     def setup(self):
         return
@@ -70,7 +70,7 @@ class RightObstacleNode(py_trees.behaviour.Behaviour):
     def __init__(self, tsh):
         super(RightObstacleNode, self).__init__(
             "Detect Right Obstacle")
-        this.tsh = tsh
+        self.tsh = tsh
 
     def setup(self):
         return
@@ -98,9 +98,9 @@ class TargetFoundNode(py_trees.behaviour.Behaviour):
     """
 
     def __init__(self, tsh):
-        super(LeftObstacleNode, self).__init__(
+        super(TargetFoundNode, self).__init__(
             "Detect Target Found")
-        this.tsh = tsh
+        self.tsh = tsh
 
     def setup(self):
         return
@@ -109,7 +109,7 @@ class TargetFoundNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if tsh.data.bbox_confidence:
+        if self.tsh.data.bbox_confidence:
             self.feedback_message = "Detected ball!"
             return py_trees.common.Status.SUCCESS
         else:

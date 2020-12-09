@@ -41,7 +41,7 @@ class TurnNode(py_trees.behaviour.Behaviour):
     """
 
     def __init__(self, tsh, degrees=90):
-        super(MoveForwardNode, self).__init__(
+        super(TurnNode, self).__init__(
             "Turn " + str(degrees) + " Degrees")
         self.initial_reading = None
         self.degrees = degrees
