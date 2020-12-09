@@ -3,19 +3,22 @@ import time
 import primitive_actions
 import primitive_conditions
 import pupper_tree_classes
+import FakeCommandInterface
 
 
 if __name__ == '__main__':
-    tsh = pupper_tree_classes.TreeStateHandler(None)
+    tsh = pupper_tree_classes.TreeStateHandler(
+        FakeCommandInterface.FakeControl())
+    #tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
 
-    tree_structure_2 = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
-                        "2_then_1":         (py_trees.composites.Sequence("2 Then 1"), ["move_2_seconds_a", "move_1_second_a"]),
-                        "1_then_2":         (py_trees.composites.Sequence("1 Then 2"), ["move_1_second_b", "move_2_seconds_b"]),
-                        "move_2_seconds_a":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
-                        "move_2_seconds_b":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
-                        "move_1_second_a":    (primitive_actions.MoveForwardNode(tsh, time_length=1), []),
-                        "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
+    tree_structure_basic = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
+                            "2_then_1":         (py_trees.composites.Sequence("2 Then 1"), ["move_2_seconds_a", "move_1_second_a"]),
+                            "1_then_2":         (py_trees.composites.Sequence("1 Then 2"), ["move_1_second_b", "move_2_seconds_b"]),
+                            "move_2_seconds_a":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
+                            "move_2_seconds_b":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
+                            "move_1_second_a":    (primitive_actions.MoveForwardNode(tsh, time_length=1), []),
+                            "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
 
     tree_structure = {"Root":                     (py_trees.composites.Sequence("Root"), ["Look for ball", "Move toward ball"]),
                       "Look for ball":            (py_trees.composites.Sequence("Look for ball"), ["Move forward A", "Detect ball A"]),
@@ -28,9 +31,9 @@ if __name__ == '__main__':
                       "Detect left sensor A":     (primitive_conditions.LeftObstacleNode(tsh), []),
                       "Detect center sensor A":   (primitive_conditions.FrontObstacleNode(tsh), []),
                       "Detect right sensor A":    (primitive_conditions.RightObstacleNode(tsh), []),
-                      "Turn right A":             (primitive_actions.TurnNode(tsh, 90), []),
-                      "Turn right B":             (primitive_actions.TurnNode(tsh, 90), []),
-                      "Turn left A":              (primitive_actions.TurnNode(tsh, -90), [])}
+                      "Turn right A":             (primitive_actions.TurnRightNode(tsh), []),
+                      "Turn right B":             (primitive_actions.TurnRightNode(tsh), []),
+                      "Turn left A":              (primitive_actions.TurnLeftNode(tsh), [])}
 
     def add_children(node_string):
         global id_count
