@@ -1,4 +1,4 @@
-# Introduction(introduction.md)
+# [Introduction](introduction.md)
 ## Project Goals
 ## Team Members
 ## Rough timeline
