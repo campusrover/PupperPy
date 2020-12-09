@@ -30,8 +30,25 @@
 
 # Web Interface
 ## Software architecture
-## Key design and code decisions
+architecture diagram
+main difficulty: realtime communication between website and external script
+separating frontend client from backend api
+add doc links to everything
+### Vue.js
+component structure, why vue
+### Pusher
+prod and dev environments
+### Additional libraries
+#### JointJS
+#### paper-js
+#### Bootstrap
+## Code design
+component diagram + technical description of each component
 ## What we would do next
+adding routes (spa vs mpa)
+backend db for storing data, replay
+converting from pusher to manual web sockets?
+complete tree stuff
 
 # IMU
 ## Hardware Interface
