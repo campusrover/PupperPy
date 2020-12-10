@@ -1,14 +1,13 @@
 import py_trees
 import time
-import primitive_actions
-import primitive_conditions
-import pupper_tree_classes
-import FakeTreeCI
+import Behavior.primitive_actions
+import Behavior.primitive_conditions
+import Behavior.pupper_tree_classes
+from CommandInterface import Control
 
 
 if __name__ == '__main__':
-    tsh = pupper_tree_classes.TreeStateHandler(
-        FakeTreeCI.FakeTreeControl())
+    tsh = pupper_tree_classes.TreeStateHandler(Control())
     # tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
 

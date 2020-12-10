@@ -11,10 +11,15 @@ class TreeStateHandler():
         self.active_node = None
         self.control = control
         self.node_id_dict = {}
-        if control:
-            self.data = control.data
-        else:
-            self.data = None
+
+    """
+    def update_data(self):
+        self.control.update_data()
+    """
+
+    # overload to get into the post tick
+    def update_data(self, tree):
+        self.control.update_data()
 
     def get_active_node_id(self):
         return self.node_id_dict[self.active_node]
