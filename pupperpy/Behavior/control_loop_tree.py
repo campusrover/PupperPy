@@ -3,13 +3,13 @@ import time
 import primitive_actions
 import primitive_conditions
 import pupper_tree_classes
-import FakeCommandInterface
+import FakeTreeCI
 
 
 if __name__ == '__main__':
     tsh = pupper_tree_classes.TreeStateHandler(
-        FakeCommandInterface.FakeControl())
-    #tsh = pupper_tree_classes.TreeStateHandler(None)
+        FakeTreeCI.FakeTreeControl())
+    # tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
 
     tree_structure_basic = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
@@ -58,6 +58,47 @@ if __name__ == '__main__':
         """
 
         return py_trees.trees.BehaviourTree(tree_structure["Root"][0])
+
+    """
+    def parseTree(tokens, index):
+        node = (tokens[index].value, tokens[index].type)
+        if (len(tokens) <= index + 1 or tokens[index + 1].tabs <= tokens[index].tabs):
+            node.children = []
+            return node
+        childIndex = index + 1
+        children = []
+        while (childIndex < tokens.length and tokens[childIndex].tabs > tokens[index].tabs):
+            if (tokens[childIndex].tabs === tokens[index].tabs + 1) {
+              children.push(this.parseTree(tokens, childIndex))
+            }
+            childIndex += 1
+        node.children = children
+        return node
+
+        parseTree(tokens, index) {
+        let node = {
+          value: tokens[index].value,
+          type: tokens[index].type,
+        }
+        // base case: leaf node; no next elt or next elt's tabs <= curr elt's tabs
+        if (tokens.length <= index + 1 || tokens[index + 1].tabs <= tokens[index].tabs) {
+          node.children = []
+          return node
+        } else {
+          // loop through children and call recursively
+          let childIndex = index + 1
+          let children = []
+          while (childIndex < tokens.length && tokens[childIndex].tabs > tokens[index].tabs) {
+            if (tokens[childIndex].tabs === tokens[index].tabs + 1) {
+              children.push(this.parseTree(tokens, childIndex))
+            }
+            childIndex++
+          }
+          node.children = children
+          return node
+        }
+      }
+      """
 
     def setup_and_print_tree_static(tree, level=0, is_root=True):
         if is_root:

@@ -4,7 +4,6 @@
 from imu_tools import IMU
 from position import PositionTracker
 from daq_tools import RepeatTimer
-from ControllerState import ControllerState
 from object_detection import ObjectSensors
 from PusherInterface import PusherClient
 from UDPComms import Publisher, Subscriber, timeout
@@ -13,6 +12,8 @@ from PS4Joystick import Joystick
 
 import numpy as np
 import time
+from ControllerState import ControllerState
+from threading import Timer
 
 
 MESSAGE_RATE = 20
@@ -22,6 +23,12 @@ CV_SUB_PORT = 105
 PUPPER_COLOR = {"red": 0, "blue": 0, "green": 255}
 
 
+class RepeatTimer(Timer):
+    def run(self):
+        while not self.finished.wait(self.interval):
+            self.function(*self.args, **self.kwargs)
+
+
 class FakeControl(object):
     STATES = ['off', 'rest', 'meander', 'goto', 'avoid']
     SCREEN_MID_X = 150
@@ -29,20 +36,20 @@ class FakeControl(object):
     def __init__(self, target='tennis_ball'):
         self.timer = RepeatTimer(1/MESSAGE_RATE, self._step)
         self.control_state = ControllerState()
-        self.pos = PositionTracker(self.control_state)
-        self.obj_sensors = ObjectSensors()
+        self.pos = None
+        self.obj_sensors = None
         self.active = False
         self.walking = False
         self.user_stop = False
-        self.cmd_pub = Publisher(CMD_PUB_PORT)
-        self.cmd_sub = Subscriber(CMD_SUB_PORT)
-        self.cv_sub = Subscriber(CV_SUB_PORT)
-        self.joystick = Joystick()
-        self.joystick.led_color(**PUPPER_COLOR)
+        self.cmd_pub = None
+        self.cmd_sub = None
+        self.cv_sub = None
+        self.joystick = None
+        # self.joystick.led_color(**PUPPER_COLOR)
         self.state = 'off'
         self.target = target
         self.current_target = None
-        self.pusher_client = PusherClient()
+        self.pusher_client = None
 
     def move_forward(self, vel=ControllerState.LEFT_ANALOG_Y_MAX):
         self.control_state.left_analog_y = vel
@@ -125,15 +132,19 @@ class FakeControl(object):
 
     def send_cmd(self):
         cmd = self.control_state.get_state()
+        """
         self.cmd_pub.send(cmd)
         try:
             msg = self.cmd_sub.get()
             self.joystick.led_color(**msg["ps4_color"])
         except timeout:
             pass
+        """
 
     def _step(self):
-        js_msg = self.joystick.get_input()
+        #js_msg = self.joystick.get_input()
+        print("ok.")
+        js_msg = {'button_l2': None, 'button_l1': None}
 
         # Force stop moving
         if js_msg['button_l2']:
@@ -260,5 +271,5 @@ class FakeControl(object):
 
 
 if __name__ == "__main__":
-    control = Control()
+    control = FakeControl()
     control.run_loop()
