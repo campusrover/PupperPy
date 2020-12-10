@@ -7,8 +7,17 @@ robot](https://stanfordstudentrobotics.org/pupper) and see how far we could
 extend the software, hardware and overall functionality of the system over the
 course of a semester.
 
-We initally set out to create a robot that could freely move around an enviroment autonomously and seek out visual targets without colliding with any objects.
-To this end our team added sensors, implement computer
-vision and created a software package for controlling the pupper robot
-programatically while reading out live operation information onto a webpage. 
+We initally set out to create a robot that could freely move around an
+enviroment autonomously and seek out visual targets without colliding with any
+objects. While we accomplished this goal, we had also hoped, but were unable,
+to fully implement odometry and environment mapping. So though Cerbaris can
+autonomously seek out a designated target, it cannot (YET) do so in an
+efficient and robust manner. 
+Our team upgraded the Pupper by integrating a front-facing camera, a 9-DOF
+inertial measurement unit (IMU), and 3 digital IR proximity sensors. With the
+aid of a Google Coral TPU, camera data was able to utilized to quickly and
+reliably identify human and tennis ball targets in real-time. We then created
+software to have the pupper randomly search a room while avoiding obstacles
+until it finds and chases down the target. Additionally, we were able to create
+a web-based real-time monitor of Cerbaris's internal stat.
 
