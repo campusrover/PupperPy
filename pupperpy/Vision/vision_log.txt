@@ -1,19 +1,12 @@
 Failed to run detection loop:
  Traceback (most recent call last):
-  File "/usr/local/lib/python3.7/dist-packages/PIL/ImageFile.py", line 510, in _save
-    fh = fp.fileno()
-AttributeError: '_idat' object has no attribute 'fileno'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "pupper_vision.py", line 71, in main
-    image.save(f)
-  File "/usr/local/lib/python3.7/dist-packages/PIL/Image.py", line 2151, in save
-    save_handler(self, fp, filename)
-  File "/usr/local/lib/python3.7/dist-packages/PIL/PngImagePlugin.py", line 1339, in _save
-    ImageFile._save(im, _idat(fp, chunk), [("zip", (0, 0) + im.size, 0, rawmode)])
-  File "/usr/local/lib/python3.7/dist-packages/PIL/ImageFile.py", line 524, in _save
-    l, s, d = e.encode(bufsize)
-KeyboardInterrupt
+  File "/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/pupper_vision.py", line 44, in main
+    results = engine.detect_with_image(image,threshold=0.2,keep_aspect_ratio=True,relative_coord=False,top_k=10)
+  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 154, in detect_with_image
+    candidates = self.detect_with_input_tensor(input_tensor, threshold, top_k)
+  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 184, in detect_with_input_tensor
+    _, raw_result = self.run_inference(input_tensor)
+  File "/usr/lib/python3/dist-packages/edgetpu/basic/basic_engine.py", line 135, in run_inference
+    assert len(input) >= expected_input_size
+AssertionError
 

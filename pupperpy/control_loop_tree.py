@@ -1,8 +1,8 @@
 import py_trees
 import time
-import Behavior.primitive_actions
-import Behavior.primitive_conditions
-import Behavior.pupper_tree_classes
+from Behavior import primitive_actions
+from Behavior import primitive_conditions
+from Behavior import pupper_tree_classes
 from CommandInterface import Control
 
 
