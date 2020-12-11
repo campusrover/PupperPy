@@ -34,7 +34,7 @@ class TreeControl(Control):
         self.data["obj"] = obj
         self.data["cv"] = cv
 
-    def _step(self):
+    def _step(self, tree):
         js_msg = self.joystick.get_input()
 
         # Force stop moving
@@ -60,7 +60,7 @@ class TreeControl(Control):
 
         #print(str(time.time()) +': ' + self.state)
         self.send_cmd()
-        self.send_pusher_message(pos, obj, cv)
+        #self.send_pusher_message(pos, obj, cv)
 
 
 """
