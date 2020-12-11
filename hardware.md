@@ -77,3 +77,37 @@ sensor readings from the gyroscope, accelerometers and magnetometer and
 appropriately rotates the data to provide euler angles relative to magnetic
 north and linear acceleration values with gravity already removed. 
 
+While some tutorials online suggest connecting the BNO055 to a Raspberry Pi in
+UART mode, this is outdated and does not work. Instead you have to connect it
+with the default I2C protocol. However, the primary I2C headers on the Pi 4 are
+in use to control the pupper's motor. As such we connected the IMU I2C
+connection to GPIOs 0 & 1 (Pins 27 & 28) and then used a device-tree overlay to
+enable a software I2C bus on the raspberry pi. Details on how to do this are in
+the [software setup](software_setup.md) section. Though some information on setting up the IMU can be found [here](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/python-circuitpython) as well.
+
+An important note is that the IMU Vin must be connected to 3.3V power and not
+5V, even though the specs say that it should be able to operate with 5V power.
+The one time we attempted to use 5V power with the IMU, the pupper refused to
+boot up at all. 
+
+## IR Object Avoidance Sensors
+For our setup we chose to use 3 digital IR object avoidance sensors in order to
+detect the presence of obstacles and avoid collisions while moving. To this end
+we bought 3x [E18-D80NK Photoelectric Switch Obstacle Avoidance Sensor
+Modules](https://www.amazon.com/dp/B08HMN53XL/ref=sspa_dk_detail_1?psc=1&pd_rd_i=B08HMN53XL&pd_rd_w=xf0V0&pf_rd_p=7d37a48b-2b1a-4373-8c1a-bdcc5da66be9&pd_rd_wg=3oQjF&pf_rd_r=Y4DXPEJ5B7ANK5TKZD3R&pd_rd_r=ebed4e45-3a7e-4042-88d8-9fc22af50d91&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExM001VDNQWkczNlRDJmVuY3J5cHRlZElkPUEwNzg3Mjk3M1I4Nk4xNUQ3T04yTyZlbmNyeXB0ZWRBZElkPUEwMjcyMDIyMzYxV1BWQlVHTTZETSZ3aWRnZXROYW1lPXNwX2RldGFpbCZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=)
+from Amazon, and mounted them onto the pupper with a custom designed and
+printed [sensor
+mount](https://github.com/nubs01/PupperPy/tree/master/CAD/sensor_mount).
+
+These sensors are setup to look forward and 25 degrees to each side, and can
+detect objects up to 30cm away. A small screw on the back can be tuned to set
+the detection range. At default, with no object, the sensors send a HIGH signal
+to the raspberry pi and switched to LOW when an object is detected. The sensors
+require 5V power input and the outputs were connected to GPIOs 5, 6 & 12.
+
+## Camera
+We also attached a standard [raspbery pi
+camera](https://www.amazon.com/1080P-Camera-Module-Raspberry-Holder/dp/B07M9Q43MX/ref=sr_1_6?dchild=1&gclid=CjwKCAiAq8f-BRBtEiwAGr3DgZG31ZD1isrbQVfqZKtAMSmcpPU1e9IFm66RiOY_LWKOLSM2ND1iYRoCWiEQAvD_BwE&hvadid=409936242402&hvdev=c&hvlocphy=9002062&hvnetw=g&hvqmt=e&hvrand=10019869209618668489&hvtargid=kwd-52858032474&hydadcr=19109_11276360&keywords=raspberry+pi+camera&qid=1607656695&sr=8-6&tag=googhydr-20)
+with an acrylic case that was attached to sensor mount with a velcro strip. 
+
+![Pupper with Sensor Mount](pupper_with_sensor_mount.jpg)
