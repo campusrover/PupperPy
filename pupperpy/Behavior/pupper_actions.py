@@ -23,6 +23,7 @@ class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
         else:
             self.feedback_message = "Still moving..."
             self.tsh.active_node = self
+            self.tsh.control.turn_stop()
             self.tsh.control.move_forward()
             return py_trees.common.Status.RUNNING
 
