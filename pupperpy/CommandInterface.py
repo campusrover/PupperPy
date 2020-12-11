@@ -35,6 +35,7 @@ class Control(object):
         self.target = target
         self.current_target = None
         self.pusher_client = PusherClient()
+        self._last_sensor_data = (None, None, None)
 
     def move_forward(self, vel=ControllerState.LEFT_ANALOG_Y_MAX):
         self.control_state.left_analog_y = vel
@@ -125,13 +126,17 @@ class Control(object):
             pass
 
     def get_sensor_data(self):
-        obj = self.obj_sensors.read()
-        pos = self.pos.data
         try:
-            cv = self.cv_sub.get()
-        except timeout:
-            cv = []
-    
+            obj = self.obj_sensors.read()
+            pos = self.pos.data
+            try:
+                cv = self.cv_sub.get()
+            except timeout:
+                cv = []
+        except:
+            obj, pos, cv = self._last_sensor_data
+            
+        self._last_sensor_data = (obj, pos, cv)
         return obj, pos, cv
     
     def _step(self):
@@ -152,6 +157,7 @@ class Control(object):
         if self.user_stop or not self.active:
             self.reset()
             self.send_cmd()
+            self.send_pusher_message()
             return
 
         if not self.walking:
@@ -160,7 +166,7 @@ class Control(object):
         
         self.update_behavior()
         self.send_cmd()
-        self.send_pusher_message(pos, obj, cv)
+        self.send_pusher_message()
         
     def update_behavior(self):
         obj, pos , cv = self.get_sensor_data()
@@ -180,7 +186,7 @@ class Control(object):
             # if nothing, wander
             self.state = 'meander'
             self.meander()
-        
+                    
     def dodge(self, obj):
         '''Takes the object sensor data and adjusts the command to avoid any
         objects
@@ -227,7 +233,8 @@ class Control(object):
         self.move_forward()
         self.current_target = best
 
-    def send_pusher_message(self, pos, obj, cv):
+    def send_pusher_message(self):
+        obj, pos, cv = self.get_sensor_data()
         bbox = self.current_target
         timestamp = time.time()
         if bbox is None:
