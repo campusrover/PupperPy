@@ -124,6 +124,16 @@ class Control(object):
         except timeout:
             pass
 
+    def get_sensor_data(self):
+        obj = self.obj_sensors.read()
+        pos = self.pos.data
+        try:
+            cv = self.cv_sub.get()
+        except timeout:
+            cv = []
+    
+        return obj, pos, cv
+    
     def _step(self):
         js_msg = self.joystick.get_input()
         
@@ -147,14 +157,13 @@ class Control(object):
         if not self.walking:
             self.start_walk()
             return
-
-        # grab data
-        obj = self.obj_sensors.read()
-        pos = self.pos.data
-        try:
-            cv = self.cv_sub.get()
-        except timeout:
-            cv = []
+        
+        self.update_behavior()
+        self.send_cmd()
+        self.send_pusher_message(pos, obj, cv)
+        
+    def update_behavior(self):
+        obj, pos , cv = self.get_sensor_data()
 
         if not any(obj.values()):
             self.turn_stop()
@@ -171,11 +180,7 @@ class Control(object):
             # if nothing, wander
             self.state = 'meander'
             self.meander()
-
-        #print(str(time.time()) +': ' + self.state)
-        self.send_cmd()
-        self.send_pusher_message(pos, obj, cv)
-
+        
     def dodge(self, obj):
         '''Takes the object sensor data and adjusts the command to avoid any
         objects
