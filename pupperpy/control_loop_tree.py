@@ -1,9 +1,31 @@
 import py_trees
 import time
 from Behavior import primitive_actions
-from Behavior import primitive_conditions
+from Behavior import primitive_conditions, pupper_actions
 from Behavior import pupper_tree_classes
 from CommandInterface import Control
+
+
+class TreeControl(Control):
+    """
+    Control extension that updates on command with behavior tree ticks.
+    """
+
+    def __init__(self):
+        super(TreeControl, self).__init__()
+        self.data = {}
+
+    def update_data(self):
+        # grab data
+        obj = self.obj_sensors.read()
+        pos = self.pos.data
+        try:
+            cv = self.cv_sub.get()
+        except timeout:
+            cv = []
+
+        self.data["obj"] = obj
+        self.data["cv"] = cv
 
 
 if __name__ == '__main__':
@@ -11,13 +33,17 @@ if __name__ == '__main__':
     # tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
 
-    tree_structure = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
-                      "2_then_1":         (py_trees.composites.Sequence("2 Then 1"), ["move_2_seconds_a", "turn_1_second_a"]),
-                      "1_then_2":         (py_trees.composites.Sequence("1 Then 2"), ["move_1_second_b", "turn_2_seconds_b"]),
-                      "move_2_seconds_a":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
-                      "turn_2_seconds_b":   (primitive_actions.TurnRightNode(tsh, time_length=2), []),
-                      "turn_1_second_a":    (primitive_actions.TurnRightNode(tsh, time_length=1), []),
-                      "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
+    tree_structure_1 = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
+                        "2_then_1":         (py_trees.composites.Sequence("2 Then 1"), ["move_2_seconds_a", "turn_1_second_a"]),
+                        "1_then_2":         (py_trees.composites.Sequence("1 Then 2"), ["move_1_second_b", "turn_2_seconds_b"]),
+                        "move_2_seconds_a":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
+                        "turn_2_seconds_b":   (primitive_actions.TurnRightNode(tsh, time_length=2), []),
+                        "turn_1_second_a":    (primitive_actions.TurnRightNode(tsh, time_length=1), []),
+                        "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
+
+    tree_structure = {"Root":             (py_trees.composites.Sequence("Root"), ["Go", "Avoid"]),
+                      "Go":               (pupper_actions.MoveUntilObstaclesNode(tsh), []),
+                      "Avoid":            (pupper_actions.AvoidObstaclesNode(tsh), [])}
 
     tree_structure_hard = {"Root":                     (py_trees.composites.Sequence("Root"), ["Look for ball", "Move toward ball"]),
                            "Look for ball":            (py_trees.composites.Sequence("Look for ball"), ["Move forward A", "Detect ball A"]),
