@@ -110,4 +110,4 @@ We also attached a standard [raspbery pi
 camera](https://www.amazon.com/1080P-Camera-Module-Raspberry-Holder/dp/B07M9Q43MX/ref=sr_1_6?dchild=1&gclid=CjwKCAiAq8f-BRBtEiwAGr3DgZG31ZD1isrbQVfqZKtAMSmcpPU1e9IFm66RiOY_LWKOLSM2ND1iYRoCWiEQAvD_BwE&hvadid=409936242402&hvdev=c&hvlocphy=9002062&hvnetw=g&hvqmt=e&hvrand=10019869209618668489&hvtargid=kwd-52858032474&hydadcr=19109_11276360&keywords=raspberry+pi+camera&qid=1607656695&sr=8-6&tag=googhydr-20)
 with an acrylic case that was attached to sensor mount with a velcro strip. 
 
-![Pupper with Sensor Mount](pupper_with_sensor_mount.jpg)
+![Pupper with Sensor Mount](/figures/pupper_with_sensor_mount.jpg)
