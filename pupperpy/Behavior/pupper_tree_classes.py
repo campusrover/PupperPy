@@ -19,8 +19,9 @@ class TreeStateHandler():
 
     # hack get into pre tick
     def update_data(self, tree):
-        print(self.node_id_dict[self.active_node])
-        self.control.active_node = self.node_id_dict[self.active_node]
+        if self.active_node:
+            print(self.node_id_dict[self.active_node])
+            self.control.active_node = self.node_id_dict[self.active_node]
         self.control.update_data()
 
     def get_active_node_id(self):
