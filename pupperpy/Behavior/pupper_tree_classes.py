@@ -17,7 +17,8 @@ class TreeStateHandler():
         self.control.update_data()
     """
 
-    def update_data(self):
+    # hack get into pre tick
+    def update_data(self, tree):
         print(self.active_node)
         self.control.active_node = self.active_node
         self.control.update_data()
