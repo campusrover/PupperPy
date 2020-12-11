@@ -109,7 +109,7 @@ class TargetFoundNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        if self.tsh.data.bbox_confidence:
+        if any([x['bbox_label'] == self.target for x in self.tsh.control.data["cv"]]):
             self.feedback_message = "Detected ball!"
             return py_trees.common.Status.SUCCESS
         else:
