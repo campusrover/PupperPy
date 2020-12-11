@@ -21,15 +21,19 @@ class TreeControl(Control):
     def __init__(self):
         super(TreeControl, self).__init__()
         self.data = {}
+        self.active_node = -1
+        self.obj = None
+        self.pos = None
+        self.cv = []
 
     def update_data(self):
         # grab data
-        obj = self.obj_sensors.read()
-        pos = self.pos.data
+        self.obj = self.obj_sensors.read()
+        self.pos = self.pos.data
         try:
-            cv = self.cv_sub.get()
+            self.cv = self.cv_sub.get()
         except timeout:
-            cv = []
+            self.cv = []
 
         self.data["obj"] = obj
         self.data["cv"] = cv
@@ -60,7 +64,36 @@ class TreeControl(Control):
 
         #print(str(time.time()) +': ' + self.state)
         self.send_cmd()
-        #self.send_pusher_message(pos, obj, cv)
+        self.send_pusher_message(self.pos, self.obj, self.cv)
+
+    def send_pusher_message(self, pos, obj, cv):
+        bbox = self.current_target
+        timestamp = time.time()
+        if bbox is None:
+            bbox = {'bbox_x': None,
+                    'bbox_y': None,
+                    'bbox_h': None,
+                    'bbox_w': None,
+                    'bbox_label': None,
+                    'bbox_confidence': None}
+
+        message = {'time': timestamp,
+                   'x_pos': pos['x'],
+                   'y_pos': pos['y'],
+                   'x_vel': pos['x_vel'],
+                   'y_vel': pos['y_vel'],
+                   'x_acc': pos['x_acc'],
+                   'y_acc': pos['y_acc'],
+                   'yaw': pos['yaw'],
+                   'yaw_rate': pos['yaw_rate'],
+                   'left_sensor': obj['left'],
+                   'center_sensor': obj['center'],
+                   'right_sensor': obj['right'],
+                   'state': self.state,
+                   'active_node': self.active_node,
+                   **bbox}
+
+        self.pusher_client.send(message)
 
 
 """

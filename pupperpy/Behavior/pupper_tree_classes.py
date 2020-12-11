@@ -17,10 +17,10 @@ class TreeStateHandler():
         self.control.update_data()
     """
 
-    # overload to get into the post tick
-    def update_data(self, tree):
-        #self.control.update_data()
-        return
+    def update_data(self):
+        print(self.active_node)
+        self.control.active_node = self.active_node
+        self.control.update_data()
 
     def get_active_node_id(self):
         return self.node_id_dict[self.active_node]
