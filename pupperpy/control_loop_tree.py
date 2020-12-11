@@ -36,7 +36,8 @@ class TreeControl(Control):
 
 
 if __name__ == '__main__':
-    tsh = pupper_tree_classes.TreeStateHandler(Control())
+    control = Control()
+    tsh = pupper_tree_classes.TreeStateHandler(control)
     vis_p = Popen(['python3', VISION_SCRIPT])
     robo_p = Popen(['python3', RUN_ROBOT_PATH])
     time.sleep(5)
