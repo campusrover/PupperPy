@@ -29,6 +29,10 @@ was simply having a second hex screwdriver that fit the M3 button head screws.
 - When mounting the legs onto the middle 3D pritned body parts, be very careful
   about orientation. If those plates are mounted backwards then the screw holes
   will not line up with the top and bottom plates. 
+- Several times during operation, the hamstrings would pop out. That is the
+  threaded rod would detach from the black end-pieces. During assembly, screw
+  those end-pieces on as tight as possible. I would even recommend using some
+  loclite or super glue on the threads to really hold them in place.
 
 ## Battery & Charging
 The pupper came with a 5200mAh 2S LiPo Battery. To properly charge the battery we used the LiPo battery charger in LiPo Balance Charge mode with 5.2A current and 7.4V(2S). On the machine, simply plugin the yellow and white connectors on the battery and scroll to the LiPo balance charge setting and press play. It should auto-detect the appopriate settings and simply ask you to confirm. You can use the +/- button to change the setting and hold play to confirm. It will then ask you to confirm the 2S charge rate and then it will charge.
