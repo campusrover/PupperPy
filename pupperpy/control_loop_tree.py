@@ -34,6 +34,45 @@ class TreeControl(Control):
         self.data["obj"] = obj
         self.data["cv"] = cv
 
+    def _step():
+        js_msg = self.joystick.get_input()
+
+        # Force stop moving
+        if js_msg['button_l2']:
+            self.user_stop = True
+            self.stop_walk()
+            return
+
+        # User activate
+        if js_msg['button_l1']:
+            self.user_stop = False
+            self.activate()
+            return
+
+        if self.user_stop or not self.active:
+            self.reset()
+            self.send_cmd()
+            return
+
+        if not self.walking:
+            self.start_walk()
+            return
+
+
+"""
+        # grab data
+        obj = self.obj_sensors.read()
+        pos = self.pos.data
+        try:
+            cv = self.cv_sub.get()
+        except timeout:
+            cv = []
+"""
+
+#print(str(time.time()) +': ' + self.state)
+self.send_cmd()
+self.send_pusher_message(pos, obj, cv)
+
 
 if __name__ == '__main__':
     control = Control()
