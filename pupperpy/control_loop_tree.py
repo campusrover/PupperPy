@@ -58,6 +58,10 @@ class TreeControl(Control):
             self.start_walk()
             return
 
+        #print(str(time.time()) +': ' + self.state)
+        self.send_cmd()
+        self.send_pusher_message(pos, obj, cv)
+
 
 """
         # grab data
@@ -68,10 +72,6 @@ class TreeControl(Control):
         except timeout:
             cv = []
 """
-
-#print(str(time.time()) +': ' + self.state)
-self.send_cmd()
-self.send_pusher_message(pos, obj, cv)
 
 
 if __name__ == '__main__':
