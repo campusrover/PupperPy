@@ -16,7 +16,7 @@ class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        obj = tsh.control.obj
+        obj = self.tsh.control.obj
         if any(obj.values()):
             self.feedback_message = "End of journey!"
             return py_trees.common.Status.SUCCESS
@@ -47,7 +47,7 @@ class AvoidObstaclesNode(py_trees.behaviour.Behaviour):
         return
 
     def update(self):
-        obj = tsh.control.obj
+        obj = self.tsh.control.obj
         if any(obj.values()):
             self.feedback_message = "Dodging obstacle..."
             self.tsh.active_node = self
