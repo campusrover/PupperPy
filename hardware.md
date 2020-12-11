@@ -30,6 +30,11 @@ was simply having a second hex screwdriver that fit the M3 button head screws.
   about orientation. If those plates are mounted backwards then the screw holes
   will not line up with the top and bottom plates. 
 
+## Battery & Charging
+The pupper came with a 5200mAh 2S LiPo Battery. To properly charge the battery we used the LiPo battery charger in LiPo Balance Charge mode with 5.2A current and 7.4V(2S). On the machine, simply plugin the yellow and white connectors on the battery and scroll to the LiPo balance charge setting and press play. It should auto-detect the appopriate settings and simply ask you to confirm. You can use the +/- button to change the setting and hold play to confirm. It will then ask you to confirm the 2S charge rate and then it will charge.
+
+From fully depleted the battery was able to charge in about 45 minutes. A full charge can power the robot and all peripherals for roughly 1.5-2hrs.
+
 # Repairs
 
 ## First damage
@@ -56,6 +61,9 @@ and more flexible than the previous parts.
 
 # Sensors
 
+Here is the a connection diagram for attaching the IMU and object sensors to the raspberry pi.
+![Sensor Connection Diagram](/figures/Pupper_Peripherals_Layout.png)
+
 ## Intertial Measurement Unit (IMU)
 We chose to install a 9-DOF IMU in hopes of accurately tracking orientation and
 position. To this end we used the [Adafruit BNO055 Absolute Orientation
@@ -64,3 +72,4 @@ which boasts on-board sensor fusion. This means that this unit already takes
 sensor readings from the gyroscope, accelerometers and magnetometer and
 appropriately rotates the data to provide euler angles relative to magnetic
 north and linear acceleration values with gravity already removed. 
+
