@@ -45,8 +45,14 @@ class PusherClient:
             'x_vel': message['x_vel'],
             'y_vel': message['y_vel']
         })
-        self.client.trigger('tree_data', 'new', {
-            'timestamp': message['time'],
-            'node_id': message['active_node']
-            # 'node_id': random.randint(0, 15)
-        })
+
+        if 'active_node' in message.keys():
+            self.client.trigger('tree_data', 'new', {
+                'timestamp': message['time'],
+                'node_id': message['active_node']
+            })
+        else:
+            self.client.trigger('tree_data', 'new', {
+                'timestamp': message['time'],
+                'node_id': random.randint(0, 15)
+            })
