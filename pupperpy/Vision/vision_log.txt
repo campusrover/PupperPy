@@ -2,13 +2,13 @@ Failed to run detection loop:
  Traceback (most recent call last):
   File "/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/pupper_vision.py", line 36, in main
     for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
-  File "/usr/local/lib/python3.7/dist-packages/picamera/camera.py", line 1702, in capture_continuous
-    if not encoder.wait(self.CAPTURE_TIMEOUT):
-  File "/usr/local/lib/python3.7/dist-packages/picamera/encoders.py", line 393, in wait
-    result = self.event.wait(timeout)
-  File "/usr/lib/python3.7/threading.py", line 552, in wait
-    signaled = self._cond.wait(timeout)
-  File "/usr/lib/python3.7/threading.py", line 300, in wait
-    gotit = waiter.acquire(True, timeout)
+  File "/usr/local/lib/python3.7/dist-packages/picamera/camera.py", line 1701, in capture_continuous
+    encoder.start(output)
+  File "/usr/local/lib/python3.7/dist-packages/picamera/encoders.py", line 1166, in start
+    super(PiRawImageMixin, self).start(output)
+  File "/usr/local/lib/python3.7/dist-packages/picamera/encoders.py", line 377, in start
+    self.output_port.enable(self._callback)
+  File "/usr/local/lib/python3.7/dist-packages/picamera/mmalobj.py", line 1248, in enable
+    mmal.mmal_port_enable(self._port, self._wrapper),
 KeyboardInterrupt
 
