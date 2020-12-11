@@ -33,7 +33,9 @@ The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset]
 [failure]: /figures/original_net_detection_failure.png
 [success]: /figures/original_net_detection_success.png
 
-We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used).
+We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used). We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range.
 
 ##### Dataset organization
-Once the images were acquired, they needed to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Once you have finished, you will have a .xml file for each image with a list of the associated bounding boxes. 
+Once the images were acquired, they needed to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Once you have finished, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
+
+We now want to split the annotated dataset into a training set and a test set. 
