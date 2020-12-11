@@ -80,7 +80,7 @@ if __name__ == '__main__':
     vis_p = Popen(['python3', VISION_SCRIPT])
     robo_p = Popen(['python3', RUN_ROBOT_PATH])
     time.sleep(5)
-    control.run_loop()
+    # control.run_loop()
     # tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
             period_ms=500,
             number_of_iterations=py_trees.trees.CONTINUOUS_TICK_TOCK,
             pre_tick_handler=tsh.update_data,
-            post_tick_handler=print_active_node
+            post_tick_handler=control._step
         )
     except KeyboardInterrupt:
         behaviour_tree.interrupt()
