@@ -2,8 +2,8 @@
 layout: template
 ---
 
-# <del>[Introduction](introduction.md)<\del>
-## <del>Project Goals<\del>
+# <del>[Introduction](introduction.md)</del>
+## <del>Project Goals</del>
 ## Team Members
 ## Rough timeline
 
