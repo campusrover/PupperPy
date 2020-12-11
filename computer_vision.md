@@ -27,4 +27,6 @@ Given the above restrictions, we decided to use a version of [MobileNetV2](https
 The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset](https://cocodataset.org/#home "COCO dataset homepage") to recognize 90 different object classes. One of these classes is "sports ball" which was close to our desired goal (a tennis ball). We therefore evaluated the performance of this network "out of the box". We found that while this network was capable of recognizing tennis balls in an image, the tennis ball needed to be fairly close to the robot to be detected.
 | Undetected               | Detected
 :-------------------------:|:---------------------:
-![alt text](https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_net_detection_failure.png) | [alt text](https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_net_detection_success.png)
+![failure]                 | ![success]
+[failure]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_network_detection_failure.png
+[success]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_network_detection_success.png
