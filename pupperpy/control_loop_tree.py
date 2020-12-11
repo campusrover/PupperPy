@@ -35,9 +35,6 @@ class TreeControl(Control):
         except timeout:
             self.last_cv = []
 
-        self.last_data["obj"] = obj
-        self.last_data["cv"] = cv
-
     def _step(self, tree):
         js_msg = self.joystick.get_input()
 
