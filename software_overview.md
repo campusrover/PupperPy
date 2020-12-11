@@ -79,5 +79,62 @@ initalizes and maintains 4 important objects:
   sets the servos to those angles. 
 
 This process can be run directly as a python script or run as a background unix
-service. See [Softwar Setup](software_setup.md) to see how to setup and run
+service. See [Software Setup](software_setup.md) to see how to setup and run
 this.
+
+# Our Automated Control Software
+In order to take programatic control of the Pupper robot we replaced the function of the PupperCommand `joytick.py` script with our own `pupperpy.CommandInterface.Control` object. 
+
+If pupperpy is installed with `sudo pip3` then all necessary processes for robot operation can be run with `sudo python3 /path/to/PupperPy/pupperpy/run_cerbaris.py` 
+
+## The pupperpy Control interface
+Unlike the `joystick` script, our controller is an object that is instantiated and is then run.
+When created the Control object creates:
+- A `pupperpy.ControllerState.ControllerState` object which keeps track of the
+  current commands to be sent to the robot and acted upon
+- A UDPComms Publisher on channel 8830 to send commands to StanfordQuadruped's run_robot.py
+- A UDPComms Subscriber on channel 8840 to receive messages from StanfordQuadruped's run_robot.py
+- A UDPComms Subscriber on channel 105 to receive output from the `pupper_vision.py` script
+- A `pupperpy.object_detection.ObjectSensors` object to monitor the state of
+  the IR object sensors
+- A `pupperpy.position.PositionTracker` object which maintains a pointer to the
+  ControllerState object and setups comunication with the IMU so that it can
+  use current command state and IMU information to update a Kalman filter and
+  track robot position, velocity, acceleration and heading.
+- A timer thread which, when started, will call the Control's `_step()` function every 1/20 sec
+- A `PS4Joystick.Joystick` object so that the PS4 controller can be used to
+  activate and emergency stop the robot
+
+On every iteration of the loop the `_step()` function checks the joystick for
+activation (L1) or emergency stop (L2) commands, otherwise it uses
+`update_behavior()` to check sensor data and update movement commands and then
+sends those to both the run_robot script and to the web interface.
+
+Additionally, this interface simplfies the creation of new behaviors through the use of simplified movement commands:
+
+```python
+control.move_forward()  # moves forward at max safe velocity
+control.move_backward() # moves backward at max safe velocity
+control.move_stop()     # stops forward and backward movement
+
+control.turn_left()     # turns left
+control.turn_right()    # turns right
+control.turn_stop()     # stops turning
+
+control.activate()      # Activates robot, initializes motor positions
+control.start_walk()    # switches robot gait from REST to TROT
+control.stop_walk()     # switches robot gait from TROT to REST
+```
+
+One can simply extend the control object and override the `update_behavior`
+function in order to implement new behavior.
+The existing behavior is very simple.
+* When instantiated you can choose the
+  designated target for the robot to chase
+  * With the existing computer vision
+    these can be 'tennis_ball', 'human', or 'chair'.
+* If there is an object detected by the IR sensors, turn away from it.
+* If the computer vision returns a bounding box for the designated target, move
+  forward and turn so as to center
+  the bounding box.
+* If neither of those then just walk forward. 
