@@ -29,5 +29,5 @@ The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset]
 :-------------------------:|:---------------------:
 ![failure]                 | ![success]
 
-[failure]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_network_detection_failure.png
-[success]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_network_detection_success.png
+[failure]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_net_detection_failure.png
+[success]: https://github.com/nubs01/PupperPy/tree/gh-pages/figures/original_net_detection_success.png
