@@ -1,12 +1,14 @@
 Failed to run detection loop:
  Traceback (most recent call last):
-  File "/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/pupper_vision.py", line 44, in main
-    results = engine.detect_with_image(image,threshold=0.2,keep_aspect_ratio=True,relative_coord=False,top_k=10)
-  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 154, in detect_with_image
-    candidates = self.detect_with_input_tensor(input_tensor, threshold, top_k)
-  File "/usr/lib/python3/dist-packages/edgetpu/detection/engine.py", line 184, in detect_with_input_tensor
-    _, raw_result = self.run_inference(input_tensor)
-  File "/usr/lib/python3/dist-packages/edgetpu/basic/basic_engine.py", line 135, in run_inference
-    assert len(input) >= expected_input_size
-AssertionError
+  File "/home/cerbaris/pupper_code/PupperPy/pupperpy/Vision/pupper_vision.py", line 36, in main
+    for _ in camera.capture_continuous(stream, format='rgb', use_video_port=True, resize=(width, height)):
+  File "/usr/local/lib/python3.7/dist-packages/picamera/camera.py", line 1702, in capture_continuous
+    if not encoder.wait(self.CAPTURE_TIMEOUT):
+  File "/usr/local/lib/python3.7/dist-packages/picamera/encoders.py", line 393, in wait
+    result = self.event.wait(timeout)
+  File "/usr/lib/python3.7/threading.py", line 552, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.7/threading.py", line 300, in wait
+    gotit = waiter.acquire(True, timeout)
+KeyboardInterrupt
 

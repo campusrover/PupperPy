@@ -34,7 +34,7 @@ class TreeControl(Control):
         self.data["obj"] = obj
         self.data["cv"] = cv
 
-    def _step():
+    def _step(self):
         js_msg = self.joystick.get_input()
 
         # Force stop moving
@@ -75,7 +75,7 @@ class TreeControl(Control):
 
 
 if __name__ == '__main__':
-    control = Control()
+    control = TreeControl()
     tsh = pupper_tree_classes.TreeStateHandler(control)
     vis_p = Popen(['python3', VISION_SCRIPT])
     robo_p = Popen(['python3', RUN_ROBOT_PATH])
