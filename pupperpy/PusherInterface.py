@@ -42,5 +42,6 @@ class PusherClient:
         'y_vel': message['y_vel']
     })
     self.client.trigger('tree_data', 'new', {
+        'timestamp': message['time'],
         'node_id': random.randint(0, 15)
     })
