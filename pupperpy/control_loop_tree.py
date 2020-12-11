@@ -22,21 +22,21 @@ class TreeControl(Control):
         super(TreeControl, self).__init__()
         self.data = {}
         self.active_node = -1
-        self.obj = None
-        self.pos = None
-        self.cv = []
+        self.last_obj = None
+        self.last_pos = None
+        self.last_cv = []
 
     def update_data(self):
         # grab data
-        self.obj = self.obj_sensors.read()
-        self.pos = self.pos.data
+        self.last_obj = self.obj_sensors.read()
+        self.last_pos = self.pos.data
         try:
-            self.cv = self.cv_sub.get()
+            self.last_cv = self.cv_sub.get()
         except timeout:
-            self.cv = []
+            self.last_cv = []
 
-        self.data["obj"] = obj
-        self.data["cv"] = cv
+        self.last_data["obj"] = obj
+        self.last_data["cv"] = cv
 
     def _step(self, tree):
         js_msg = self.joystick.get_input()
@@ -64,7 +64,7 @@ class TreeControl(Control):
 
         #print(str(time.time()) +': ' + self.state)
         self.send_cmd()
-        self.send_pusher_message(self.pos, self.obj, self.cv)
+        self.send_pusher_message(self.last_pos, self.last_obj, self.last_cv)
 
     def send_pusher_message(self, pos, obj, cv):
         bbox = self.current_target
