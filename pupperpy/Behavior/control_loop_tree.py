@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     try:
         behaviour_tree.tick_tock(
-            period_ms=500,
+            period_ms=200,
             number_of_iterations=py_trees.trees.CONTINUOUS_TICK_TOCK,
             pre_tick_handler=tsh.update_data,
             post_tick_handler=print_active_node
