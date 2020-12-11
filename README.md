@@ -69,7 +69,7 @@ Then the Control object can be run.
 
 *In IPython,*
 ```python
-control.run()
+control.run_loop()
 ```
 
 This will start a timer that calls the `control._step()` function approximately
