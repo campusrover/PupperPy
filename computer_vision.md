@@ -43,5 +43,5 @@ e.g.
 `python3 split_data.py \  
 --data_dir=/path/to/dataset/ \  
 --output_dir=/where/to/store/output/ \  
---train_frac=.5  
+--train_frac=.5`   
 
