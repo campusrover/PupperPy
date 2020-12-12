@@ -40,4 +40,4 @@ To collect a custom dataset, we simply placed tennis balls around the robotics l
 
 We now want to split the annotated dataset into a training set and a test set. For this we've written a python script `split_data.py` which accepts 2 required and 1 optional command line argument.
 e.g.
-`python3 split_data.py --data_dir=/path/to/dataset/ --output_dir=/where/to/store/output/ --train_frac=.5
+`python3 split_data.py --data_dir=/path/to/dataset/ --output_dir=/where/to/store/output/ --train_frac=.5`
