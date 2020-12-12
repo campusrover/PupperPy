@@ -23,6 +23,7 @@ class TreeStateHandler():
             # print(self.node_id_dict[self.active_node])
             self.control.active_node = self.node_id_dict[self.active_node]
         self.control.update_data()
+        print(str(self.control.control_state))
 
     def set_active_node(self, node):
         if not self.active_node is node:
