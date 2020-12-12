@@ -36,6 +36,15 @@ git clone http://github.com/stanfordroboticsclub/UDPComms.git
 git clone https://github.com/stanfordroboticsclub/uDHCPd.git
 git clone https://github.com/nubs01/PupperPy.git
 
+# Setup network insterfaces for use with UDPComms
+cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/network/interfaces
+
+# Configurations for IMU and Camera
+# Change to /boot/firmware/config.txt for ubuntu mate
+# IMU must be connected like this: Vin: 3.3V, GND: GND, SDA: GPIO_0, SCL:
+# GPIO_1, RST: GPIO_16 (or any open GPIO, set to high, pulse low to reset)
+cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
+
 # And grab and install pigpio (the StanfordQuadruped install uses pigpio-v74,
 # no idea why but it doesn't work with ubuntu, master should work with all
 wget https://github.com/joan2937/pigpio/archive/master.zip
@@ -48,6 +57,8 @@ cd ..
 # Now install the pupper code
 sudo pip3 install -e UDPComms
 sudo bash uDHCPd/install.sh
+# To pip install pupperpy package in editable form and allow pupperpy imports
+# in ipython from anywhere
 cd PupperPy
 sudo pip3 install -e pupperpy
 cd ..
@@ -85,30 +96,24 @@ sudo systemctl start robot
 #sudo systemctl start robotble
 
 ### For autonomous control ###
-sudo systemctl enable cerbaris_control
-sudo systemctl enable cerbaris_robot
-sudo systemctl enable pupper_vision
-sudo systemctl start cerbaris_control
-sudo systemctl start pupper_vision
-sudo systemctl start cerbaris_robot
+### THIS IS DEPRECATED ###
+#sudo systemctl enable cerbaris_control
+#sudo systemctl enable cerbaris_robot
+#sudo systemctl enable pupper_vision
+#sudo systemctl start cerbaris_control
+#sudo systemctl start pupper_vision
+#sudo systemctl start cerbaris_robot
 # After connecting the PS4 Controller, you may need to restart cerbaris_robot
 # sudo systemctl restart cerbaris_robot
 
-
-# Setup network insterfaces for use with UDPComms
-cat PupperPy/pupperpy/resources/network_interfaces_extra.txt | sudo tee -a /etc/network/interfaces
-
-# Configurations for IMU and Camera
-# Change to /boot/firmware/config.txt for ubuntu mate
-# IMU must be connected like this: Vin: 3.3V, GND: GND, SDA: GPIO_0, SCL:
-# GPIO_1, RST: GPIO_16 (or any open GPIO, set to high, pulse low to reset)
-cat PupperPy/pupperpy/resources/config_extra.txt | sudo tee -a /boot/config.txt
+# Now you can start all neeeded processes to run the robot with:
+sudo python3 /home/cerbaris/pupper_code/PupperPy/pupperpy/run_cerbaris.py
 
 # To pip install pupperpy package in editable form and allow pupperpy imports
 # in ipython from anywhere
-cd PupperPy
-sudo pip3 install -e pupperpy
-cd ..
+#cd PupperPy
+#sudo pip3 install -e pupperpy
+#cd ..
 
 ################################################################################
 ################    IMU and Camera Setup    ######################
