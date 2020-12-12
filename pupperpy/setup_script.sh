@@ -48,6 +48,9 @@ cd ..
 # Now install the pupper code
 sudo pip3 install -e UDPComms
 sudo bash uDHCPd/install.sh
+cd PupperPy
+sudo pip3 install -e pupperpy
+cd ..
 
 # Setup symlinks and services
 
