@@ -26,9 +26,9 @@ class TreeStateHandler():
 
     def set_active_node(self, node):
         if not self.active_node == node:
+            self.active_node = node
             print("Active node is now: " +
                   str(self.node_id_dict[self.active_node]))
-        self.active_node = node
 
     def get_active_node_id(self):
         return self.node_id_dict[self.active_node]
