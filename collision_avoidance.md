@@ -10,7 +10,8 @@ The hardware communcation is achieved through the `pigpio` package. For ease of 
 from pupperpy.object_detection import ObjectSensors
 
 sensors = ObjectSensors()
-sensors.read() # returns dict with keys 'left', 'right' and 'center' which have boolean values
+sensors.read() # returns dict with keys 'left', 'right' and 'center' which have
+               # boolean values
 ```
 
 ## Current Usage
