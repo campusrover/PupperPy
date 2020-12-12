@@ -1,5 +1,5 @@
 ---
-template: layout
+layout: template
 ---
 # Odometry using a 9-DOF IMU
 
