@@ -22,6 +22,18 @@ and guiding comments to allow a few different setup configurations. Just
 copy-pasta what you need into a terminal one line or block at a time.
 
 # Automated Cerbaris Control
+## Updated Usage
+Though the below methods can still be used, a simpler but less versatile usage is to pip install the pupperpy package:
+```bash
+cd /your/path/to/PupperPy
+sudo pip3 install -e pupperpy
+```
+and now you can startup all processes with one command:
+```bash
+sudo python3 /your/path/to/PupperPy/pupperpy/run_cerbaris.py
+```
+and then connecting your PS4 controller. Now cerbaris is ready to run. Just hit the L1 button to activate. L2 can be used to emergency stop the pupper, with L1 being able to re-activate.
+
 ## Usage
 The automated control system is located in the pupperpy/CommandInterface.py
 file. Currently control of the pupper is done using the
