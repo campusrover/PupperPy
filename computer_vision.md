@@ -38,9 +38,10 @@ We therefore decided to use a transfer learning protocol to retrain the last few
 ##### Dataset organization
 To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, they needed to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the predefined_classes.txt file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
 
-We now want to split the annotated dataset into a training set and a test set. For this we've written a python script `split_data.py` which accepts 2 required and 1 optional command line argument.
-e.g.
-`python3 split_data.py \
---data_dir=/path/to/dataset/ \
---output_dir=/where/to/store/output/ \
---train_frac=.5`
+We now want to split the annotated dataset into a training set and a test set. For this we've written a python script `split_data.py` which accepts 2 required and 1 optional command line argument.  
+e.g.  
+`python3 split_data.py \  
+--data_dir=/path/to/dataset/ \  
+--output_dir=/where/to/store/output/ \  
+--train_frac=.5  
+
