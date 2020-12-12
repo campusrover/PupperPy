@@ -22,7 +22,7 @@ class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still moving..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             self.tsh.control.turn_stop()
             self.tsh.control.move_forward()
             return py_trees.common.Status.RUNNING
@@ -51,7 +51,7 @@ class AvoidObstaclesNode(py_trees.behaviour.Behaviour):
         obj = self.tsh.control.obj_sensors.read()
         if any(obj.values()):
             self.feedback_message = "Dodging obstacle..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             if obj['left'] and obj['center']:
                 self.tsh.control.move_stop()
                 self.tsh.control.turn_right()

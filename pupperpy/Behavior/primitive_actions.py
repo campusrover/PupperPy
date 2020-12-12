@@ -26,7 +26,7 @@ class MoveForwardNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still moving..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             self.tsh.control.turn_stop()
             self.tsh.control.move_forward()
             return py_trees.common.Status.RUNNING
@@ -59,7 +59,7 @@ class TurnLeftNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still moving..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             self.tsh.control.move_stop()
             self.tsh.control.turn_left()
             return py_trees.common.Status.RUNNING
@@ -92,7 +92,7 @@ class TurnRightNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still moving..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             self.tsh.control.move_stop()
             self.tsh.control.turn_right()
             return py_trees.common.Status.RUNNING
@@ -126,7 +126,7 @@ class TurnNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.SUCCESS
         else:
             self.feedback_message = "Still turning..."
-            self.tsh.active_node = self
+            self.tsh.set_active_node(self)
             # print(self.name)
             # update command interface
             return py_trees.common.Status.RUNNING
