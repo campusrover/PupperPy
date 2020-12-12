@@ -44,5 +44,17 @@ e.g.
     python3 split_data.py \  
     --data_dir=/path/to/dataset/ \  
     --output_dir=/where/to/store/output/ \  
-    --train_frac=.5   
+    --train_frac=0.5   
 ```
+where `train_frac` gives the fraction of the total dataset to be used as training data.
+This will create two directories, train and test, in the `output_dir` directory.
+
+Once this is done, we need to convert our training and test sets into TFRecord files. To do this we can use the `generate_tfrecord.py` script in `pupperpy/Vision/transfer_learning/`. We will convert the training and test sets separately. For example, for the training set, if all the image and .xml files for the training set are in a directory `data/train`, run:
+```python
+python3 generate_tfrecord.py \
+--xml_dir=data/train \
+--labels_path=/path/to/labels.pbtxt \
+--output_path=/path/to/output/tfrecord/train.record \
+--image_dir=data/train
+```
+
