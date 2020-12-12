@@ -59,6 +59,27 @@ python3 generate_tfrecord.py \
 ```
 If this code runs successfully, there should now be a train.record file in your desired output location. Repeat the same process but for the test set now to create a test.record file.
 
+Lastly, we need to create a label map file called pupper_label_map.pbtxt (see example in the Vision/transfer_learning/learn_custom/custom folder). List all of your desired output classes in this file like this:
+```
+item {
+  id: 1
+  name: 'ball'
+}
+
+item {
+  id: 2
+  name: 'human'
+}
+
+item {
+  id: 3
+  name: 'chair'
+}
+.
+.
+.
+```
+
 ##### Retraining the network
 Now that we have our train/test.record files, we can move on to actually retraining the network. To do this, we will follow a [tutorial on the coral webpage](https://coral.ai/docs/edgetpu/retrain-detection/#requirements "Transfer Learning tutorial") for retraining the last few layers of the mobilenet_v2 model in docker. This tutorial is meant to retrain the network to recognize certain breeds of cats and dogs, but we will utilize the retraining code and just substitute in our own dataset. Note, however that we will need to modify some of the files in the tutorial in order to use our custom dataset.
 
@@ -75,7 +96,7 @@ Now that we have our train/test.record files, we can move on to actually retrain
     4. `train`
 
 5. Next, you will see a `constants.sh` file in the `research` directory. Copy that file to a new file `pupper_constants.sh`. We need to change the specified paths at the bottom of this file to use our dataset. Change the lines (starting at `OBJ_DET_DIR=...`) to read the following:  
-```
+```shell
 OBJ_DET_DIR="$PWD"
 LEARN_DIR="${OBJ_DET_DIR}/learn_custom"
 DATASET_DIR="${LEARN_DIR}/custom
@@ -83,4 +104,6 @@ CKPT_DIR="${LEARN_DIR}/ckpt"
 TRAIN_DIR="${LEARN_DIR}/train"
 OUTPUT_DIR="${LEARN_DIR}/models"
 ```
+Now save and close this file.
 
+6. 
