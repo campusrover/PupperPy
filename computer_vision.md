@@ -66,4 +66,11 @@ Now that we have our train/test.record files, we can move on to actually retrain
 
 2. Follow the instructions in the tutorial for cloning the coral tutorials repo and starting the Docker container.
 
-3. Once you start the docker container, your command prompt should be inside the Docker container at the path `/tensorflow/models/research` and you should see a directory titled `learn_pet` inside the research directory. The `learn_pet` directory is used for the tutorial. In order to use our own dataset, we will need to create our own directory inside `/tensorflow/models/research` that mirrors the structure of `learn_pet`. Let's call our directory `learn_custom`.
+3. Once you start the docker container, your command prompt should be inside the Docker container at the path `/tensorflow/models/research` and you should see a directory titled `learn_pet` inside the research directory. The `learn_pet` directory is used for the tutorial. In order to use our own dataset, we will need to create our own directory inside `/tensorflow/models/research` that mirrors the structure of `learn_pet`. Let's create a directory `learn_custom`.
+
+4. Inside `/tensorflow/models/research/learn_custom/` create 4 subdirectories:  
+    1. `ckpt`
+    2. `models`
+    3. `custom`
+    4. `train`
+
