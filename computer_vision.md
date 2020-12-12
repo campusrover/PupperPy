@@ -74,3 +74,13 @@ Now that we have our train/test.record files, we can move on to actually retrain
     3. `custom`
     4. `train`
 
+5. Next, you will see a `constants.sh` file in the `research` directory. Copy that file to a new file `pupper_constants.sh`. We need to change the specified paths at the bottom of this file to use our dataset. Change the lines (starting at `OBJ_DET_DIR=...`) to read the following:  
+```
+OBJ_DET_DIR="$PWD"
+LEARN_DIR="${OBJ_DET_DIR}/learn_custom"
+DATASET_DIR="${LEARN_DIR}/custom
+CKPT_DIR="${LEARN_DIR}/ckpt"
+TRAIN_DIR="${LEARN_DIR}/train"
+OUTPUT_DIR="${LEARN_DIR}/models"
+```
+
