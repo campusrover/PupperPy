@@ -23,7 +23,7 @@ sudo nano /etc/hosts
 # Install basic software
 sudo apt-get update
 sudo apg-get upgrade
-sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools 
+sudo apt-get install -y vim python3-pip build-essential libbluetooth-dev libatlas-base-dev libsdl-ttf2.0-0 git i2c-tools tmux
 sudo pip3 install numpy pybluez ds4drv msgpack pexpect transforms3d pigpio pyserial ipython adafruit-circuitpython-bno055 picamera pandas pathlib python-dotenv pusher
 
 # Git grabs
