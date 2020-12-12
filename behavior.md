@@ -1,3 +1,6 @@
+---
+layout: template
+---
 **Behavior Trees (in progress)**
 
 Complex behavior for the CERBaris is a behavior tree implementation dependent on the py_trees library. To run the current behavior iteration, simply run control_loop.py from the main pupperpy directory.
