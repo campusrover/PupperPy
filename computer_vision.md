@@ -36,7 +36,7 @@ The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset]
 We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used). We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range.
 
 ##### Dataset organization
-To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, they needed to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the predefined_classes.txt file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
+To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, we copied them off of the pi to an Ubuntu laptop (the rest of the retraining procedure all happens off of the pi). The images now need to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the `predefined_classes.txt` file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
 
 We now want to split the annotated dataset into a training set and a test set. For this we've written a python script `split_data.py` which accepts 2 required and 1 optional command line argument.  
 e.g.  
@@ -57,4 +57,13 @@ python3 generate_tfrecord.py \
 --output_path=/path/to/output/tfrecord/train.record \
 --image_dir=data/train
 ```
+If this code runs successfully, there should now be a train.record file in your desired output location. Repeat the same process but for the test set now to create a test.record file.
 
+##### Retraining the network
+Now that we have our train/test.record files, we can move on to actually retraining the network. To do this, we will follow a [tutorial on the coral webpage](https://coral.ai/docs/edgetpu/retrain-detection/#requirements "Transfer Learning tutorial") for retraining the last few layers of the mobilenet_v2 model in docker. This tutorial is meant to retrain the network to recognize certain breeds of cats and dogs, but we will utilize the retraining code and just substitute in our own dataset. Note, however that we will need to modify some of the files in the tutorial in order to use our custom dataset.
+
+1. The first step is to [install docker](https://docs.docker.com/engine/install/ubuntu/ "install docker") onto your machine.
+
+2. Follow the instructions in the tutorial for cloning the coral tutorials repo and starting the Docker container.
+
+3. Once you start the docker container, your command prompt should be inside the Docker container at the path `/tensorflow/models/research` and you should see a directory titled `learn_pet` inside the research directory. The `learn_pet` directory is used for the tutorial. In order to use our own dataset, we will need to create our own directory inside `/tensorflow/models/research` that mirrors the structure of `learn_pet`. Let's call our directory `learn_custom`.
