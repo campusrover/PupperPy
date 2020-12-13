@@ -1,7 +1,14 @@
 ---
 layout: template
 ---
-{% include image.html url="/figures/Roshan.jpg" description="Roshan Nanu" %}
-{% include image.html url="/figures/Ben.jpg" description="Ben Ballintyn" %}
-{% include image.html url="/figures/Evalyn.jpg" description="Evalyn Berleant" %}
-{% include image.html url="/figures/Chris.png" description="Chris Tam" %}
+![Roshan Nanu](/figures/Roshan.jpg)
+*Roshan Nanu*
+
+![Ben Ballintyn](/figures/Ben.jpg)
+*Ben Ballintyn*
+
+![Evalyn Berleant](/figures/Evalyn.jpg)
+*Evalyn Berleant*
+
+![Chris Tam](/figures/Chris.png)
+*Chris Tam*
