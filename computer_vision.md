@@ -11,6 +11,7 @@ For this project, we used the [raspberry pi v2 camera](https://www.amazon.com/Ra
 6. Publish the bounding box info as a list of dictionaries via UDPcomms on port 105
 
 #### Hardware Interface
+##### Camera
 First things first, connect the Raspberry Pi Camera Module to the Pi as in this [tutorial](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera "Installing the PiCamera"). Be sure to make sure the cable is the right way around.
 
 Next, you can enable the camera by using the raspi-config tool. If you do not have the raspi-config tool (e.g. if you are using Ubuntu), you can enable the camera by editing `/boot/config.txt` (if using raspbian) or `/boot/firmware/config.txt` (if using Ubuntu). Go to the bottom of the config.txt file and add the lines:
@@ -20,6 +21,7 @@ gpu_mem=128
 ```
 Note, you can increase or decrease gpu_mem to your needs (we currently use 256).
 
+##### Google Coral Edge TPU USB Accelerator
 To accelerate object detection inference onboard the robot, we used the [Coral TPU USB accelerator from Google](https://coral.ai/products/accelerator/ "TPU product page"). This plugs into one of the USB 3.0 ports on the raspberry pi 4.
 
 To get started with the USB accelerator, follow the [instructions](https://coral.ai/docs/accelerator/get-started/) for installing the edgetpu runtime library (replicated here).
@@ -32,9 +34,19 @@ sudo apt-get install libedgetpu1-std
 
 #### Tensorflow
 The Coral edge TPU is only compatible with Tensorflow Lite and since we only want to do inference with a .tflite model onboard the robot, we will [install just the TF Lite interpreter](https://www.tensorflow.org/lite/guide/python). Make sure to use the .whl for ARM 32 and your corresponding python version (we used python 3.7)
+e.g.
+```shell
+pip3 install https://github.com/google-coral/pycoral/releases/download/release-frogfish/tflite_runtime-2.5.0-cp37-cp37m-linux_armv7l.whl
+```
 
 #### ML Models
-To perform inference on the TPU, we are able to use the `DetectionEngine` in the [Edge TPU API](https://coral.ai/docs/edgetpu/api-intro/#install-the-library "Edge TPU API install"). This API abstracts away almost all of the tensor manipulation required to do inference. All we really need to do is find an object detection model that we can use. Currently, this API only supports [SSD (Single-Shot Detection)](https://arxiv.org/pdf/1512.02325.pdf "Original SSD paper") with a postprocessing operator ([such as non-maximum suppression](https://towardsdatascience.com/non-maximum-suppression-nms-93ce178e177c "NMS blog")). Additional restrictions on the network operations that are supported on the coral TPU can be found [here](https://coral.ai/docs/edgetpu/models-intro/#supported-operations "Supported operations").
+To perform inference on the TPU, we are able to use the `DetectionEngine` in the [Edge TPU API](https://coral.ai/docs/edgetpu/api-intro/#install-the-library "Edge TPU API install"). This API abstracts away almost all of the tensor manipulation required to do inference. Unfortunately, during the project, this API became deprecated but is still installable via:
+```shell
+sudo apt-get install python3-edgetpu
+```
+It has been replaced by the [PyCoral API](https://coral.ai/docs/reference/py/ "PyCoral API"). Which we will endeavour to adapt our code to ASAP. 
+
+Given these APIs, all we really need to do is find an object detection model that we can use. Currently, the Edge TPU API only supports [SSD (Single-Shot Detection)](https://arxiv.org/pdf/1512.02325.pdf "Original SSD paper") with a postprocessing operator ([such as non-maximum suppression](https://towardsdatascience.com/non-maximum-suppression-nms-93ce178e177c "NMS blog")). Additional restrictions on the network operations that are supported on the coral TPU can be found [here](https://coral.ai/docs/edgetpu/models-intro/#supported-operations "Supported operations").
 
 Given the above restrictions, we decided to use a version of [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf "MobileNetV2 Paper") which is precompiled to be run on the Coral TPU. This model (MobileNetV2 SSD v2 COCO) and a couple other variants are available [here](https://coral.ai/models/ "Coral Models page"). The [MobileNet networks](https://arxiv.org/pdf/1704.04861.pdf "Original MobileNet paper"), developed by Google, are an attractice option since they utilize a modified convolution operation that requires only ~10% of the computation of a standard convolution operation. This means that they retain most of the accuracy of other vision models but can be run much faster allowing them to be used on mobile and edge devices.
 
@@ -196,7 +208,12 @@ sudo docker exec -it edgetpu-detect /bin/bash
 tensorboard --logdir=./learn_custom/train
 ```
 Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
-
+![tensorboard1]
+![tensorboard2]
+![tensorboard3]
+[tensorboard1]: /figures/tensorboard_image_example.png
+[tensorboard2]: /figures/tensorboard_image_example2.png
+[tensorboard3]: /figures/tensorboard_loss_example.png
 ##### Compiling the model for the Edge TPU
 Now that the network has been retrained, as stated in the [tutorial](https://coral.ai/docs/edgetpu/retrain-detection/#compile-the-model-for-the-edge-tpu "Compiling the model for the Edge TPU"), we need to convert the checkpoint file (found in `/tensorflow/models/research/learn_custom/train`) to a frozen graph, convert that graph to a TensorFlow Lite flatbuffer file, then compile that model for the Edge TPU. Fortunately the first 2 steps can be done using the `convert_checkpoint_to_edgetpu_tflite.sh` script in `/tensorflow/models/research`. However we need to make make one small change first. In `convert_checkpoint_to_edgetpu_tflite.sh` change the line:
 ```shell
