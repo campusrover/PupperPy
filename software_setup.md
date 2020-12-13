@@ -108,6 +108,6 @@ class NewControl(Control):
         self.hokey_pokey_ticks += 1
 ```
 
-Now you just make a copy of run_cerbaris.py and change put your new class in
+Now you just make a copy of run_cerbaris.py and put your new class in
 place of `Control()`
         
