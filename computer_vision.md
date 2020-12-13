@@ -11,9 +11,24 @@ For this project, we used the [raspberry pi v2 camera](https://www.amazon.com/Ra
 6. Publish the bounding box info as a list of dictionaries via UDPcomms on port 105
 
 #### Hardware Interface
+First things first, connect the Raspberry Pi Camera Module to the Pi as in this [tutorial](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera "Installing the PiCamera"). Be sure to make sure the cable is the right way around.
+
+Next, you can enable the camera by using the raspi-config tool. If you do not have the raspi-config tool (e.g. if you are using Ubuntu), you can enable the camera by editing `/boot/config.txt` (if using raspbian) or `/boot/firmware/config.txt` (if using Ubuntu). Go to the bottom of the config.txt file and add the lines:
+```shell
+start_x=1
+gpu_mem=128
+```
+Note, you can increase or decrease gpu_mem to your needs (we currently use 256).
+
 To accelerate object detection inference onboard the robot, we used the [Coral TPU USB accelerator from Google](https://coral.ai/products/accelerator/ "TPU product page"). This plugs into one of the USB 3.0 ports on the raspberry pi 4.
 
-To get started with the USB accelerator, follow the [instructions](https://coral.ai/docs/accelerator/get-started/) for installing the edgetpu runtime library.
+To get started with the USB accelerator, follow the [instructions](https://coral.ai/docs/accelerator/get-started/) for installing the edgetpu runtime library (replicated here).
+```shell
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install libedgetpu1-std
+```
 
 #### Tensorflow
 The Coral edge TPU is only compatible with Tensorflow Lite and since we only want to do inference with a .tflite model onboard the robot, we will [install just the TF Lite interpreter](https://www.tensorflow.org/lite/guide/python). Make sure to use the .whl for ARM 32 and your corresponding python version (we used python 3.7)
