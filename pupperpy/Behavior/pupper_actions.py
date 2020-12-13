@@ -109,7 +109,7 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
 
         else:
             tmp = [x for x in self.tsh.control.last_cv if x['bbox_label']
-                   == self.target]
+                   == self.tsh.control.target]
             if len(tmp) == 0:
                 # self.meander()
                 pass
