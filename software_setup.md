@@ -47,3 +47,19 @@ steps are:
   * required for basic PS4 control of pupper
   * not needed for our autonomous control
 
+## Running Cerbaris
+Once setup is complete and you have installed the PuppyPy package through pip:
+```bash
+cd /path/to/PupperPy
+pip install -e pupperpy
+```
+
+You can now run the robot and all necessary processes with one command:
+```bash
+sudo python3 /path/to/PupperPy/pupperpy/run_cerbaris.py
+```
+After running this line you can connect the PS4 controller by holding the power and share buttons simultaneously until you see a double-blinking white light. The light will turn green when connected.
+
+* To activate the robot press the Left Bumper (L1).
+* To stop to robot press the Left Trigger (L2).
+* You can monitor the status of the robot on the web interface at https://cerbaris.netlify.app
