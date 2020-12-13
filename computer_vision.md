@@ -78,7 +78,15 @@ e.g.
 where `train_frac` gives the fraction of the total dataset to be used as training data.
 This will create two directories, train and test, in the `output_dir` directory.
 
-Once this is done, we need to convert our training and test sets into TFRecord files. To do this we can use the `generate_tfrecord.py` script in `pupperpy/Vision/transfer_learning/`. We will convert the training and test sets separately. For example, for the training set, if all the image and .xml files for the training set are in a directory `data/train`, run:
+Once this is done, we need to convert our training and test sets into TFRecord files. To do this we can use the `generate_tfrecord.py` script in `pupperpy/Vision/transfer_learning/`. In order to use `generate_tfrecord.py` you need to install Google's [object detection API](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2.md "Object detection API install"). We used the python package installation method:
+```shell
+git clone https://github.com/tensorflow/models.git
+cd models/research
+protoc object_detection/protos/*.proto --python_out=.
+cp object_detection/packages/tf2/setup.py .
+python -m pip install --use-feature=2020-resolver .
+```
+We will convert the training and test sets separately. For example, for the training set, if all the image and .xml files for the training set are in a directory `data/train`, run:
 ```python
 python3 generate_tfrecord.py \
 --xml_dir=data/train \
