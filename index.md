@@ -24,3 +24,5 @@ software to have the pupper randomly search a room while avoiding obstacles
 until it finds and chases down the target. Additionally, we were able to create
 a web-based real-time monitor of Cerbaris's internal state.
 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Xw1M4CqaYvM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
