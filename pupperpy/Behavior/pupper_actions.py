@@ -1,5 +1,6 @@
 import py_trees
 import time
+import numpy as np
 
 
 class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
