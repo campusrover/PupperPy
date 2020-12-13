@@ -1,7 +1,7 @@
 ---
 layout: template
 ---
-### Pupper Vision
+## Pupper Vision
 For this project, we used the [raspberry pi v2 camera](https://www.amazon.com/Raspberry-Pi-Camera-Module-Megapixel/dp/B01ER2SKFS/ref=sxts_sxwds-bia-wc-nc-drs1_0?cv_ct_cx=raspberry+pi+camera&dchild=1&keywords=raspberry+pi+camera&pd_rd_i=B01ER2SKFS&pd_rd_r=956aa0c4-1cb5-4b3c-a5a5-977edde184a8&pd_rd_w=cDFck&pd_rd_wg=P6cVG&pf_rd_p=0ec05f25-9534-48fe-9c3e-40b89957230e&pf_rd_r=KG6HEMGWM3EBRMW5DSTP&psc=1&qid=1607705316&sr=1-1-88388c6d-14b8-4f70-90f6-05ac39e80cc0 "Amazon listing") to detect and localize our object of interest (tennis ball). At a high level, the vision systems works as follows:
 1. Raspberry pi is started
 2. `pupper_vision.py` is started either as a linux service or by calling it from a higher level python script. This loads the computer vision model and sets up the picamera.
@@ -10,8 +10,8 @@ For this project, we used the [raspberry pi v2 camera](https://www.amazon.com/Ra
 5. Output top N bounding boxes (according to confidence level assigned by model) with associated class labels
 6. Publish the bounding box info as a list of dictionaries via UDPcomms on port 105
 
-#### Hardware Interface
-##### Camera
+### Hardware Interface
+#### Camera
 First things first, connect the Raspberry Pi Camera Module to the Pi as in this [tutorial](https://projects.raspberrypi.org/en/projects/getting-started-with-picamera "Installing the PiCamera"). Be sure to make sure the cable is the right way around.
 
 Next, you can enable the camera by using the raspi-config tool. If you do not have the raspi-config tool (e.g. if you are using Ubuntu), you can enable the camera by editing `/boot/config.txt` (if using raspbian) or `/boot/firmware/config.txt` (if using Ubuntu). Go to the bottom of the config.txt file and add the lines:
@@ -21,7 +21,7 @@ gpu_mem=128
 ```
 Note, you can increase or decrease gpu_mem to your needs (we currently use 256).
 
-##### Google Coral Edge TPU USB Accelerator
+#### Google Coral Edge TPU USB Accelerator
 To accelerate object detection inference onboard the robot, we used the [Coral TPU USB accelerator from Google](https://coral.ai/products/accelerator/ "TPU product page"). This plugs into one of the USB 3.0 ports on the raspberry pi 4.
 
 To get started with the USB accelerator, follow the [instructions](https://coral.ai/docs/accelerator/get-started/) for installing the edgetpu runtime library (replicated here).
@@ -32,14 +32,14 @@ sudo apt-get update
 sudo apt-get install libedgetpu1-std
 ```
 
-#### Tensorflow
+### Tensorflow
 The Coral edge TPU is only compatible with Tensorflow Lite and since we only want to do inference with a .tflite model onboard the robot, we will [install just the TF Lite interpreter](https://www.tensorflow.org/lite/guide/python). Make sure to use the .whl for ARM 32 and your corresponding python version (we used python 3.7)
 e.g.
 ```shell
 pip3 install https://github.com/google-coral/pycoral/releases/download/release-frogfish/tflite_runtime-2.5.0-cp37-cp37m-linux_armv7l.whl
 ```
 
-#### ML Models
+### ML Models
 To perform inference on the TPU, we are able to use the `DetectionEngine` in the [Edge TPU API](https://coral.ai/docs/edgetpu/api-intro/#install-the-library "Edge TPU API install"). This API abstracts away almost all of the tensor manipulation required to do inference. Unfortunately, during the project, this API became deprecated but is still installable via:
 ```shell
 sudo apt-get install python3-edgetpu
@@ -50,8 +50,8 @@ Given these APIs, all we really need to do is find an object detection model tha
 
 Given the above restrictions, we decided to use a version of [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf "MobileNetV2 Paper") which is precompiled to be run on the Coral TPU. This model (MobileNetV2 SSD v2 COCO) and a couple other variants are available [here](https://coral.ai/models/ "Coral Models page"). The [MobileNet networks](https://arxiv.org/pdf/1704.04861.pdf "Original MobileNet paper"), developed by Google, are an attractice option since they utilize a modified convolution operation that requires only ~10% of the computation of a standard convolution operation. This means that they retain most of the accuracy of other vision models but can be run much faster allowing them to be used on mobile and edge devices.
 
-#### Transfer Learning
-##### Motivation
+### Transfer Learning
+#### Motivation
 The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset](https://cocodataset.org/#home "COCO dataset homepage") to recognize 90 different object classes. One of these classes is "sports ball" which was close to our desired goal (a tennis ball). We therefore evaluated the performance of this network "out of the box". We found that while this network was capable of recognizing tennis balls in an image, the tennis ball needed to be fairly close to the robot to be detected and usually had a low associated confidence. This is most likely due to the fact that there were few tennis balls (labeled as sports balls) in the COCO training set.
 | Undetected               | Detected
 :-------------------------:|:---------------------:
@@ -64,7 +64,7 @@ We therefore decided to use a transfer learning protocol to retrain the last few
 
 Transfer learning is a method for taking a network trained on one dataset, and using the learned features to predict outputs for a new dataset with few examples. The idea is that you remove only the last few layers from the pre-trained network (the layers that essentially map the learned features to output class probabilities) and retrain new output layers on your custom classes. This allows you to reuse the previously learned and hopefully general learned features in the earlier layers of the network. The retraining process then simply learns a mapping from the pretrained features to your new output classes. This saves lots of training time (since you are training many fewer parameters) and allows you to have fewer examples of your custom classes. In our case, we are hoping to reuse the features learned on the COCO dataset (what this version of mobilenet_v2 was trained on) to learn to detect specifically tennis balls, humans, and chairs (common objects around the robotics lab). The below instructions are meant to be sufficiently general that you could retrain the mobilenet_v2 network on your own custom dataset. 
 
-##### Dataset organization
+#### Dataset organization
 To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, we copied them off of the pi to an Ubuntu laptop (the rest of the retraining procedure all happens off of the pi). The images now need to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the `predefined_classes.txt` file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
 
 We now want to split the annotated dataset into a training set and a test set. For this we've written a python script `split_data.py` which accepts 2 required and 1 optional command line argument.  
@@ -117,7 +117,7 @@ item {
 .
 ```
 
-##### Retraining the network
+#### Retraining the network
 Now that we have our train/test.record files, we can move on to actually retraining the network. To do this, we will follow a [tutorial on the coral webpage](https://coral.ai/docs/edgetpu/retrain-detection/#requirements "Transfer Learning tutorial") for retraining the last few layers of the mobilenet_v2 model in docker. This tutorial is meant to retrain the network to recognize certain breeds of cats and dogs, but we will utilize the retraining code and just substitute in our own dataset. Note, however that we will need to modify some of the files in the tutorial in order to use our custom dataset.
 
 1. The first step is to [install docker](https://docs.docker.com/engine/install/ubuntu/ "install docker") onto your machine.
@@ -228,7 +228,7 @@ Then you can go to localhost:6006 in your browser and should get a tensorboard p
 ![tensorboard3]
 
 [tensorboard3]: /figures/tensorboard_loss_example.png
-##### Compiling the model for the Edge TPU
+#### Compiling the model for the Edge TPU
 Now that the network has been retrained, as stated in the [tutorial](https://coral.ai/docs/edgetpu/retrain-detection/#compile-the-model-for-the-edge-tpu "Compiling the model for the Edge TPU"), we need to convert the checkpoint file (found in `/tensorflow/models/research/learn_custom/train`) to a frozen graph, convert that graph to a TensorFlow Lite flatbuffer file, then compile that model for the Edge TPU. Fortunately the first 2 steps can be done using the `convert_checkpoint_to_edgetpu_tflite.sh` script in `/tensorflow/models/research`. However we need to make make one small change first. In `convert_checkpoint_to_edgetpu_tflite.sh` change the line:
 ```shell
 source "${PWD}/constants.sh"
@@ -259,4 +259,15 @@ The compiled file is named `output_tflite_graph_edgetpu.tflite` and is saved to 
 
 To use the retrained model on the pupper, you will need to add it to the `pupperpy/Vision/models` directory. In addition, you will need to create a file with the output classes of the model (see `pupperpy/Vision/models/pupper_labels.txt` for an example) and also put it in the models folder. Lastly, you will need to change the `MODEL_PATH` and `LABEL_PATH` lines (lines 23 and 24) in pupper_vision.py to reflect your new model and class files.
 
-*Congratulations* the next time you run `pupper_vision.py` your retrained model will be used. Just be sure to update any exisiting control code to use the class strings from your class file.
+*Congratulations!* The next time you run `pupper_vision.py` your retrained model will be used. Just be sure to update any exisiting control code to use the class strings from your class file.
+
+### Assessment
+Below are some examples of the object detection systems ability after the retraining procedure:
+
+![tennis_ball_gif]
+
+[tennis_ball_gif]: /figures/test_images_121320_3.gif
+
+![chair_gif]
+
+[chair_gif]: /figures/test_images_121320_4.gif
