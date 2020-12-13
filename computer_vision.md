@@ -208,6 +208,7 @@ sudo docker exec -it edgetpu-detect /bin/bash
 tensorboard --logdir=./learn_custom/train
 ```
 Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
+
 ![tensorboard1]
 ![tensorboard2]
 ![tensorboard3]
