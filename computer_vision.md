@@ -144,3 +144,13 @@ Alternatively, if you ran the `prepare_checkpoint_and_dataset.sh` file above, yo
 8. Next, we need to configure the `pipeline.config` file in `learn_custom/ckpt/`. The critical lines are:
    1. (line 19) `num_classes: x`
       * change whatever x is to the number of classes you want to detect (must agree with the number of classes in you pupper_label_map.pbtxt)
+   2. (line 27) Make sure this line is `type: "ssd_mobilenet_v2"`
+   3. (line 174) This gives the path to the model checkpoint file to use. Make sure it says:
+      * `fine_tune_checkpoint: "/tensorflow/models/research/learn_custom/ckpt/model.ckpt"`
+   4. (line 194) Gives the path to the .pbtxt label map. Shoud be:
+      * `label_map_path: "/tensorflow/models/research/learn_custom/custom/pupper_label_map.pbtxt"`
+   5. (line 196) Gives the path to the train.record file. Should be:
+      * `input_path: "/tensorflow/models/research/learn_custom/custom/train.record"`
+   6. (line 205) Same as line 194, path to .pbtxt label map.
+   7. (line 209) Path to test.record file. Should be:
+      * `input_path: "/tensorflow/models/research/learn_custom/custom/test.record"`
