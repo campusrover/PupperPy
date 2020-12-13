@@ -141,7 +141,7 @@ docker cp /path/to/pupperpy/Vision/transfer_learning/learn_custom/ckpt/ edgetpu-
 
 Alternatively, if you ran the `prepare_checkpoint_and_dataset.sh` file above, you can copy the contents of the `learn_pet/ckpt` directory to `learn_custom/ckpt`
 
-8. Next, we need to configure the `pipeline.config` file in `learn_custom/ckpt/`. The critical lines are:
+8. Next, we need to configure the `pipeline.config` file in `learn_custom/ckpt/`. If you copied the `ckpt` directory from the PupperPy repo, you should only need to change the `num_classes` field below. The critical lines are:
    1. (line 19) `num_classes: x`
       * change whatever x is to the number of classes you want to detect (must agree with the number of classes in you pupper_label_map.pbtxt)
    2. (line 27) Make sure this line is `type: "ssd_mobilenet_v2"`
@@ -154,3 +154,28 @@ Alternatively, if you ran the `prepare_checkpoint_and_dataset.sh` file above, yo
    6. (line 205) Same as line 194, path to .pbtxt label map.
    7. (line 209) Path to test.record file. Should be:
       * `input_path: "/tensorflow/models/research/learn_custom/custom/test.record"`
+
+9. We are almost ready to begin training. Make sure you are in the `/tensorflow/models/research/` directory in the docker container. The last change we need to make is to the `retrain_detection_model.sh` script. Open this file then go down to the line that says:
+```shell
+source "${PWD}/constants.sh"
+```
+and change this to:
+```shell
+source "${PWD}/pupper_constants.sh"
+```
+
+10. Initiate the retraining by running:
+```shell
+NUM_TRAINING_STEPS=500 && NUM_EVAL_STEPS=100
+./retrain_detection_model.sh \
+--num_training_steps ${NUM_TRAINING_STEPS} \
+--num_eval_steps ${NUM_EVAL_STEPS}
+```
+as in the tutorial. This will begin the retraining process using your CPU. As of now we are unsure how to use the code from this tutorial to utilize GPU resources for retraining. The retraining process will likely take several hours depending on how large your custom dataset is.
+
+11. As stated in the tutorial, you can monitor the training progress by starting tensorboard in the docker container. In a new terminal:
+```shell
+sudo docker exec -it edgetpu-detect /bin/bash
+tensorboard --logdir=./learn_custom/train
+```
+Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
