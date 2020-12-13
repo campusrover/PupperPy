@@ -63,3 +63,51 @@ After running this line you can connect the PS4 controller by holding the power 
 * To activate the robot press the Left Bumper (L1).
 * To stop to robot press the Left Trigger (L2).
 * You can monitor the status of the robot on the web interface at https://cerbaris.netlify.app
+
+## Creating new behaviors
+The control class provides a easy framework for creating and implementing new behaviors.
+All you need to do is inherit the Control class and override the update_behavior function.
+```python
+from pupperpy.CommandInterface import Control
+
+class NewControl(Control):
+    def __init__(self, target='tennis_ball'):
+        super().__init__(target=target)
+        self.hokey_pokey_ticks = 0
+        self._last_turn = None
+
+    def update_behavior(self):
+        obj, pos, cv = self.get_sensor_data()
+        if self.hokey_pokey_ticks > 0 & self.hokey_pokey_ticks < 300:
+            self.do_the_hokey_pokey()
+            return
+        elif self.hokey_pokey_ticks >= 300:
+            self.turn_stop()
+            self.move_forward()
+            return
+
+        if obj['left']:
+            self.hokey_pokey_ticks = 0
+            self.do_the_hokey_pokey()
+
+    def do_the_hokey_pokey(self):
+        if self._last_turn is None:
+            self.turn_left()
+            self._last_turn = 'left'
+            self.hokey_pokey_ticks += 1
+            return
+
+        if self.hokey_pokey_ticks % 40 == 0:
+            if self._last_turn == 'left':
+                self.turn_right()
+                self._last_turn = 'right':
+            else:
+                self.turn_left()
+                self._last_turn = 'left'
+
+        self.hokey_pokey_ticks += 1
+```
+
+Now you just make a copy of run_cerbaris.py and change put your new class in
+place of `Control()`
+        
