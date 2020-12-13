@@ -142,5 +142,5 @@ docker cp /path/to/pupperpy/Vision/transfer_learning/learn_custom/ckpt/ edgetpu-
 Alternatively, if you ran the `prepare_checkpoint_and_dataset.sh` file above, you can copy the contents of the `learn_pet/ckpt` directory to `learn_custom/ckpt`
 
 8. Next, we need to configure the `pipeline.config` file in `learn_custom/ckpt/`. The critical lines are:
-1. (line 19) `num_classes: x`
+  1. (line 19) `num_classes: x`
   * change whatever x is to the number of classes you want to detect (must agree with the number of classes in you pupper_label_map.pbtxt)
