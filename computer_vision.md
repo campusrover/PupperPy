@@ -86,14 +86,35 @@ Now that we have our train/test.record files, we can move on to actually retrain
 1. The first step is to [install docker](https://docs.docker.com/engine/install/ubuntu/ "install docker") onto your machine.
 
 2. Follow the instructions in the tutorial for cloning the coral tutorials repo and starting the Docker container.
+```shell
+CORAL_DIR=${HOME}/google-coral && mkdir -p ${CORAL_DIR}
+cd ${CORAL_DIR}
+git clone https://github.com/google-coral/tutorials.git
+cd tutorials/docker/object_detection
+docker build . -t detect-tutorial-tf1
+DETECT_DIR=${PWD}/out && mkdir -p $DETECT_DIR
 
-3. Once you start the docker container, your command prompt should be inside the Docker container at the path `/tensorflow/models/research` and you should see a directory titled `learn_pet` inside the research directory. The `learn_pet` directory is used for the tutorial. In order to use our own dataset, we will need to create our own directory inside `/tensorflow/models/research` that mirrors the structure of `learn_pet`. Let's create a directory `learn_custom`.
+docker run --name edgetpu-detect \
+--rm -it --privileged -p 6006:6006 \
+--mount type=bind,src=${DETECT_DIR},dst=/tensorflow/models/research/learn_custom \
+detect-tutorial-tf1
+```
+Note that the line starting with --mount links the directory `DETECT_DIR` in your normal file system to the directory `/tensorflow/models/research/learn_custom` in the docker container's file system. This means that the contents of the `learn_custom` folder in the container are maintained in `DETECT_DIR` even after the docker container is closed (every other newly created folder in the docker container will be erased). This is important to know since if your container closes for some reason before the retraining is finished, any newly created or edited files not in `/tensorflow/models/research/learn_custom` will be lost upon restarting the container.
+
+3. Once you start the docker container, your command prompt should be inside the Docker container at the path `/tensorflow/models/research` and you should see an empty directory titled `learn_custom` inside the research directory. The `learn_pet` directory referenced in the tutorial will not appear since we replaced that with `learn_custom` in the `--mount` flag above. You can create and populate the `learn_pet` directory if you want to run the original tutorial or just to see the file structure if your run the line:
+```shell
+./prepare_checkpoint_and_dataset.sh --network_type mobilenet_v2_ssd --train_whole_model false
+```
+from the original tutorial. This will download the images and annotations, download the model checkpoint, modify the pipeline.config file, and create .record files out of the downloaded dataset. In the steps below we will recreate these steps for our own dataset in the `learn_custom` directory.
+
+In order to use our own dataset, we will need to create our own directory (`learn_custom`) that mirrors that of `learn_pet` in the tutorial. 
 
 4. Inside `/tensorflow/models/research/learn_custom/` create 4 subdirectories:  
-    1. `ckpt`
-    2. `models`
-    3. `custom`
-    4. `train`
+```shell
+cd learn_custom
+mkdir ckpt models custom train
+cd ..
+```
 
 5. Next, you will see a `constants.sh` file in the `research` directory. Copy that file to a new file `pupper_constants.sh`. We need to change the specified paths at the bottom of this file to use our dataset. Change the lines (starting at `OBJ_DET_DIR=...`) to read the following:  
 ```shell
@@ -106,4 +127,12 @@ OUTPUT_DIR="${LEARN_DIR}/models"
 ```
 Now save and close this file.
 
-6. 
+6. From a terminal outside the docker container, use the `docker cp` command to copy the train.record, test.record, and pupper_label_map.pbtxt files into the the learn_custom/custom directory in the docker container:
+e.g.
+```shell
+docker cp /path/to/train.record edgetpu-detect:/tensorflow/models/research/learn_custom/custom
+docker cp /path/to/test.record edgetpu-detect:/tensorflow/models/research/learn_custom/custom
+docker cp /path/to/pupper_label_map.pbtxt edgetpu-detect:/tensorflow/models/research/learn_custom/custom
+```
+
+7. 
