@@ -277,3 +277,13 @@ Notice how in the 2nd .gif, the system mistakenly identifies some yellow tape as
 To improve the system it would be beneficial to supplement the existing dataset with images from a diversity of angles (such as from the robot walking around) and settings. However given the very time consuming nature of labeling the images, we have not pursued this.
 
 The dataset we used for retraining can be found [here](https://drive.google.com/drive/u/1/folders/1FQI1VDUJme0Exa7GULDAEWy1wYkNd2Zu "Google Drive Folder with data")
+
+### Future directions
+There are 2 additions to the vision system which would be helpful, but that we haven't had time to implement.
+1. Image stabilization
+   * While the object detection works fairly well even when the robot is moving, it would likely be improved by stabilizing the images as much as possible. A simple start would be to simply set `picamera.video_stabilization = True` in `pupper_vision.py` before the `capture_continuous` method is run. However, this built in image stabilization only accounts for vertical and horizontal motion.
+
+   * An alternative would be to use odometry information from a working IMU (ours is currently not calibrated well enough to use), to rotate/translate captured images. This however will likely reduce the framerate at which images can be processed
+
+2. Computing distance to target using successive bounding boxes
+   * One idea we had is that we could use the relative sizes of successive bounding boxes (presumably around the same object) and the velocity of the robot to compute a distance to the target. This, combined with a mapping system, would allow the robot to 'remember' where its target is such that it could potentially plan a route there to avoid obstacles if necessary.
