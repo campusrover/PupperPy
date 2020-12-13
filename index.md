@@ -1,81 +1,26 @@
 ---
 layout: template
+title: Introduction
 ---
+As a team we set out to build the [Standford Pupper
+robot](https://stanfordstudentrobotics.org/pupper) and see how far we could
+extend the software, hardware and overall functionality of the system over the
+course of a semester.
 
-# <del>[Introduction](introduction.md)</del>
-## <del>Project Goals</del>
-## Team Members
-## Rough timeline
+## Project Goals
+We initally set out to create a robot that could freely move around an
+enviroment autonomously and seek out visual targets without colliding with any
+objects. While we accomplished this goal, we had also hoped, but were unable,
+to fully implement odometry and environment mapping. So though Cerbaris can
+autonomously seek out a designated target, it cannot -- yet -- do so in an
+efficient and robust manner.
 
-# Hardware
-## Build, assembly, repairs
-## Calibration
-## Battery and Charging
-## Camera
-## Collision Sensors
-## IMU
+## Project Achievements 
+Our team upgraded the Pupper by integrating a front-facing camera, a 9-DOF
+inertial measurement unit (IMU), and 3 digital IR proximity sensors. With the
+aid of a Google Coral TPU, camera data was able to utilized to quickly and
+reliably identify human and tennis ball targets in real-time. We then created
+software to have the pupper randomly search a room while avoiding obstacles
+until it finds and chases down the target. Additionally, we were able to create
+a web-based real-time monitor of Cerbaris's internal state.
 
-# Software
-## Review of original architecture
-## Review of revised architecture
-## Key services
-
-# Computer Vision
-## Hardware interface
-## Tensorflow
-## ML models
-## How to train
-## Assessment
-
-# Collision Detection
-## Hardware Interface
-## What worked
-## What we would do next
-
-# Web Interface
-## Software architecture
-architecture diagram
-main difficulty: realtime communication between website and external script
-separating frontend client from backend api
-add doc links to everything
-### Vue.js
-component structure, why vue
-### Pusher
-prod and dev environments
-### Additional libraries
-#### JointJS
-#### paper-js
-#### Bootstrap
-## Code design
-component diagram + technical description of each component
-## What we would do next
-adding routes (spa vs mpa)
-backend db for storing data, replay
-converting from pusher to manual web sockets?
-complete tree stuff
-
-# IMU
-## Hardware Interface
-## What worked
-## Kalman Filter Status
-## What we would do next
-
-# Behaviors
-## Software design
-## Extensibility
-## Currently working behavior
-## Use of Behavior Trees
-## What we would do next
-
-# Mapping
-## Software Design thoughts
-## What should be done next
-
-# Running
-## How to install starting from bare metal
-## How to run
-
-# Learnings and Next Steps
-## Retrospective on the project
-## Key learnings
-## Recommended goals for PupperII project
