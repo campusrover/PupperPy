@@ -212,6 +212,7 @@ Then you can go to localhost:6006 in your browser and should get a tensorboard p
 ![tensorboard1]
 ![tensorboard2]
 ![tensorboard3]
+
 [tensorboard1]: /figures/tensorboard_image_example.png
 [tensorboard2]: /figures/tensorboard_image_example2.png
 [tensorboard3]: /figures/tensorboard_loss_example.png
