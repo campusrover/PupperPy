@@ -105,9 +105,7 @@ Note that the line starting with --mount links the directory `DETECT_DIR` in you
 ```shell
 ./prepare_checkpoint_and_dataset.sh --network_type mobilenet_v2_ssd --train_whole_model false
 ```
-from the original tutorial. This will download the images and annotations, download the model checkpoint, modify the pipeline.config file, and create .record files out of the downloaded dataset. In the steps below we will recreate these steps for our own dataset in the `learn_custom` directory.
-
-In order to use our own dataset, we will need to create our own directory (`learn_custom`) that mirrors that of `learn_pet` in the tutorial. 
+from the original tutorial. This will download the images and annotations, download the model checkpoint, modify the pipeline.config file, and create .record files out of the downloaded dataset. In the steps below we will recreate these steps for our own dataset in the `learn_custom` directory. 
 
 4. Inside `/tensorflow/models/research/learn_custom/` create 4 subdirectories:  
 ```shell
@@ -135,4 +133,14 @@ docker cp /path/to/test.record edgetpu-detect:/tensorflow/models/research/learn_
 docker cp /path/to/pupper_label_map.pbtxt edgetpu-detect:/tensorflow/models/research/learn_custom/custom
 ```
 
-7. 
+7. Now we need to get the model checkpoint and pipeline files into the `learn_custom/ckpt` directory. The easiest way to do this is to copy the contents of the `Vision/transfer_learning/learn_custom/ckpt` directory in the PupperPy repo into the `/tensorflow/models/research/learn_custom/ckpt` directory in the docker container.
+e.g.
+```shell
+docker cp /path/to/pupperpy/Vision/transfer_learning/learn_custom/ckpt/ edgetpu-detect:/tensorflow/models/research/learn_custom/
+```
+
+Alternatively, if you ran the `prepare_checkpoint_and_dataset.sh` file above, you can copy the contents of the `learn_pet/ckpt` directory to `learn_custom/ckpt`
+
+8. Next, we need to configure the `pipeline.config` file in `learn_custom/ckpt/`. The critical lines are:
+1. (line 19) `num_classes: x`
+  * change whatever x is to the number of classes you want to detect (must agree with the number of classes in you pupper_label_map.pbtxt)
