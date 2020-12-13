@@ -112,9 +112,10 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
             self.feedback_message = "Moving towards ball!"
             tmp = [x for x in self.tsh.control.last_cv if x['bbox_label']
                    == self.tsh.control.target]
+
             if len(tmp) == 0:
-                # self.meander()
-                pass
+                self.feedback_message = "No such obstacle!"
+                return py_trees.common.Status.FAILURE
 
             conf = np.array([x['bbox_confidence'] for x in tmp])
             idx = np.argmax(conf)
