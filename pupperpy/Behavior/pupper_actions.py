@@ -64,10 +64,10 @@ class AvoidObstaclesNode(py_trees.behaviour.Behaviour):
                 self.tsh.control.move_stop()
                 self.tsh.control.turn_left()
             elif obj['left']:
-                self.tsh.control.move_forward()
+                self.tsh.control.move_forward(.3)
                 self.tsh.control.turn_right()
             elif obj['right']:
-                self.tsh.control.move_forward()
+                self.tsh.control.move_forward(.3)
                 self.tsh.control.turn_left()
             elif not any(obj.values()):
                 self.tsh.control.turn_stop()
