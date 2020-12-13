@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     tree_structure = {"Root":                     (py_trees.composites.Sequence("Root"), ["Avoid", "Go", "Go to target"]),
                       "Avoid":                    (pupper_actions.AvoidObstaclesNode(tsh), []),
-                      "Go":                       (pupper_actions.MoveTargetFoundNode(tsh), []),
+                      "Go":                       (pupper_actions.MoveUntilTargetFoundNode(tsh), []),
                       "Go to target":             (pupper_actions.GoToTargetNode(tsh), [])}
 
     tree_structure_hard = {"Root":                     (py_trees.composites.Sequence("Root"), ["Look for ball", "Move toward ball"]),
