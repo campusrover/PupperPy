@@ -21,7 +21,7 @@ class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
         if any(obj.values()):
             self.feedback_message = "Obstacle detected!"
             return py_trees.common.Status.FAILURE
-        elif any([x['bbox_label'] == self.target for x in cv]):
+        elif any([x['bbox_label'] == self.tsh.control.target for x in cv]):
             self.feedback_message = "End of journey!"
             return py_trees.common.Status.SUCCESS
         else:
