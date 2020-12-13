@@ -10,48 +10,56 @@
   // todo: get string from GET request to API
   // switch between normal dashboard and this using keyboard shortcut
   // make fully interactive
-  const behaviorTreeString = 
-`fetch ball
-\tthen
-\t\tunless I see a ball
-\t\t\tcontinue
-\t\t\t\tlook for ball
-\t\tunless a ball is close enough
-\t\t\tcontinue
-\t\t\t\tmove towards ball
-\t\twait
-look for ball
-\tthen
-\t\tturn 432 degrees
-\t\t\tunless I see an obstacle
-\t\t\t\tmove forward for 5 seconds
-\t\tunless I don't see an obstacle
-\t\t\tcontinue
-\t\t\t\tavoid obstacle
-
-avoid obstacle
-\tunless obstacle is in front for 1 second
-\t\tcontinue
-\t\t\tmove forward
-\tunless no obstacle is in front
-\t\tcontinue
-\t\t\twhile
-\t\t\t\tturn right
-\t\t\t\tmove backward
-
-move towards ball
-\tthen
-\t\tturn towards ball
-\t\tunless not facing the ball
-\t\t\tcontinue
-\t\t\t\tmove forward
-do something
-\tthen
-\t\tdo another thing
-do blah
-\tthen
-\t\tdo blah2
+  const behaviorTreeString =
+`root
+\tAvoid Obstacles
+\tMove Until Target Found
+\tGo To Target
 `
+
+/**
+*`fetch ball
+*\tthen
+*\t\tunless I see a ball
+*\t\t\tcontinue
+*\t\t\t\tlook for ball
+*\t\tunless a ball is close enough
+*\t\t\tcontinue
+*\t\t\t\tmove towards ball
+*\t\twait
+*look for ball
+*\tthen
+*\t\tturn 432 degrees
+*\t\t\tunless I see an obstacle
+*\t\t\t\tmove forward for 5 seconds
+*\t\tunless I don't see an obstacle
+*\t\t\tcontinue
+*\t\t\t\tavoid obstacle
+*
+*avoid obstacle
+*\tunless obstacle is in front for 1 second
+*\t\tcontinue
+*\t\t\tmove forward
+*\tunless no obstacle is in front
+*\t\tcontinue
+*\t\t\twhile
+*\t\t\t\tturn right
+*\t\t\t\tmove backward
+*
+*move towards ball
+*\tthen
+*\t\tturn towards ball
+*\t\tunless not facing the ball
+*\t\t\tcontinue
+*\t\t\t\tmove forward
+*do something
+*\tthen
+*\t\tdo another thing
+*do blah
+*\tthen
+*\t\tdo blah2
+*`
+/
 
   const TreeDiagram = {
     props: ['currNodeId'],
@@ -61,7 +69,7 @@ do blah
           this.changeStroke(this.currPath.nodes, this.currPath.links, 1, 'black')
         }
         if (this.currNodeId !== null) {
-          this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId], 
+          this.currPath = this.getPathToRoot(this.nodeList[this.currNodeId],
             {nodes: [], links: []})
           this.changeStroke(this.currPath.nodes, this.currPath.links, 2, 'red')
         }
@@ -248,7 +256,7 @@ do blah
           rankDir: "LR",
         })
 
-        let scale = Math.min(paperSize.width / (graphBBox.width + marginX*2), 
+        let scale = Math.min(paperSize.width / (graphBBox.width + marginX*2),
           paperSize.height / (graphBBox.height + marginY*2))
         paper.scale(scale, scale)
       },

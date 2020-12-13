@@ -3,11 +3,11 @@ import time
 import numpy as np
 
 
-class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
+class MoveUntilTargetFoundNode(py_trees.behaviour.Behaviour):
 
     def __init__(self, tsh):
-        super(MoveUntilObstaclesNode, self).__init__(
-            "Move Until Obstacles")
+        super(MoveUntilTargetFoundNode, self).__init__(
+            "Move Until Target Found")
         self.tsh = tsh
 
     def setup(self):
@@ -19,12 +19,12 @@ class MoveUntilObstaclesNode(py_trees.behaviour.Behaviour):
     def update(self):
         obj = self.tsh.control.last_obj
         cv = self.tsh.control.last_cv
-        if any(obj.values()):
-            self.feedback_message = "Obstacle detected!"
-            return py_trees.common.Status.FAILURE
-        elif any([x['bbox_label'] == self.tsh.control.target for x in cv]):
+        if any([x['bbox_label'] == self.tsh.control.target for x in cv]):
             self.feedback_message = "End of journey!"
             return py_trees.common.Status.SUCCESS
+        elif any(obj.values()):
+            self.feedback_message = "Obstacle detected!"
+            return py_trees.common.Status.FAILURE
         else:
             self.feedback_message = "Still moving..."
             self.tsh.set_active_node(self)

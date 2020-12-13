@@ -123,9 +123,9 @@ if __name__ == '__main__':
                         "turn_1_second_a":    (primitive_actions.TurnRightNode(tsh, time_length=1), []),
                         "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
 
-    tree_structure = {"Root":             (py_trees.composites.Sequence("Root"), ["Avoid", "Go", "Go to target"]),
-                      "Go":               (pupper_actions.MoveUntilObstaclesNode(tsh), []),
-                      "Avoid":            (pupper_actions.AvoidObstaclesNode(tsh), []),
+    tree_structure = {"Root":                     (py_trees.composites.Sequence("Root"), ["Avoid", "Go", "Go to target"]),
+                      "Avoid":                    (pupper_actions.AvoidObstaclesNode(tsh), []),
+                      "Go":                       (pupper_actions.MoveTargetFoundNode(tsh), []),
                       "Go to target":             (pupper_actions.GoToTargetNode(tsh), [])}
 
     tree_structure_hard = {"Root":                     (py_trees.composites.Sequence("Root"), ["Look for ball", "Move toward ball"]),
