@@ -109,6 +109,7 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.FAILURE
 
         else:
+            self.feedback_message = "Moving towards ball!"
             tmp = [x for x in self.tsh.control.last_cv if x['bbox_label']
                    == self.tsh.control.target]
             if len(tmp) == 0:
@@ -126,6 +127,7 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
 
             self.tsh.control.move_forward()
             self.tsh.control.current_target = best
+            return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
         return
