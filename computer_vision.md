@@ -35,7 +35,7 @@ The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset]
 
 We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used). We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range. 
 
-Transfer learning is a method for taking a network trained on one dataset, and using the learned features to predict outputs for a new dataset with few examples. The idea is that you remove only the last few layers from the pre-trained network (the layers that essentially map the learned features to output class probabilities) and retrain new output layers on your custom classes. This allows you to reuse the previously learned and hopefully general learned features in the earlier layers of the network. The retraining process then simply learns a mapping from the pretrained features to your new output classes. This saves lots of training time (since you are training many fewer parameters) and allows you to have fewer examples of your custom classes. 
+Transfer learning is a method for taking a network trained on one dataset, and using the learned features to predict outputs for a new dataset with few examples. The idea is that you remove only the last few layers from the pre-trained network (the layers that essentially map the learned features to output class probabilities) and retrain new output layers on your custom classes. This allows you to reuse the previously learned and hopefully general learned features in the earlier layers of the network. The retraining process then simply learns a mapping from the pretrained features to your new output classes. This saves lots of training time (since you are training many fewer parameters) and allows you to have fewer examples of your custom classes. In our case, we are hoping to reuse the features learned on the COCO dataset (what this version of mobilenet_v2 was trained on) to learn to detect specifically tennis balls, humans, and chairs (common objects around the robotics lab). The below instructions are meant to be sufficiently general that you could retrain the mobilenet_v2 network on your own custom dataset. 
 
 ##### Dataset organization
 To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, we copied them off of the pi to an Ubuntu laptop (the rest of the retraining procedure all happens off of the pi). The images now need to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the `predefined_classes.txt` file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
@@ -182,4 +182,33 @@ tensorboard --logdir=./learn_custom/train
 ```
 Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
 
+##### Compiling the model for the Edge TPU
+Now that the network has been retrained, as stated in the [tutorial](https://coral.ai/docs/edgetpu/retrain-detection/#compile-the-model-for-the-edge-tpu "Compiling the model for the Edge TPU"), we need to convert the checkpoint file (found in `/tensorflow/models/research/learn_custom/train` to a frozen graph, convert that graph to a TensorFlow Lite flatbuffer file, then compile that model for the Edge TPU. Fortunately the first 2 steps can be done using the `convert_checkpoint_to_edgetpu_tflite.sh` script in `/tensorflow/models/research`. However we need to make make one small change first. In `convert_checkpoint_to_edgetpu_tflite.sh` change the line:
+```shell
+source "${PWD}/constants.sh"
+```
+to:
+```shell
+source "${PWD}/pupper_constants.sh"
+```
+Now look in the `/tensorflow/models/research/learn_custom/train` directory and look for the .ckpt file with the highest number (let's call this number x). This is the most recent checkpoint file (the one from the end of training). We can now convert this checkpoint to a TensorFlow Lite model by calling the following from the `/tensorflow/models/research` directory:
+```shell
+./convert_checkpoint_to_edgetpu_tflite.sh --checkpoint_num x
+```
+where x is the checkpoint number. This will output the TensorFlow Lite model as a file named `output_tflite_graph.tflite` in the `/tensorflow/models/research/learn_custom/models/` directory. Recall that all of the files in the `/tensorflow/models/research/learn_custom/` directory in the docker container are also available on your host file system at `google-coral/tutorials/docker/object_detection/out` if you used the directions above when running the docker container.
 
+Next, follow the instructions in the tutorial (replicated here) to install the Edge TPU Compiler:
+```shell
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+sudo apt update
+sudo apt-get install edgetpu-compiler
+```
+Now change to the directory on your host filesystem with the .tflite model (should be `${HOME}/google-coral/tutorials/docker/object_detection/out/models`) and run the edgetpu_compiler on the .tflite model.
+```shell
+cd ${HOME}/google-coral/tutorials/docker/object_detection/models
+edgetpu_compiler output_tflite_graph.tflite
+```
+The compiled file is named `output_tflite_graph_edgetpu.tflite` and is saved to the current directory. Rename this file to something more descriptive (ours is named `ssd_mobilenet_v2_pupper_quant_edgetpu.tflite`). 
+
+To use the retrained model on the pupper, you will need to add it to the `pupperpy/Vision/models` directory. In addition, you will need to create a file with the output classes of the model (see `pupperpy/Vision/models/pupper_labels.txt` for an example) and also put it in the models folder. Lastly, you will need to change the `MODEL_PATH` and `LABEL_PATH` lines (lines 23 and 24) in pupper_vision.py to reflect your new model and class files. 
