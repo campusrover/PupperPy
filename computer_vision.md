@@ -271,3 +271,7 @@ Below are some examples of the object detection systems ability after the retrai
 ![chair_gif]
 
 [chair_gif]: /figures/test_images_121320_4.gif
+
+Notice how in the 2nd .gif, the system mistakenly identifies some yellow tape as a tennis ball. This tells us that the network has likely picked up on some simple features of tennis balls (such as that they are yellow) to identify them. This is likely because the training set used to train the network only used images taken from within the robotics lab (where there is not much yellow) and so the network picked out simple features to distinguish them. Additionally, the day the training set was captured, the robot was unable to walk around so the images were taken from only ~12 different angles. This means the system is likely over fit to these angles.
+
+To improve the system it would be beneficial to supplement the existing dataset with images from a diversity of angles (such as from the robot walking around) and settings. However given the very time consuming nature of labeling the images, we have not pursued this.
