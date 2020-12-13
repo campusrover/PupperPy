@@ -211,7 +211,7 @@ Then you can go to localhost:6006 in your browser and should get a tensorboard p
 
 ![tensorboard1]
 
-[tensorboard1]: /figures/tensorboard_image_example.png
+[tensorboard1]: /figures/tensorboard_images_example.png
 
 ![tensorboard2]
 
