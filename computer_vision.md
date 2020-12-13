@@ -183,7 +183,7 @@ tensorboard --logdir=./learn_custom/train
 Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
 
 ##### Compiling the model for the Edge TPU
-Now that the network has been retrained, as stated in the [tutorial](https://coral.ai/docs/edgetpu/retrain-detection/#compile-the-model-for-the-edge-tpu "Compiling the model for the Edge TPU"), we need to convert the checkpoint file (found in `/tensorflow/models/research/learn_custom/train` to a frozen graph, convert that graph to a TensorFlow Lite flatbuffer file, then compile that model for the Edge TPU. Fortunately the first 2 steps can be done using the `convert_checkpoint_to_edgetpu_tflite.sh` script in `/tensorflow/models/research`. However we need to make make one small change first. In `convert_checkpoint_to_edgetpu_tflite.sh` change the line:
+Now that the network has been retrained, as stated in the [tutorial](https://coral.ai/docs/edgetpu/retrain-detection/#compile-the-model-for-the-edge-tpu "Compiling the model for the Edge TPU"), we need to convert the checkpoint file (found in `/tensorflow/models/research/learn_custom/train`) to a frozen graph, convert that graph to a TensorFlow Lite flatbuffer file, then compile that model for the Edge TPU. Fortunately the first 2 steps can be done using the `convert_checkpoint_to_edgetpu_tflite.sh` script in `/tensorflow/models/research`. However we need to make make one small change first. In `convert_checkpoint_to_edgetpu_tflite.sh` change the line:
 ```shell
 source "${PWD}/constants.sh"
 ```
@@ -211,4 +211,6 @@ edgetpu_compiler output_tflite_graph.tflite
 ```
 The compiled file is named `output_tflite_graph_edgetpu.tflite` and is saved to the current directory. Rename this file to something more descriptive (ours is named `ssd_mobilenet_v2_pupper_quant_edgetpu.tflite`). 
 
-To use the retrained model on the pupper, you will need to add it to the `pupperpy/Vision/models` directory. In addition, you will need to create a file with the output classes of the model (see `pupperpy/Vision/models/pupper_labels.txt` for an example) and also put it in the models folder. Lastly, you will need to change the `MODEL_PATH` and `LABEL_PATH` lines (lines 23 and 24) in pupper_vision.py to reflect your new model and class files. 
+To use the retrained model on the pupper, you will need to add it to the `pupperpy/Vision/models` directory. In addition, you will need to create a file with the output classes of the model (see `pupperpy/Vision/models/pupper_labels.txt` for an example) and also put it in the models folder. Lastly, you will need to change the `MODEL_PATH` and `LABEL_PATH` lines (lines 23 and 24) in pupper_vision.py to reflect your new model and class files.
+
+*Congratulations* the next time you run `pupper_vision.py` your retrained model will be used. Just be sure to update any exisiting control code to use the class strings from your class file.
