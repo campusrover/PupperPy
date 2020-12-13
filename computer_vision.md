@@ -33,7 +33,9 @@ The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset]
 [failure]: /figures/original_net_detection_failure.png
 [success]: /figures/original_net_detection_success.png
 
-We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used). We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range.
+We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a custom dataset taken from within our robotics lab (see the `Vision/retraining/learn_custom/custom/images` for the images used). We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range. 
+
+Transfer learning is a method for taking a network trained on one dataset, and using the learned features to predict outputs for a new dataset with few examples. The idea is that you remove only the last few layers from the pre-trained network (the layers that essentially map the learned features to output class probabilities) and retrain new output layers on your custom classes. This allows you to reuse the previously learned and hopefully general learned features in the earlier layers of the network. The retraining process then simply learns a mapping from the pretrained features to your new output classes. This saves lots of training time (since you are training many fewer parameters) and allows you to have fewer examples of your custom classes. 
 
 ##### Dataset organization
 To collect a custom dataset, we simply placed tennis balls around the robotics lab and continuously captured images using the picamera mounted on the robot. Once the images were acquired, we copied them off of the pi to an Ubuntu laptop (the rest of the retraining procedure all happens off of the pi). The images now need to be labeled by adding bounding boxes around all of the objects we wished to recognize. To do this, we used [labelImg](https://github.com/tzutalin/labelImg "labelImg github page") which allows you to go through a directory of images and draw boxes around objects in each image. Note that you will need to create a .txt file with all of your desired classes (see the `predefined_classes.txt` file in the data folder of the labelImg repo for an example). Once you have finished annotating the images, you will have a .xml file for each image with a list of the associated bounding boxes. Go ahead and put all of the image and .xml files into one folder.
@@ -179,3 +181,5 @@ sudo docker exec -it edgetpu-detect /bin/bash
 tensorboard --logdir=./learn_custom/train
 ```
 Then you can go to localhost:6006 in your browser and should get a tensorboard panel that will update as training progresses. At first, only the GRAPHS tab will be available, showing you a visualization of the mobilenet network architecture. However, after new checkpoints are saved in `learn_custom/train`, the SCALARS (showing various training metrics including the loss values) and IMAGES (showing predicted vs ground truth bounding boxes) tabs will appear allowing you to assess the quality of the training.
+
+
