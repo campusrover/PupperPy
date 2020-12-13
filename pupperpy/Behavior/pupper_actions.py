@@ -97,6 +97,8 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
 
     def update(self):
 
+        obj = self.tsh.control.last_obj
+
         if False:
             self.feedback_message = "Ball is here!"
             return py_trees.common.Status.SUCCESS
