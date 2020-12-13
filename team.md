@@ -1,14 +1,19 @@
 ---
 layout: template
 ---
-![Roshan Nanu](/figures/Roshan.jpg =250x)
+<img src='./figures/Roshan.jpg' alt='Roshan' width="250"/>
+
 *Roshan Nanu*
 
-![Ben Ballintyn](/figures/Ben.jpg =250x)
+
+<img src='./figures/Ben.jpg' alt='Ben' width="250"/>
+
 *Ben Ballintyn*
 
-![Evalyn Berleant](/figures/Evalyn.jpg =250x)
+<img src='./figures/Evalyn.jpg' alt='Evalyn' width="250"/>
+
 *Evalyn Berleant*
 
-![Chris Tam](/figures/Chris.png =250x)
+<img src='./figures/Chris.png' alt='Chris' width="250"/>
+
 *Chris Tam*
