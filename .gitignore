@@ -1,4 +1,7 @@
 *.DS_Store
+.jekyll-cache/
+.jekyll-metadata
+_site/
 __pycache__
 pupperpy/
 web/
