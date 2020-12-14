@@ -105,10 +105,6 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
             self.feedback_message = "Ball is here!"
             return py_trees.common.Status.SUCCESS
 
-        elif any(obj.values()):
-            self.feedback_message = "Obstacle detected!"
-            return py_trees.common.Status.FAILURE
-
         else:
             self.feedback_message = "Moving towards ball!"
             tmp = [x for x in self.tsh.control.last_cv if x['bbox_label']
