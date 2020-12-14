@@ -68,10 +68,7 @@ The `pupper_vision.py` script is run as a separate process from the control code
 The version of MobileNetV2 mentioned above, was pretrained on the [COCO dataset](https://cocodataset.org/#home "COCO dataset homepage") to recognize 90 different object classes. One of these classes is "sports ball" which was close to our desired goal (a tennis ball). We therefore evaluated the performance of this network "out of the box". We found that while this network was capable of recognizing tennis balls in an image, the tennis ball needed to be fairly close to the robot to be detected and usually had a low associated confidence. This is most likely due to the fact that there were few tennis balls (labeled as sports balls) in the COCO training set.
 | Undetected               | Detected
 :-------------------------:|:---------------------:
-![failure]                 | ![success]
-
-[failure]: /figures/original_net_detection_failure.png
-[success]: /figures/original_net_detection_success.png
+![failure](/figures/original_net_detection_failure.png) | ![success](/figures/original_net_detection_success.png)
 
 We therefore decided to use a transfer learning protocol to retrain the last few layers of the MobileNetV2 on a [custom dataset](https://drive.google.com/drive/u/1/folders/1FQI1VDUJme0Exa7GULDAEWy1wYkNd2Zu "custom dataset Google Drive") taken from within our robotics lab. We speculated that by retraining specifically on images of tennis balls we would be able to improve the detection range. 
 
