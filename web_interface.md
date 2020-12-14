@@ -234,6 +234,8 @@ this.drawPos() // draws the robot's current position
 
 ### Bounding box diagram
 
+![bounding box diagram](/figures/bbdiagram.gif)
+
 The bounding box diagram receives the x and y positions of the upper left corner of the bounding box, as well as its width and height. Using this information, we can clear the previous bounding box and draw the new one each time new data is received.
 
 ```js
