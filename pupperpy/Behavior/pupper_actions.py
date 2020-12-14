@@ -19,6 +19,7 @@ class MoveUntilTargetFoundNode(py_trees.behaviour.Behaviour):
     def update(self):
         obj = self.tsh.control.last_obj
         cv = self.tsh.control.last_cv
+        print(cv)
         if any([x['bbox_label'] == self.tsh.control.target for x in cv]):
             self.feedback_message = "End of journey!"
             return py_trees.common.Status.SUCCESS
