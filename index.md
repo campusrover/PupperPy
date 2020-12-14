@@ -18,7 +18,7 @@ efficient and robust manner.
 ## Project Achievements 
 Our team upgraded the Pupper by integrating a front-facing camera, a 9-DOF
 inertial measurement unit (IMU), and 3 digital IR proximity sensors. With the
-aid of a Google Coral TPU, camera data was able to utilized to quickly and
+aid of a Google Coral TPU, camera data was utilized to quickly and
 reliably identify human and tennis ball targets in real-time. We then created
 software to have the pupper randomly search a room while avoiding obstacles
 until it finds and chases down the target. Additionally, we were able to create

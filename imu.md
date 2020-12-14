@@ -66,6 +66,8 @@ In this package the Kalman filter is designed to track:
 * Heading realtive to magnetic north
 * Yaw rate -- change in heading
 
+The equations used for our Kalman Filter can be found in [kalman.py](https://github.com/nubs01/PupperPy/blob/master/pupperpy/kalman.py) in the repository.
+
 Initially I tried to track all values on cartesian space but found that the
 results were more accurate if the rotation from the egocentric to allocentric
 space occurred at the position level and not the acceleration level. 
@@ -93,7 +95,7 @@ measurement data and output data. Moving forward a dataset with good ground trut
 There are a few separate ways in which to improve the performance of the odometry:
 * continue to collect data at 100Hz, but only update the Kalman filter at 10Hz
   feeding it an average of 10 measurements at each step. 
-* Calibrate the IMU
+* Calibrate the IMU, save the calibration values and write them to the imu registers on startup
 * Add an ultrasonic range finder to get accurate X velocity with which to
   update the kalman filter
 * Properly tune the observation and estimation error parameters.

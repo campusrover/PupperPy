@@ -21,11 +21,11 @@ The current Control flow uses this information to avoid collisions by simply tur
 Going forward object avoidance can be made much smarter. The simplest and
 probably most useful improvement would be to turn back after dodging an object
 that only appeared in only the left or right sensor, this way it would acutally
-go around and object and not just turn and walk off in an awkward direction,
+go around an object and not just turn and walk off in an awkward direction,
 possibly completely losing track of a previously tracked target. Additionally,
 heading information could be used from the IMU to help relocalize a target that
 was lost by a suddenly appearing obstacle.
 
-One weakness of the current sensor array is low obstacle that could trip the
+One weakness of the current sensor array is low obstacles that could trip the
 robot -- such as the legs of rolly chairs. It may be better to mount the
 sensors pointing at a slight downward angle so as to detect and avoid those. 
