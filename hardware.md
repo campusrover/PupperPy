@@ -2,10 +2,10 @@
 layout: template
 ---
 # Build/Assembly
-
-We recieved a parts kit from COMPANY_NAME_HERE which came with the full set of
-parts and tools needed to build robot. Assembly was fairly straightforward and
-generally followed the official [Pupper build
+The robotics kits was dontated by the [Hands-On Robotics
+Initiative](https://handsonrobotics.org/). It came with the full set of parts
+and all of the tools needed to build robot. Assembly was fairly straightforward
+and generally followed the official [Pupper build
 guide](https://pupper.readthedocs.io/en/latest/) except as noted below. Our
 inital build took roughly 10 hours, though later, an almost complete teardown
 and rebuild took less than 4 hours. A huge part of this change in assembly time
