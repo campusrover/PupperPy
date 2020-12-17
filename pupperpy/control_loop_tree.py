@@ -36,6 +36,7 @@ class TreeControl(Control):
         except timeout:
             self.last_cv = []
 
+    # override to remove steps - sole purpose is to send commands
     def _step(self, tree):
         js_msg = self.joystick.get_input()
 
@@ -60,10 +61,10 @@ class TreeControl(Control):
             self.start_walk()
             return
 
-        #print(str(time.time()) +': ' + self.state)
         self.send_cmd()
         self.send_pusher_message(self.last_pos, self.last_obj, self.last_cv)
 
+    # override to send pusher active node
     def send_pusher_message(self, pos, obj, cv):
         bbox = self.current_target
         timestamp = time.time()
@@ -111,37 +112,22 @@ if __name__ == '__main__':
     vis_p = Popen(['python3', VISION_SCRIPT])
     robo_p = Popen(['python3', RUN_ROBOT_PATH])
     time.sleep(5)
-    # control.run_loop()
-    # tsh = pupper_tree_classes.TreeStateHandler(None)
     id_count = 0
-
-    tree_structure_1 = {"Root":             (py_trees.composites.Sequence("Root"), ["2_then_1", "1_then_2"]),
-                        "2_then_1":         (py_trees.composites.Sequence("2 Then 1"), ["move_2_seconds_a", "turn_1_second_a"]),
-                        "1_then_2":         (py_trees.composites.Sequence("1 Then 2"), ["move_1_second_b", "turn_2_seconds_b"]),
-                        "move_2_seconds_a":   (primitive_actions.MoveForwardNode(tsh, time_length=2), []),
-                        "turn_2_seconds_b":   (primitive_actions.TurnRightNode(tsh, time_length=2), []),
-                        "turn_1_second_a":    (primitive_actions.TurnRightNode(tsh, time_length=1), []),
-                        "move_1_second_b":    (primitive_actions.MoveForwardNode(tsh, time_length=1), [])}
 
     tree_structure = {"Root":                     (py_trees.composites.Sequence("Root"), ["Avoid", "Go", "Go to target"]),
                       "Avoid":                    (pupper_actions.AvoidObstaclesNode(tsh), []),
-                      "Go":                       (pupper_actions.MoveUntilTargetFoundNode(tsh), []),
+                      "Go":                       (pupper_actions.MeanderNode(tsh), []),
                       "Go to target":             (pupper_actions.GoToTargetNode(tsh), [])}
 
-    tree_structure_hard = {"Root":                     (py_trees.composites.Sequence("Root"), ["Look for ball", "Move toward ball"]),
-                           "Look for ball":            (py_trees.composites.Sequence("Look for ball"), ["Move forward A", "Detect ball A"]),
-                           "Move toward ball":         (py_trees.composites.Selector("Move toward ball"), ["Handle left", "Handle center", "Handle right"]),
-                           "Move forward A":           (primitive_actions.MoveForwardNode(tsh), []),
-                           "Detect ball A":            (primitive_conditions.TargetFoundNode(tsh), []),
-                           "Handle left":              (py_trees.composites.Sequence("Handle left"), ["Detect left sensor A", "Turn right A"]),
-                           "Handle center":            (py_trees.composites.Sequence("Handle center"), ["Detect center sensor A", "Turn right B"]),
-                           "Handle right":             (py_trees.composites.Sequence("Handle right"), ["Detect right sensor A", "Turn left A"]),
-                           "Detect left sensor A":     (primitive_conditions.LeftObstacleNode(tsh), []),
-                           "Detect center sensor A":   (primitive_conditions.FrontObstacleNode(tsh), []),
-                           "Detect right sensor A":    (primitive_conditions.RightObstacleNode(tsh), []),
-                           "Turn right A":             (primitive_actions.TurnRightNode(tsh), []),
-                           "Turn right B":             (primitive_actions.TurnRightNode(tsh), []),
-                           "Turn left A":              (primitive_actions.TurnLeftNode(tsh), [])}
+    """
+    tree_structure_planned = {"Root":                     (py_trees.composites.Sequence("Root"), ["Avoid obstacles", "Look for balll", "Move towards ball", "Wait"]),
+                              "Avoid obstacles":          (pupper_actions.AvoidObstaclesNode(tsh), []),
+                              "Look for ball":            (py_trees.composites.Selector("Root"), ["Turn around", "Meander"]),
+                              "Turn around":              (pupper_actions.TurnAroundNode(tsh), []),
+                              "Meander":                  (pupper_actions.MeanderNode(tsh), []),
+                              "Move Towards Ball":        (pupper_actions.GoToTargetNode(tsh), []),
+                              "Wait":                     (pupper_actions.WaitNode(tsh), [])}
+    """
 
     def add_children(node_string):
         global id_count
@@ -167,47 +153,6 @@ if __name__ == '__main__':
 
         return py_trees.trees.BehaviourTree(tree_structure["Root"][0])
 
-    """
-    def parseTree(tokens, index):
-        node = (tokens[index].value, tokens[index].type)
-        if (len(tokens) <= index + 1 or tokens[index + 1].tabs <= tokens[index].tabs):
-            node.children = []
-            return node
-        childIndex = index + 1
-        children = []
-        while (childIndex < tokens.length and tokens[childIndex].tabs > tokens[index].tabs):
-            if (tokens[childIndex].tabs === tokens[index].tabs + 1) {
-              children.push(this.parseTree(tokens, childIndex))
-            }
-            childIndex += 1
-        node.children = children
-        return node
-
-        parseTree(tokens, index) {
-        let node = {
-          value: tokens[index].value,
-          type: tokens[index].type,
-        }
-        // base case: leaf node; no next elt or next elt's tabs <= curr elt's tabs
-        if (tokens.length <= index + 1 || tokens[index + 1].tabs <= tokens[index].tabs) {
-          node.children = []
-          return node
-        } else {
-          // loop through children and call recursively
-          let childIndex = index + 1
-          let children = []
-          while (childIndex < tokens.length && tokens[childIndex].tabs > tokens[index].tabs) {
-            if (tokens[childIndex].tabs === tokens[index].tabs + 1) {
-              children.push(this.parseTree(tokens, childIndex))
-            }
-            childIndex++
-          }
-          node.children = children
-          return node
-        }
-      }
-      """
-
     def setup_and_print_tree_static(tree, level=0, is_root=True):
         if is_root:
             tree = tree.root
@@ -230,7 +175,7 @@ if __name__ == '__main__':
 
     try:
         behaviour_tree.tick_tock(
-            period_ms=50,
+            period_ms=50,  # match default control rate
             number_of_iterations=py_trees.trees.CONTINUOUS_TICK_TOCK,
             pre_tick_handler=tsh.update_data,
             post_tick_handler=control._step

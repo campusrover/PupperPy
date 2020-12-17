@@ -3,11 +3,14 @@ import time
 import numpy as np
 
 
-class MoveUntilTargetFoundNode(py_trees.behaviour.Behaviour):
+class MeanderNode(py_trees.behaviour.Behaviour):
+    """
+    Primitive behavior that moves robot forward until it sees Control's target.
+    """
 
     def __init__(self, tsh):
-        super(MoveUntilTargetFoundNode, self).__init__(
-            "Move Until Target Found")
+        super(MeanderNode, self).__init__(
+            "Meander")
         self.tsh = tsh
 
     def setup(self):
@@ -128,4 +131,34 @@ class GoToTargetNode(py_trees.behaviour.Behaviour):
             return py_trees.common.Status.RUNNING
 
     def terminate(self, new_status):
+        return
+
+
+class TurnAroundNode(py_trees.behaviour.Behaviour):
+    """
+    Primitive behavior that spins the robot around in a circle.
+    """
+
+    def __init__(self, tsh):
+        super(TurnAroundNode, self).__init__(
+            "Turn Around")
+        self.tsh = tsh
+
+    def update(self):
+        #not implemented
+        return
+
+
+class WaitNode(py_trees.behaviour.Behaviour):
+    """
+    Primitive behavior that busy waits tick cycles until the ball is no longer seen.
+    """
+
+    def __init__(self, tsh):
+        super(MeanderNode, self).__init__(
+            "Wait")
+        self.tsh = tsh
+
+    def update(self):
+        #not implemented
         return

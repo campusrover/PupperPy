@@ -1,3 +1,8 @@
+"""
+First finite state machine control loop that functions independently from CommandInterface. Can be also be run on randomized
+data from test classes if robot cannot be run.
+"""
+
 import random
 import numpy as np
 import time

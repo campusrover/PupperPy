@@ -1,39 +1,40 @@
 <template>
   <div id="app">
-    <p class="m-3">Press enter to toggle between panels and tree diagram</p>
-    <sensor-panel class="toggle-enter"></sensor-panel>
+    <p class="m-3">
+      Press enter to toggle between panels and tree diagram
+    </p>
+    <sensor-panel class="toggle-enter" />
     <div class="d-flex flex-wrap flex-lg-nowrap">
-      <vision-panel class="toggle-enter flex-fill"></vision-panel>
-      <state-panel class="toggle-enter flex-fill"></state-panel>
+      <vision-panel class="toggle-enter flex-fill" />
+      <state-panel class="toggle-enter flex-fill" />
     </div>
-    <tree class="d-none-on-mount toggle-enter"></tree>
+    <tree class="d-none-on-mount toggle-enter" />
   </div>
 </template>
 
 <script>
-  import Pusher from 'pusher-js';
-  import SensorPanel from '@/components/SensorPanel'
-  import VisionPanel from '@/components/VisionPanel'
-  import StatePanel from '@/components/StatePanel'
-  import Tree from '@/components/Tree'
+import SensorPanel from '@/components/SensorPanel'
+import VisionPanel from '@/components/VisionPanel'
+import StatePanel from '@/components/StatePanel'
+import Tree from '@/components/Tree'
 
-  const App = {
-    components: {SensorPanel, VisionPanel, StatePanel, Tree},
-    mounted() {
-      Array.from(document.querySelectorAll('.d-none-on-mount')).forEach(elt => {
-        elt.classList.add('d-none')
-      })
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          Array.from(document.querySelectorAll('.toggle-enter')).forEach(elt => {
-            elt.classList.toggle('d-none')
-          })
-        }
-      })
-    },
-  }
+const App = {
+  components: { SensorPanel, VisionPanel, StatePanel, Tree },
+  mounted () {
+    Array.from(document.querySelectorAll('.d-none-on-mount')).forEach(elt => {
+      elt.classList.add('d-none')
+    })
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        Array.from(document.querySelectorAll('.toggle-enter')).forEach(elt => {
+          elt.classList.toggle('d-none')
+        })
+      }
+    })
+  },
+}
 
-  export default App;
+export default App
 </script>
 
 <style>
