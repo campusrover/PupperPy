@@ -1,6 +1,7 @@
 # PupperPy
 Software for the control and management of the Stanford Pupper Robot
 
+*This readme is behind. Please find more complete documentation [here](https://campusrover.github.io/PupperPy/)*
 
 ## Install Notes For Laptop Bluetooth controller
 - in order to install pybluez you may first need to install libbluetooth-dev
